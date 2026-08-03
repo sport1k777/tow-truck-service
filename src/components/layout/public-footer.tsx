@@ -11,8 +11,12 @@ import {
   Share2,
 } from 'lucide-react';
 import { SettingsService } from '@/modules/settings/settings.service';
+import {
+  getDisplayPhone,
+  getTelHref,
+  getWhatsAppHref,
+} from '@/lib/contact';
 
-const PLACEHOLDER_PHONE = '+38 (000) 000-00-00';
 const PLACEHOLDER_EMAIL = 'info@example.com';
 
 const NAV_ITEMS = [
@@ -30,23 +34,13 @@ const SOCIAL_PLACEHOLDERS = [
   { id: 'facebook', href: '#', label: 'Facebook', icon: Share2 },
 ] as const;
 
-function toTelHref(value: string): string {
-  const normalized = value.replace(/[^\d+]/g, '');
-  return normalized ? `tel:${normalized}` : '#';
-}
-
-function toWhatsAppHref(value: string): string {
-  const digits = value.replace(/\D/g, '');
-  return digits ? `https://wa.me/${digits}` : '#';
-}
-
 export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
   const settings = await SettingsService.getBusinessSettings();
   const companyName = settings.companyName || 'Евакуатор';
   const isDark = variant === 'dark';
 
-  const displayPhone = settings.phone || PLACEHOLDER_PHONE;
-  const displayWhatsApp = settings.whatsappNumber || settings.phone || PLACEHOLDER_PHONE;
+  const displayPhone = getDisplayPhone(settings.phone);
+  const displayWhatsApp = getDisplayPhone(settings.whatsappNumber || settings.phone);
   const displayEmail = settings.email || PLACEHOLDER_EMAIL;
   const displayHours = settings.workingHours || '24/7';
 
@@ -138,13 +132,13 @@ export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'l
                 icon={Phone}
                 label="Phone"
                 value={displayPhone}
-                href={toTelHref(displayPhone)}
+                href={getTelHref()}
               />
               <FooterContactItem
                 icon={MessageCircle}
                 label="WhatsApp"
                 value={displayWhatsApp}
-                href={toWhatsAppHref(displayWhatsApp)}
+                href={getWhatsAppHref()}
                 external
               />
               <FooterContactItem

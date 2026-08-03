@@ -11,8 +11,12 @@ import {
   Phone,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import {
+  getDisplayPhone,
+  getTelHref,
+  getWhatsAppHref,
+} from '@/lib/contact';
 
-const PLACEHOLDER_PHONE = '+38 (000) 000-00-00';
 const PLACEHOLDER_EMAIL = 'info@example.com';
 
 interface ContactCtaSectionProps {
@@ -22,24 +26,14 @@ interface ContactCtaSectionProps {
   workingHours: string | null;
 }
 
-function toTelHref(value: string): string {
-  const normalized = value.replace(/[^\d+]/g, '');
-  return normalized ? `tel:${normalized}` : '#';
-}
-
-function toWhatsAppHref(value: string): string {
-  const digits = value.replace(/\D/g, '');
-  return digits ? `https://wa.me/${digits}` : '#';
-}
-
 export function ContactCtaSection({
   phone,
   whatsappNumber,
   email,
   workingHours,
 }: ContactCtaSectionProps) {
-  const displayPhone = phone || PLACEHOLDER_PHONE;
-  const displayWhatsApp = whatsappNumber || phone || PLACEHOLDER_PHONE;
+  const displayPhone = getDisplayPhone(phone);
+  const displayWhatsApp = getDisplayPhone(whatsappNumber || phone);
   const displayEmail = email || PLACEHOLDER_EMAIL;
   const displayHours = workingHours || '24/7';
 
@@ -55,14 +49,14 @@ export function ContactCtaSection({
       icon: Phone,
       label: 'Phone',
       value: displayPhone,
-      href: toTelHref(displayPhone),
+      href: getTelHref(),
     },
     {
       id: 'whatsapp',
       icon: MessageCircle,
       label: 'WhatsApp',
       value: displayWhatsApp,
-      href: toWhatsAppHref(displayWhatsApp),
+      href: getWhatsAppHref(),
     },
     {
       id: 'email',
@@ -119,7 +113,7 @@ export function ContactCtaSection({
               Order a Tow Truck
             </Link>
             <a
-              href={toWhatsAppHref(displayWhatsApp)}
+              href={getWhatsAppHref()}
               target="_blank"
               rel="noopener noreferrer"
               className="cta-whatsapp hero-cta-secondary group inline-flex h-[3.25rem] items-center justify-center gap-2 rounded-full px-8 text-[0.9375rem] font-medium text-white/85"
@@ -128,7 +122,7 @@ export function ContactCtaSection({
               Contact via WhatsApp
             </a>
             <a
-              href={toTelHref(displayPhone)}
+              href={getTelHref()}
               className="cta-phone hero-cta-secondary group inline-flex h-[3.25rem] items-center justify-center gap-2 rounded-full px-8 text-[0.9375rem] font-medium text-white/85"
             >
               <span aria-hidden="true">📞</span>

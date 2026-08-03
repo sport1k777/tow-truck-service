@@ -1,4 +1,5 @@
 import type { BookingSubmissionPayload } from './booking.types';
+import { getWhatsAppHref } from '@/lib/contact';
 
 export interface WhatsAppDispatchResult {
   success: boolean;
@@ -16,15 +17,15 @@ export function formatBookingWhatsAppMessage(
   const lines = [
     `🚚 Нова заявка: ${referenceNumber}`,
     '',
-    `👤 Клієнт: ${payload.customerName}`,
-    `📞 Телефон: ${payload.customerPhone}`,
-    `📍 Забір: ${payload.pickupAddress}`,
-    `🏁 Призначення: ${payload.destinationAddress}`,
-    `🚗 Авто: ${payload.vehicleMakeModel}`,
+    `Customer Name: ${payload.customerName}`,
+    `Phone Number: ${payload.customerPhone}`,
+    `Pickup Address: ${payload.pickupAddress}`,
+    `Destination Address: ${payload.destinationAddress}`,
+    `Vehicle Make/Model: ${payload.vehicleMakeModel}`,
   ];
 
   if (payload.additionalNotes) {
-    lines.push(`📝 Примітки: ${payload.additionalNotes}`);
+    lines.push(`Notes: ${payload.additionalNotes}`);
   }
 
   lines.push('', `⏱ ${new Date(payload.submittedAt).toLocaleString('uk-UA')}`);
@@ -33,24 +34,24 @@ export function formatBookingWhatsAppMessage(
 }
 
 /**
- * Sends a booking request to WhatsApp Business.
- *
- * Phase 7.2: simulated dispatch (no API).
- * Phase 7.3: replace the implementation body with the WhatsApp Business Cloud API
- *             while keeping this function as the single integration point.
+ * Opens WhatsApp (wa.me) with a pre-filled booking message.
+ * Phase 7.3+: optional WhatsApp Business Cloud API can replace the window.open path.
  */
 export async function sendBookingToWhatsApp(
   payload: BookingSubmissionPayload,
   referenceNumber: string,
 ): Promise<WhatsAppDispatchResult> {
   const message = formatBookingWhatsAppMessage(payload, referenceNumber);
+  const url = getWhatsAppHref(message);
 
-  // Phase 7.3: call WhatsApp Business API here using businessPhoneNumber + message
-  await new Promise((resolve) => setTimeout(resolve, 1200));
+  if (typeof window === 'undefined') {
+    return { success: false, error: 'WhatsApp dispatch requires a browser environment' };
+  }
 
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console -- dev preview of WhatsApp payload
-    console.log('[sendBookingToWhatsApp]', message);
+  const whatsappWindow = window.open(url, '_blank', 'noopener,noreferrer');
+
+  if (!whatsappWindow) {
+    return { success: false, error: 'Unable to open WhatsApp. Allow pop-ups and try again.' };
   }
 
   return { success: true };

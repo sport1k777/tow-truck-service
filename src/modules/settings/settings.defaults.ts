@@ -8,6 +8,7 @@ import {
   DEFAULT_PHONE_COUNTRY_CODE,
   DEFAULT_TIMEZONE,
 } from '@/lib/locale.defaults';
+import { COMPANY_PHONE_DISPLAY, COMPANY_PHONE_E164 } from '@/lib/contact.defaults';
 import type { BusinessSettings } from './settings.types';
 
 /**
@@ -19,8 +20,8 @@ export const SETTINGS_DEFAULTS: BusinessSettings = {
   logoUrl: null,
   primaryColor: null,
   secondaryColor: null,
-  phone: '',
-  whatsappNumber: null,
+  phone: COMPANY_PHONE_DISPLAY,
+  whatsappNumber: COMPANY_PHONE_E164,
   email: null,
   websiteUrl: null,
   socialLinks: {},

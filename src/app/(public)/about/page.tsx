@@ -1,3 +1,4 @@
+import { PageShell } from '@/components/layout/page-shell';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 
 export async function generateMetadata() {
@@ -10,9 +11,9 @@ export async function generateMetadata() {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold">Про нас</h1>
-      <p className="mt-2 text-muted-foreground">Сторінка про компанію — Phase 7.</p>
-    </div>
+    <PageShell
+      title="Про нас"
+      description="Сторінка про компанію — Phase 7."
+    />
   );
 }

@@ -1,3 +1,4 @@
+import { PageShell } from '@/components/layout/page-shell';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 
 export async function generateMetadata() {
@@ -10,9 +11,9 @@ export async function generateMetadata() {
 
 export default function FaqPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold">Часті запитання</h1>
-      <p className="mt-2 text-muted-foreground">FAQ — Phase 7.</p>
-    </div>
+    <PageShell
+      title="Часті запитання"
+      description="FAQ — Phase 7."
+    />
   );
 }

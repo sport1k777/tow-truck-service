@@ -1,3 +1,4 @@
+import { PageShell } from '@/components/layout/page-shell';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 import { SettingsService } from '@/modules/settings/settings.service';
 
@@ -13,9 +14,8 @@ export default async function ContactPage() {
   const settings = await SettingsService.getBusinessSettings();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold">Контакти</h1>
-      <div className="mt-6 space-y-2 text-muted-foreground">
+    <PageShell title="Контакти">
+      <div className="space-y-3 text-white/55">
         {settings.phone && <p>Телефон: {settings.phone}</p>}
         {settings.whatsappNumber && <p>WhatsApp: {settings.whatsappNumber}</p>}
         {settings.email && <p>Email: {settings.email}</p>}
@@ -23,6 +23,6 @@ export default async function ContactPage() {
           <p>Контактна інформація буде налаштована в адмін-панелі.</p>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

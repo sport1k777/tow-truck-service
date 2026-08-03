@@ -275,22 +275,20 @@ async function main() {
   for (const holiday of holidays) {
     const date = new Date(Date.UTC(currentYear, holiday.month - 1, holiday.day));
 
-    await prisma.holiday.upsert({
-      where: {
-        date_countryCode_cityId: {
-          date,
-          countryCode: 'UA',
-          cityId: null,
-        },
-      },
-      update: {},
-      create: {
-        name: holiday.name,
-        date,
-        isRecurring: true,
-        countryCode: 'UA',
-      },
+    const existing = await prisma.holiday.findFirst({
+      where: { date, countryCode: 'UA', cityId: null },
     });
+
+    if (!existing) {
+      await prisma.holiday.create({
+        data: {
+          name: holiday.name,
+          date,
+          isRecurring: true,
+          countryCode: 'UA',
+        },
+      });
+    }
   }
 
   console.log('Seed completed successfully.');

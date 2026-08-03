@@ -11,8 +11,8 @@ Built with Next.js 15, TypeScript, Tailwind CSS, PostgreSQL (Neon), Prisma, Goog
 | 1 | Project Architecture | ✅ Approved |
 | 2 | Software Architecture | ✅ Approved |
 | 3 | Folder Structure & Scaffolding | ✅ Complete |
-| 4 | Database Design | ✅ Complete — Pending Approval |
-| 5 | API Specification | Pending |
+| 4 | Database Design | ✅ Approved |
+| 5 | API Specification | ✅ Complete — Pending Approval |
 | 6 | UI/UX Design | Pending |
 | 7+ | Development & Deployment | Pending |
 
@@ -82,8 +82,10 @@ Full structure documented in [`docs/FOLDER_STRUCTURE.md`](docs/FOLDER_STRUCTURE.
 
 - [Architecture Document](docs/ARCHITECTURE.md) — complete software architecture
 - [Database Design](docs/DATABASE.md) — schema, ERD, indexes, seed data
+- [API Specification](docs/API.md) — Server Actions, Route Handlers, integrations
 - [Phase 3 Summary](docs/PHASE3.md) — scaffolding decisions
 - [Phase 4 Summary](docs/PHASE4.md) — database design summary
+- [Phase 5 Summary](docs/PHASE5.md) — API specification summary
 - [Folder Structure](docs/FOLDER_STRUCTURE.md) — directory reference
 
 ## Scripts

@@ -8,7 +8,8 @@ WORKDIR /app
 # ── Dependencies ──────────────────────────────────────────────────────────────
 FROM base AS deps
 COPY package.json package-lock.json ./
-RUN npm ci
+COPY prisma ./prisma
+RUN npm ci --ignore-scripts
 
 # ── Build ─────────────────────────────────────────────────────────────────────
 FROM base AS builder

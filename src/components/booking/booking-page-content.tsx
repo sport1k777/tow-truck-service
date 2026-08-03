@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { AlertCircle } from 'lucide-react';
+import { BookingConfirmationScreen } from './booking-confirmation-screen';
 import { BookingForm } from './booking-form';
 import { BookingLoadingState } from './booking-loading-state';
-import { BookingSuccessState } from './booking-success-state';
+import { BookingQuoteSummary } from './booking-quote-summary';
 import { useBookingForm } from './use-booking-form';
 
 export function BookingPageContent() {
@@ -14,12 +15,40 @@ export function BookingPageContent() {
     status,
     result,
     submittedPayload,
+    submitError,
+    quoteSnapshot,
+    isQuoteStale,
+    mapsUnavailable,
+    noQuoteAvailable,
+    isHydrated,
     updateField,
     submit,
     reset,
     isSubmitting,
     isSuccess,
   } = useBookingForm();
+
+  if (isSuccess && result && submittedPayload) {
+    return (
+      <BookingConfirmationScreen
+        result={result}
+        payload={submittedPayload}
+        onCreateAnother={reset}
+      />
+    );
+  }
+
+  if (!isHydrated) {
+    return (
+      <section className="relative min-h-screen bg-[#030712] pb-20 pt-8 sm:pt-12">
+        <div className="landing-container relative max-w-3xl">
+          <div className="landing-panel p-8">
+            <div className="h-40 animate-pulse rounded-xl bg-white/[0.03]" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -48,46 +77,45 @@ export function BookingPageContent() {
           </p>
         </div>
 
+        <div className="mb-6">
+          <BookingQuoteSummary
+            quote={quoteSnapshot}
+            isQuoteStale={isQuoteStale}
+            mapsUnavailable={mapsUnavailable}
+            noQuoteAvailable={noQuoteAvailable}
+          />
+        </div>
+
         <div className="landing-panel relative p-6 sm:p-8">
           {isSubmitting && <BookingLoadingState />}
 
-          {isSuccess && result && submittedPayload ? (
-            <BookingSuccessState
-              result={result}
-              payload={submittedPayload}
-              onReset={reset}
-            />
-          ) : (
-            <>
-              {status === 'error' && (
-                <div
-                  className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.06] px-4 py-4"
-                  role="alert"
-                >
-                  <AlertCircle
-                    className="mt-0.5 h-5 w-5 shrink-0 text-red-400"
-                    aria-hidden="true"
-                  />
-                  <p className="text-sm text-red-300/90">
-                    Не вдалося надіслати заявку. Перевірте дані та спробуйте ще раз.
-                  </p>
-                </div>
-              )}
-
-              <div
-                className={isSubmitting ? 'pointer-events-none opacity-40 transition-opacity duration-300' : undefined}
-                aria-hidden={isSubmitting}
-              >
-                <BookingForm
-                  form={form}
-                  errors={errors}
-                  isSubmitting={isSubmitting}
-                  onFieldChange={updateField}
-                  onSubmit={submit}
-                />
-              </div>
-            </>
+          {status === 'error' && (
+            <div
+              className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.06] px-4 py-4"
+              role="alert"
+            >
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" aria-hidden="true" />
+              <p className="text-sm text-red-300/90">
+                {submitError ??
+                  'Не вдалося надіслати заявку. Перевірте дані та спробуйте ще раз.'}
+              </p>
+            </div>
           )}
+
+          <div
+            className={
+              isSubmitting ? 'pointer-events-none opacity-40 transition-opacity duration-300' : undefined
+            }
+            aria-hidden={isSubmitting}
+          >
+            <BookingForm
+              form={form}
+              errors={errors}
+              isSubmitting={isSubmitting}
+              onFieldChange={updateField}
+              onSubmit={submit}
+            />
+          </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-white/35">

@@ -1,40 +1,36 @@
-import type { VehicleType } from '@/lib/constants';
+import type { PricingVehicleType } from '@/modules/pricing/pricing.config';
+import type { PriceCalculationResult } from '@/modules/pricing/pricing.types';
+import type { GeoCoordinates } from '@/modules/maps/maps.types';
 
 /** Form state — maps 1:1 to future CreateOrderInput / CalculatePriceInput */
 export interface CalculatorFormState {
   pickupAddress: string;
+  pickupPlaceId: string | null;
+  pickupLocation: GeoCoordinates | null;
   destinationAddress: string;
-  vehicleType: VehicleType;
+  destinationPlaceId: string | null;
+  destinationLocation: GeoCoordinates | null;
+  vehicleType: PricingVehicleType;
+  isEmergencyDispatch: boolean;
+  isDifficultLoading: boolean;
   comments: string;
 }
 
-/** Future: populated by Google Directions API via /api/v1/maps/directions */
 export interface CalculatorRoutePreview {
   distanceKm: number;
   durationMinutes: number;
   polyline: string | null;
 }
 
-/** Future: populated by validateServiceArea Server Action */
 export interface CalculatorServiceAvailability {
   isAvailable: boolean;
   message: string;
   areaName?: string;
 }
 
-/** Future: populated by calculatePrice Server Action */
-export interface CalculatorPriceResult {
-  total: number;
-  currency: string;
-  breakdown: Array<{
-    label: string;
-    amount: number;
-  }>;
-}
-
 export interface CalculatorResult {
   route: CalculatorRoutePreview;
-  price: CalculatorPriceResult;
+  price: PriceCalculationResult;
   availability: CalculatorServiceAvailability;
   calculatedAt: string;
 }
@@ -44,4 +40,5 @@ export type CalculatorStatus = 'idle' | 'calculating' | 'success' | 'error';
 export interface CalculatorFormErrors {
   pickupAddress?: string;
   destinationAddress?: string;
+  route?: string;
 }

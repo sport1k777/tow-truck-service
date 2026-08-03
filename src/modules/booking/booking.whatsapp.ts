@@ -6,6 +6,16 @@ export interface WhatsAppDispatchResult {
   error?: string;
 }
 
+const WHATSAPP_UNAVAILABLE_ERROR =
+  'Не вдалося відкрити WhatsApp. Дозвольте спливаючі вікна в браузері або напишіть нам напряму в WhatsApp.';
+
+function formatLocalDateTime(isoDate: string): string {
+  return new Date(isoDate).toLocaleString('uk-UA', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+}
+
 /**
  * Formats the booking request as a WhatsApp message for the dispatcher.
  * Used by sendBookingToWhatsApp — keep in sync when fields change.
@@ -14,28 +24,64 @@ export function formatBookingWhatsAppMessage(
   payload: BookingSubmissionPayload,
   referenceNumber: string,
 ): string {
-  const lines = [
-    `🚚 Нова заявка: ${referenceNumber}`,
-    '',
-    `Customer Name: ${payload.customerName}`,
-    `Phone Number: ${payload.customerPhone}`,
-    `Pickup Address: ${payload.pickupAddress}`,
-    `Destination Address: ${payload.destinationAddress}`,
-    `Vehicle Make/Model: ${payload.vehicleMakeModel}`,
-  ];
+  const notes = payload.additionalNotes?.trim() || '—';
+  const localDateTime = formatLocalDateTime(payload.submittedAt);
 
-  if (payload.additionalNotes) {
-    lines.push(`Notes: ${payload.additionalNotes}`);
+  return [
+    '🚚 НОВЕ ЗАМОВЛЕННЯ ЕВАКУАТОРА',
+    '',
+    "👤 Ім'я:",
+    payload.customerName,
+    '',
+    '📞 Телефон:',
+    payload.customerPhone,
+    '',
+    '📍 Адреса подачі:',
+    payload.pickupAddress,
+    '',
+    '📍 Адреса доставки:',
+    payload.destinationAddress,
+    '',
+    '🚗 Автомобіль:',
+    payload.vehicleMakeModel,
+    '',
+    '📝 Коментар:',
+    notes,
+    '',
+    '🆔 Номер заявки:',
+    referenceNumber,
+    '',
+    '⏰ Час:',
+    localDateTime,
+  ].join('\n');
+}
+
+function tryOpenWhatsApp(url: string): boolean {
+  try {
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return true;
+  } catch {
+    // Fall through to window.open.
   }
 
-  lines.push('', `⏱ ${new Date(payload.submittedAt).toLocaleString('uk-UA')}`);
-
-  return lines.join('\n');
+  try {
+    const popup = window.open(url, '_blank', 'noopener,noreferrer');
+    return popup !== null;
+  } catch {
+    return false;
+  }
 }
 
 /**
  * Opens WhatsApp (wa.me) with a pre-filled booking message.
- * Phase 7.3+: optional WhatsApp Business Cloud API can replace the window.open path.
+ * Uses wa.me + encodeURIComponent — no WhatsApp Business API.
  */
 export async function sendBookingToWhatsApp(
   payload: BookingSubmissionPayload,
@@ -45,13 +91,11 @@ export async function sendBookingToWhatsApp(
   const url = getWhatsAppHref(message);
 
   if (typeof window === 'undefined') {
-    return { success: false, error: 'WhatsApp dispatch requires a browser environment' };
+    return { success: false, error: WHATSAPP_UNAVAILABLE_ERROR };
   }
 
-  const whatsappWindow = window.open(url, '_blank', 'noopener,noreferrer');
-
-  if (!whatsappWindow) {
-    return { success: false, error: 'Unable to open WhatsApp. Allow pop-ups and try again.' };
+  if (!tryOpenWhatsApp(url)) {
+    return { success: false, error: WHATSAPP_UNAVAILABLE_ERROR };
   }
 
   return { success: true };

@@ -1,8 +1,10 @@
 'use client';
 
-import { Car, Loader2, MapPin, MessageSquare } from 'lucide-react';
+import { Car, Loader2, MapPin, MessageSquare, Zap } from 'lucide-react';
+import { AddressAutocomplete } from '@/components/maps/address-autocomplete';
 import type { CalculatorFormErrors, CalculatorFormState } from './calculator.types';
-import { VEHICLE_TYPE_OPTIONS } from './calculator.placeholder';
+import { VEHICLE_TYPE_OPTIONS } from './calculator.pricing';
+import type { PlaceLocation } from '@/modules/maps/maps.types';
 
 interface CalculatorFormProps {
   form: CalculatorFormState;
@@ -12,6 +14,8 @@ interface CalculatorFormProps {
     key: K,
     value: CalculatorFormState[K],
   ) => void;
+  onPickupPlaceSelect: (place: PlaceLocation) => void;
+  onDestinationPlaceSelect: (place: PlaceLocation) => void;
   onCalculate: () => void;
 }
 
@@ -20,6 +24,8 @@ export function CalculatorForm({
   errors,
   isCalculating,
   onFieldChange,
+  onPickupPlaceSelect,
+  onDestinationPlaceSelect,
   onCalculate,
 }: CalculatorFormProps) {
   return (
@@ -31,58 +37,39 @@ export function CalculatorForm({
       }}
       noValidate
     >
-      {/* Pickup — Phase 7: replace with AddressAutocomplete */}
-      <div className="space-y-2">
-        <label htmlFor="pickup-address" className="flex items-center gap-2 text-sm font-medium text-white/80">
-          <MapPin className="h-4 w-4 text-sky-400" aria-hidden="true" />
-          Звідки забрати
-        </label>
-        <input
-          id="pickup-address"
-          type="text"
-          value={form.pickupAddress}
-          onChange={(e) => onFieldChange('pickupAddress', e.target.value)}
-          placeholder="вул. Хрещатик, 1, Київ"
-          autoComplete="off"
-          aria-invalid={!!errors.pickupAddress}
-          aria-describedby={errors.pickupAddress ? 'pickup-error' : undefined}
-          className="calculator-input w-full"
-        />
-        {errors.pickupAddress && (
-          <p id="pickup-error" className="text-xs text-red-400" role="alert">
-            {errors.pickupAddress}
-          </p>
-        )}
-      </div>
+      <AddressAutocomplete
+        id="pickup-address"
+        label="Звідки забрати"
+        icon={MapPin}
+        iconClassName="text-sky-400"
+        value={form.pickupAddress}
+        placeholder="вул. Хрещатик, 1, Київ"
+        error={errors.pickupAddress}
+        onAddressChange={(address) => onFieldChange('pickupAddress', address)}
+        onPlaceSelect={onPickupPlaceSelect}
+      />
 
-      {/* Destination */}
-      <div className="space-y-2">
-        <label
-          htmlFor="destination-address"
-          className="flex items-center gap-2 text-sm font-medium text-white/80"
+      <AddressAutocomplete
+        id="destination-address"
+        label="Куди доставити"
+        icon={MapPin}
+        iconClassName="text-blue-400"
+        value={form.destinationAddress}
+        placeholder="вул. Борщагівська, 150, Київ"
+        error={errors.destinationAddress}
+        onAddressChange={(address) => onFieldChange('destinationAddress', address)}
+        onPlaceSelect={onDestinationPlaceSelect}
+      />
+
+      {errors.route && (
+        <div
+          className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3 text-sm text-amber-200/90"
+          role="alert"
         >
-          <MapPin className="h-4 w-4 text-blue-400" aria-hidden="true" />
-          Куди доставити
-        </label>
-        <input
-          id="destination-address"
-          type="text"
-          value={form.destinationAddress}
-          onChange={(e) => onFieldChange('destinationAddress', e.target.value)}
-          placeholder="вул. Борщагівська, 150, Київ"
-          autoComplete="off"
-          aria-invalid={!!errors.destinationAddress}
-          aria-describedby={errors.destinationAddress ? 'destination-error' : undefined}
-          className="calculator-input w-full"
-        />
-        {errors.destinationAddress && (
-          <p id="destination-error" className="text-xs text-red-400" role="alert">
-            {errors.destinationAddress}
-          </p>
-        )}
-      </div>
+          {errors.route}
+        </div>
+      )}
 
-      {/* Vehicle type */}
       <div className="space-y-2">
         <label htmlFor="vehicle-type" className="flex items-center gap-2 text-sm font-medium text-white/80">
           <Car className="h-4 w-4 text-white/50" aria-hidden="true" />
@@ -102,7 +89,31 @@ export function CalculatorForm({
         </select>
       </div>
 
-      {/* Comment */}
+      <fieldset className="space-y-3">
+        <legend className="flex items-center gap-2 text-sm font-medium text-white/80">
+          <Zap className="h-4 w-4 text-white/50" aria-hidden="true" />
+          Додаткові послуги
+        </legend>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-colors hover:border-white/[0.1]">
+          <input
+            type="checkbox"
+            checked={form.isEmergencyDispatch}
+            onChange={(e) => onFieldChange('isEmergencyDispatch', e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/[0.04] text-sky-500 focus:ring-sky-500/40"
+          />
+          <span className="text-sm text-white/70">Термінова подача</span>
+        </label>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-colors hover:border-white/[0.1]">
+          <input
+            type="checkbox"
+            checked={form.isDifficultLoading}
+            onChange={(e) => onFieldChange('isDifficultLoading', e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/[0.04] text-sky-500 focus:ring-sky-500/40"
+          />
+          <span className="text-sm text-white/70">Складне навантаження</span>
+        </label>
+      </fieldset>
+
       <div className="space-y-2">
         <label htmlFor="comments" className="flex items-center gap-2 text-sm font-medium text-white/80">
           <MessageSquare className="h-4 w-4 text-white/50" aria-hidden="true" />

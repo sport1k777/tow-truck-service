@@ -1,40 +1,27 @@
-import { PRICING_SURCHARGE_TYPES, VEHICLE_TYPES } from '@/lib/constants';
+import { PRICING_SURCHARGE_TYPES } from '@/lib/constants';
+import type { PricingVehicleType } from './pricing.config';
 
-export type { VehicleType } from '@/lib/constants';
+export type { PricingVehicleType } from './pricing.config';
 
 export interface PricingInput {
   distanceKm: number;
-  vehicleType: keyof typeof VEHICLE_TYPES;
+  vehicleType: PricingVehicleType;
   timestamp: Date;
   isDifficultLoading?: boolean;
+  isEmergencyDispatch?: boolean;
 }
 
 export interface PriceBreakdownItem {
   label: string;
   amount: number;
-  type: 'base' | 'distance' | 'surcharge';
+  type: 'base' | 'distance' | 'surcharge' | 'total';
   surchargeType?: keyof typeof PRICING_SURCHARGE_TYPES;
 }
 
 export interface PriceCalculationResult {
   total: number;
   currency: string;
+  currencySymbol: string;
   distanceKm: number;
   breakdown: PriceBreakdownItem[];
-}
-
-export interface PricingRuleConfig {
-  id: string;
-  name: string;
-  baseFee: number;
-  perKmRate: number;
-  minCharge: number;
-  isActive: boolean;
-  vehicleTypeSurcharges: Record<string, number>;
-  nightSurchargePercent: number;
-  nightStartHour: number;
-  nightEndHour: number;
-  weekendSurchargePercent: number;
-  holidaySurchargePercent: number;
-  difficultLoadingSurcharge: number;
 }

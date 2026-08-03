@@ -478,6 +478,48 @@
   outline: none;
 }
 
+/* Google Places Autocomplete — dark theme for calculator */
+.pac-container {
+  margin-top: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  background: #0a1628;
+  box-shadow: 0 16px 40px rgba(3, 7, 18, 0.55);
+  font-family: inherit;
+}
+
+.pac-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.625rem 0.875rem;
+  cursor: pointer;
+}
+
+.pac-item:first-child {
+  border-top: none;
+}
+
+.pac-item:hover,
+.pac-item-selected {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.pac-item-query {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.pac-matched {
+  color: #38bdf8;
+}
+
+.pac-icon {
+  display: none;
+}
+
+.pac-logo::after {
+  filter: invert(1) opacity(0.35);
+}
+
 @keyframes calculator-route-draw {
   from {
     stroke-dashoffset: 400;
@@ -778,18 +820,74 @@
   animation: booking-loading-step-pulse 1.8s ease-in-out infinite;
 }
 
+.booking-loading-ring {
+  animation: booking-loading-ring-pulse 2.4s ease-in-out infinite;
+}
+
+.booking-loading-truck {
+  animation: booking-loading-truck-bob 1.6s ease-in-out infinite;
+}
+
 .booking-success-animate {
   animation: booking-success-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .booking-success-icon {
-  animation: booking-success-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: booking-success-scale-in 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes booking-loading-ring-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 32px rgba(56, 189, 248, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 56px rgba(56, 189, 248, 0.22);
+  }
+}
+
+@keyframes booking-loading-truck-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes booking-success-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.booking-order-timeline .booking-timeline-marker-current {
+  animation: booking-timeline-current-pulse 2s ease-in-out infinite;
+}
+
+@keyframes booking-timeline-current-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(56, 189, 248, 0.28);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .booking-loading-step {
+  .booking-loading-step,
+  .booking-loading-ring,
+  .booking-loading-truck {
     animation: none;
     opacity: 0.7;
+    transform: none;
   }
 
   .booking-success-animate,
@@ -797,5 +895,9 @@
     animation: none;
     opacity: 1;
     transform: none;
+  }
+
+  .booking-order-timeline .booking-timeline-marker-current {
+    animation: none;
   }
 }

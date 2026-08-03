@@ -2,14 +2,30 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { MapsProvider } from '@/modules/maps/maps-provider';
+import { CalculatorRouteMap } from '@/components/maps/calculator-route-map';
 import { CalculatorForm } from './calculator-form';
-import { CalculatorMapPreview } from './calculator-map-preview';
 import { CalculatorResults } from './calculator-results';
 import { useCalculator } from './use-calculator';
 
-export function PriceCalculatorSection() {
-  const { form, errors, status, result, updateField, calculate, isCalculating, hasResult } =
-    useCalculator();
+function PriceCalculatorSectionContent() {
+  const {
+    form,
+    errors,
+    status,
+    result,
+    route,
+    routeStatus,
+    livePrice,
+    displayDistanceKm,
+    displayDurationMinutes,
+    updateField,
+    setPickupPlace,
+    setDestinationPlace,
+    calculate,
+    isCalculating,
+    isCalculatingRoute,
+  } = useCalculator();
 
   return (
     <section
@@ -18,12 +34,10 @@ export function PriceCalculatorSection() {
       aria-labelledby="calculator-heading"
     >
       <div className="landing-section-divider" aria-hidden="true" />
-      {/* Bridge from hero */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#030712] to-transparent"
         aria-hidden="true"
       />
-      {/* Bridge into How It Works */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(59,130,246,0.07),transparent)]"
         aria-hidden="true"
@@ -42,7 +56,6 @@ export function PriceCalculatorSection() {
 
         <div className="landing-panel">
           <div className="grid lg:grid-cols-[minmax(0,420px)_1fr] xl:grid-cols-[minmax(0,440px)_1fr]">
-            {/* LEFT — form + results */}
             <div className="flex flex-col gap-8 border-b border-white/[0.06] p-6 sm:p-8 lg:border-b-0 lg:border-r">
               <div className="flex flex-col gap-3">
                 <CalculatorForm
@@ -50,6 +63,8 @@ export function PriceCalculatorSection() {
                   errors={errors}
                   isCalculating={isCalculating}
                   onFieldChange={updateField}
+                  onPickupPlaceSelect={setPickupPlace}
+                  onDestinationPlaceSelect={setDestinationPlace}
                   onCalculate={calculate}
                 />
 
@@ -63,23 +78,39 @@ export function PriceCalculatorSection() {
               </div>
 
               <div aria-live="polite" aria-atomic="true">
-                <CalculatorResults status={status} result={result} />
+                <CalculatorResults
+                  status={status}
+                  result={result}
+                  livePrice={livePrice}
+                  displayDistanceKm={displayDistanceKm}
+                  displayDurationMinutes={displayDurationMinutes}
+                  isCalculatingRoute={isCalculatingRoute}
+                  routeStatus={routeStatus}
+                />
               </div>
             </div>
 
-            {/* RIGHT — map preview */}
             <div className="relative min-h-[320px] lg:min-h-[560px]">
-              <CalculatorMapPreview
+              <CalculatorRouteMap
                 pickupAddress={form.pickupAddress}
                 destinationAddress={form.destinationAddress}
-                distanceKm={result?.route.distanceKm}
-                durationMinutes={result?.route.durationMinutes}
-                isActive={hasResult}
+                route={route}
+                distanceKm={displayDistanceKm}
+                durationMinutes={displayDurationMinutes ?? undefined}
+                isCalculatingRoute={isCalculatingRoute}
               />
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+export function PriceCalculatorSection() {
+  return (
+    <MapsProvider>
+      <PriceCalculatorSectionContent />
+    </MapsProvider>
   );
 }

@@ -1,4 +1,5 @@
-import type { BookingSubmissionPayload, BookingSubmissionResult } from './booking.types';
+import { calculateEstimatedArrival } from './booking.eta';
+import type { BookingQuoteSnapshot, BookingSubmissionResult } from './booking.types';
 
 export function generateReferenceNumber(): string {
   const date = new Date();
@@ -10,16 +11,30 @@ export function generateReferenceNumber(): string {
 }
 
 export async function simulateBookingProcessing(): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, 600));
+  await new Promise((resolve) => setTimeout(resolve, 900));
 }
 
-export function buildSubmissionResult(referenceNumber: string): BookingSubmissionResult {
+export function finalizeQuoteSnapshot(quote: BookingQuoteSnapshot): BookingQuoteSnapshot {
+  const estimatedArrivalAt = calculateEstimatedArrival(quote.durationMinutes).toISOString();
+
   return {
-    orderId: null,
-    referenceNumber,
-    message:
-      'Заявку надіслано диспетчеру. Очікуйте дзвінок для підтвердження — евакуатор буде у шляху найближчим часом.',
+    ...quote,
+    estimatedArrivalAt,
   };
 }
 
-export type { BookingSubmissionPayload };
+export function buildSubmissionResult(
+  referenceNumber: string,
+  extras: {
+    quote: BookingQuoteSnapshot;
+    whatsappUrl: string;
+  },
+): BookingSubmissionResult {
+  return {
+    orderId: null,
+    referenceNumber,
+    message: 'Наш диспетчер зв\'яжеться з вами найближчим часом.',
+    quote: finalizeQuoteSnapshot(extras.quote),
+    whatsappUrl: extras.whatsappUrl,
+  };
+}

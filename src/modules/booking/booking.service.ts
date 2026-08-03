@@ -1,20 +1,22 @@
+import { getWhatsAppHref } from '@/lib/contact';
 import {
   buildSubmissionResult,
   generateReferenceNumber,
   simulateBookingProcessing,
 } from './booking.placeholder';
-import { sendBookingToWhatsApp } from './booking.whatsapp';
+import { formatBookingWhatsAppMessage, sendBookingToWhatsApp } from './booking.whatsapp';
 import { toBookingSubmissionPayload, validateBookingForm } from './booking.validation';
 import type {
   BookingFormErrors,
   BookingFormState,
+  BookingQuoteSnapshot,
   BookingSubmissionPayload,
   BookingSubmissionResult,
 } from './booking.types';
 
 /**
  * Client-side booking workflow.
- * Phase 7.3+: persist via createOrderAction before WhatsApp dispatch.
+ * Phase 8+: persist via createOrderAction before WhatsApp dispatch.
  */
 export class BookingService {
   static validate(form: BookingFormState): BookingFormErrors {
@@ -37,9 +39,12 @@ export class BookingService {
   }
 
   /**
-   * Submit a booking: validate → process → dispatch to WhatsApp Business.
+   * Submit a booking: validate → process → open WhatsApp with order details.
    */
-  static async submit(form: BookingFormState): Promise<{
+  static async submit(
+    form: BookingFormState,
+    quote: BookingQuoteSnapshot,
+  ): Promise<{
     result: BookingSubmissionResult;
     payload: BookingSubmissionPayload;
   }> {
@@ -50,6 +55,8 @@ export class BookingService {
 
     const payload = this.buildPayload(form);
     const referenceNumber = generateReferenceNumber();
+    const whatsappMessage = formatBookingWhatsAppMessage(payload, referenceNumber);
+    const whatsappUrl = getWhatsAppHref(whatsappMessage);
 
     await simulateBookingProcessing();
 
@@ -59,7 +66,7 @@ export class BookingService {
     }
 
     return {
-      result: buildSubmissionResult(referenceNumber),
+      result: buildSubmissionResult(referenceNumber, { quote, whatsappUrl }),
       payload,
     };
   }

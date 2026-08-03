@@ -19,6 +19,17 @@ export type BookingFormErrors = Partial<Record<BookingFormField, string>>;
 
 export type BookingFormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
+/** Quote snapshot attached to a booking — from calculator or unavailable fallback */
+export interface BookingQuoteSnapshot {
+  distanceKm: number | null;
+  durationMinutes: number | null;
+  estimatedPrice: number | null;
+  currency: string;
+  currencySymbol: string;
+  estimatedArrivalAt: string | null;
+  mapsAvailable: boolean;
+}
+
 /** Normalized payload passed to BookingService — ready for server actions & integrations */
 export interface BookingSubmissionPayload {
   customerName: string;
@@ -47,6 +58,8 @@ export interface BookingSubmissionResult {
   message: string;
   /** Placeholder until createOrderAction returns real order id */
   orderId: string | null;
+  quote: BookingQuoteSnapshot;
+  whatsappUrl: string;
 }
 
 export interface BookingDispatchResult {

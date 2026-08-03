@@ -1,13 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { BookingForm } from './booking-form';
+import { BookingLoadingState } from './booking-loading-state';
+import { BookingSuccessState } from './booking-success-state';
 import { useBookingForm } from './use-booking-form';
 
 export function BookingPageContent() {
-  const { form, errors, status, result, updateField, submit, reset, isSubmitting, isSuccess } =
-    useBookingForm();
+  const {
+    form,
+    errors,
+    status,
+    result,
+    submittedPayload,
+    updateField,
+    submit,
+    reset,
+    isSubmitting,
+    isSuccess,
+  } = useBookingForm();
 
   return (
     <section
@@ -36,11 +48,13 @@ export function BookingPageContent() {
           </p>
         </div>
 
-        <div className="landing-panel p-6 sm:p-8">
-          {isSuccess && result ? (
+        <div className="landing-panel relative p-6 sm:p-8">
+          {isSubmitting && <BookingLoadingState />}
+
+          {isSuccess && result && submittedPayload ? (
             <BookingSuccessState
-              referenceNumber={result.referenceNumber}
-              message={result.message}
+              result={result}
+              payload={submittedPayload}
               onReset={reset}
             />
           ) : (
@@ -60,13 +74,18 @@ export function BookingPageContent() {
                 </div>
               )}
 
-              <BookingForm
-                form={form}
-                errors={errors}
-                isSubmitting={isSubmitting}
-                onFieldChange={updateField}
-                onSubmit={submit}
-              />
+              <div
+                className={isSubmitting ? 'pointer-events-none opacity-40 transition-opacity duration-300' : undefined}
+                aria-hidden={isSubmitting}
+              >
+                <BookingForm
+                  form={form}
+                  errors={errors}
+                  isSubmitting={isSubmitting}
+                  onFieldChange={updateField}
+                  onSubmit={submit}
+                />
+              </div>
             </>
           )}
         </div>
@@ -77,45 +96,5 @@ export function BookingPageContent() {
         </p>
       </div>
     </section>
-  );
-}
-
-function BookingSuccessState({
-  referenceNumber,
-  message,
-  onReset,
-}: {
-  referenceNumber: string;
-  message: string;
-  onReset: () => void;
-}) {
-  return (
-    <div className="py-4 text-center" role="status">
-      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-500/25 bg-emerald-500/10">
-        <CheckCircle2 className="h-7 w-7 text-emerald-400" aria-hidden="true" />
-      </div>
-      <h2 className="text-xl font-semibold text-white">Заявку прийнято</h2>
-      <p className="landing-subtitle mx-auto mt-3 max-w-md">{message}</p>
-      <p className="mt-6 text-sm text-white/45">
-        Номер заявки:{' '}
-        <span className="font-mono font-semibold text-sky-300">{referenceNumber}</span>
-      </p>
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Link
-          href="/"
-          className="hero-cta-primary inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold text-white"
-        >
-          На головну
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-        <button
-          type="button"
-          onClick={onReset}
-          className="hero-cta-secondary inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium text-white/85"
-        >
-          Нова заявка
-        </button>
-      </div>
-    </div>
   );
 }

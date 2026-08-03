@@ -1,8 +1,11 @@
-import { logger } from '@/lib/logger';
-import { placeholderDispatchBooking, placeholderSubmitBooking } from './booking.placeholder';
+import {
+  buildSubmissionResult,
+  generateReferenceNumber,
+  simulateBookingProcessing,
+} from './booking.placeholder';
+import { sendBookingToWhatsApp } from './booking.whatsapp';
 import { toBookingSubmissionPayload, validateBookingForm } from './booking.validation';
 import type {
-  BookingDispatchResult,
   BookingFormErrors,
   BookingFormState,
   BookingSubmissionPayload,
@@ -10,8 +13,8 @@ import type {
 } from './booking.types';
 
 /**
- * Booking orchestration layer.
- * Phase 7.2+: wire createOrderAction, NotificationsService, and AI dispatcher here.
+ * Client-side booking workflow.
+ * Phase 7.3+: persist via createOrderAction before WhatsApp dispatch.
  */
 export class BookingService {
   static validate(form: BookingFormState): BookingFormErrors {
@@ -34,12 +37,11 @@ export class BookingService {
   }
 
   /**
-   * Submit a booking request.
-   * Future: persist order, notify WhatsApp, trigger AI dispatcher, update admin dashboard.
+   * Submit a booking: validate → process → dispatch to WhatsApp Business.
    */
   static async submit(form: BookingFormState): Promise<{
     result: BookingSubmissionResult;
-    dispatch: BookingDispatchResult[];
+    payload: BookingSubmissionPayload;
   }> {
     const errors = this.validate(form);
     if (Object.keys(errors).length > 0) {
@@ -47,22 +49,18 @@ export class BookingService {
     }
 
     const payload = this.buildPayload(form);
+    const referenceNumber = generateReferenceNumber();
 
-    logger.info('Booking submission received', {
-      module: 'booking',
-      action: 'submit',
-      metadata: {
-        source: payload.source,
-        pickup: payload.pickupAddress,
-        destination: payload.destinationAddress,
-      },
-    });
+    await simulateBookingProcessing();
 
-    const [result, dispatch] = await Promise.all([
-      placeholderSubmitBooking(payload),
-      placeholderDispatchBooking(payload),
-    ]);
+    const whatsappResult = await sendBookingToWhatsApp(payload, referenceNumber);
+    if (!whatsappResult.success) {
+      throw new Error(whatsappResult.error ?? 'WHATSAPP_DISPATCH_FAILED');
+    }
 
-    return { result, dispatch };
+    return {
+      result: buildSubmissionResult(referenceNumber),
+      payload,
+    };
   }
 }

@@ -1,11 +1,6 @@
-import type {
-  BookingDispatchResult,
-  BookingSubmissionPayload,
-  BookingSubmissionResult,
-} from './booking.types';
-import { BOOKING_DISPATCH_TARGETS } from './booking.types';
+import type { BookingSubmissionPayload, BookingSubmissionResult } from './booking.types';
 
-function generateReferenceNumber(): string {
+export function generateReferenceNumber(): string {
   const date = new Date();
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -14,32 +9,17 @@ function generateReferenceNumber(): string {
   return `TT-${y}${m}${d}-${seq}`;
 }
 
-/**
- * Phase 7.1 placeholder — simulates order creation latency.
- * Phase 7.2+: replace with createOrderAction + real dispatch pipeline.
- */
-export async function placeholderSubmitBooking(
-  _payload: BookingSubmissionPayload,
-): Promise<BookingSubmissionResult> {
-  await new Promise((resolve) => setTimeout(resolve, 900));
+export async function simulateBookingProcessing(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 600));
+}
 
+export function buildSubmissionResult(referenceNumber: string): BookingSubmissionResult {
   return {
     orderId: null,
-    referenceNumber: generateReferenceNumber(),
-    message: 'Заявку прийнято. Диспетчер звʼяжеться з вами найближчим часом.',
+    referenceNumber,
+    message:
+      'Заявку надіслано диспетчеру. Очікуйте дзвінок для підтвердження — евакуатор буде у шляху найближчим часом.',
   };
 }
 
-/**
- * Phase 7.2+: route to WhatsApp Business, AI dispatcher, and admin notifications.
- */
-export async function placeholderDispatchBooking(
-  _payload: BookingSubmissionPayload,
-): Promise<BookingDispatchResult[]> {
-  return [
-    { target: BOOKING_DISPATCH_TARGETS.DATABASE, success: true },
-    { target: BOOKING_DISPATCH_TARGETS.WHATSAPP, success: true },
-    { target: BOOKING_DISPATCH_TARGETS.AI_DISPATCHER, success: true },
-    { target: BOOKING_DISPATCH_TARGETS.ADMIN_DASHBOARD, success: true },
-  ];
-}
+export type { BookingSubmissionPayload };

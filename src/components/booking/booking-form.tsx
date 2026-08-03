@@ -1,6 +1,6 @@
 'use client';
 
-import { Car, Loader2, MapPin, MessageSquare, Phone, Send, User } from 'lucide-react';
+import { Car, MapPin, MessageSquare, Phone, Send, User } from 'lucide-react';
 import type { BookingFormErrors, BookingFormState } from '@/modules/booking/booking.types';
 import { DEFAULT_PHONE_COUNTRY_CODE } from '@/lib/locale.defaults';
 import { BookingFormField } from './booking-form-field';
@@ -31,6 +31,7 @@ export function BookingForm({
         onSubmit();
       }}
       noValidate
+      aria-busy={isSubmitting}
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <BookingFormField
@@ -49,7 +50,8 @@ export function BookingForm({
             autoComplete="name"
             aria-invalid={!!errors.customerName}
             aria-describedby={errors.customerName ? 'customer-name-error' : undefined}
-            className="calculator-input w-full"
+            className="calculator-input w-full disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSubmitting}
           />
         </BookingFormField>
 
@@ -70,7 +72,8 @@ export function BookingForm({
             inputMode="tel"
             aria-invalid={!!errors.customerPhone}
             aria-describedby={errors.customerPhone ? 'customer-phone-error' : undefined}
-            className="calculator-input w-full"
+            className="calculator-input w-full disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSubmitting}
           />
         </BookingFormField>
       </div>
@@ -91,7 +94,8 @@ export function BookingForm({
           autoComplete="street-address"
           aria-invalid={!!errors.pickupAddress}
           aria-describedby={errors.pickupAddress ? 'pickup-address-error' : undefined}
-          className="calculator-input w-full"
+          className="calculator-input w-full disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={isSubmitting}
         />
       </BookingFormField>
 
@@ -113,7 +117,8 @@ export function BookingForm({
           aria-describedby={
             errors.destinationAddress ? 'destination-address-error' : undefined
           }
-          className="calculator-input w-full"
+          className="calculator-input w-full disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={isSubmitting}
         />
       </BookingFormField>
 
@@ -133,7 +138,8 @@ export function BookingForm({
           autoComplete="off"
           aria-invalid={!!errors.vehicleMakeModel}
           aria-describedby={errors.vehicleMakeModel ? 'vehicle-make-model-error' : undefined}
-          className="calculator-input w-full"
+          className="calculator-input w-full disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={isSubmitting}
         />
       </BookingFormField>
 
@@ -150,7 +156,8 @@ export function BookingForm({
           onChange={(event) => onFieldChange('additionalNotes', event.target.value)}
           placeholder="Стан авто, особливості завантаження, час виїзду…"
           rows={4}
-          className="calculator-input w-full resize-none"
+          className="calculator-input w-full resize-none disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={isSubmitting}
         />
       </BookingFormField>
 
@@ -159,17 +166,8 @@ export function BookingForm({
         disabled={isSubmitting}
         className="hero-cta-primary flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            Надсилаємо заявку…
-          </>
-        ) : (
-          <>
-            <Send className="h-4 w-4" aria-hidden="true" />
-            Надіслати заявку
-          </>
-        )}
+        <Send className="h-4 w-4" aria-hidden="true" />
+        {isSubmitting ? 'Надсилаємо…' : 'Надіслати заявку'}
       </button>
     </form>
   );

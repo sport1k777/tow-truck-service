@@ -7,6 +7,7 @@ import type {
   BookingFormField,
   BookingFormState,
   BookingFormStatus,
+  BookingSubmissionPayload,
   BookingSubmissionResult,
 } from '@/modules/booking/booking.types';
 
@@ -24,6 +25,7 @@ export function useBookingForm() {
   const [errors, setErrors] = useState<BookingFormErrors>({});
   const [status, setStatus] = useState<BookingFormStatus>('idle');
   const [result, setResult] = useState<BookingSubmissionResult | null>(null);
+  const [submittedPayload, setSubmittedPayload] = useState<BookingSubmissionPayload | null>(null);
 
   const updateField = useCallback(
     <K extends BookingFormField>(key: K, value: BookingFormState[K]) => {
@@ -32,6 +34,7 @@ export function useBookingForm() {
       if (status === 'success') {
         setStatus('idle');
         setResult(null);
+        setSubmittedPayload(null);
       }
     },
     [status],
@@ -49,12 +52,14 @@ export function useBookingForm() {
     setErrors({});
 
     try {
-      const { result: submissionResult } = await BookingService.submit(form);
+      const { result: submissionResult, payload } = await BookingService.submit(form);
       setResult(submissionResult);
+      setSubmittedPayload(payload);
       setStatus('success');
     } catch {
       setStatus('error');
       setResult(null);
+      setSubmittedPayload(null);
     }
   }, [form]);
 
@@ -63,6 +68,7 @@ export function useBookingForm() {
     setErrors({});
     setStatus('idle');
     setResult(null);
+    setSubmittedPayload(null);
   }, []);
 
   return {
@@ -70,6 +76,7 @@ export function useBookingForm() {
     errors,
     status,
     result,
+    submittedPayload,
     updateField,
     submit,
     reset,

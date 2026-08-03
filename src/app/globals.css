@@ -751,3 +751,51 @@
   box-shadow: 0 0 24px rgba(59, 130, 246, 0.12);
   transform: translateY(-1px);
 }
+
+/* Booking workflow */
+@keyframes booking-loading-step-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes booking-success-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.booking-loading-step {
+  animation: booking-loading-step-pulse 1.8s ease-in-out infinite;
+}
+
+.booking-success-animate {
+  animation: booking-success-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.booking-success-icon {
+  animation: booking-success-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-loading-step {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .booking-success-animate,
+  .booking-success-icon {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

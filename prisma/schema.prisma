@@ -1,5 +1,6 @@
-// Prisma schema — full database design in Phase 4.
-// This placeholder enables project scaffolding and code generation.
+// Tow Truck Service Platform — Production Database Schema
+// Phase 4: Database Design
+// Documentation: docs/DATABASE.md
 
 generator client {
   provider = "prisma-client-js"
@@ -10,4 +11,389 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Phase 4 will define: Order, PricingRule, ServiceArea, Setting, AdminUser, etc.
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DISPATCHED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum VehicleType {
+  PASSENGER_CAR
+  SUV
+  VAN
+  TRUCK
+  MOTORCYCLE
+  OTHER
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  DISPATCHER
+  VIEWER
+}
+
+enum SettingType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+}
+
+enum ServiceAreaType {
+  RADIUS
+  POLYGON
+}
+
+enum SurchargeType {
+  VEHICLE_TYPE
+  NIGHT
+  WEEKEND
+  HOLIDAY
+  DIFFICULT_LOADING
+  SERVICE_AREA
+}
+
+enum NotificationChannel {
+  WHATSAPP
+  EMAIL
+  TELEGRAM
+}
+
+enum NotificationEvent {
+  ORDER_CREATED
+  ORDER_STATUS_CHANGED
+  ORDER_CANCELLED
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// =============================================================================
+// AUTHENTICATION & ADMIN
+// =============================================================================
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  name         String
+  role         AdminRole @default(ADMIN)
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  accounts           Account[]
+  sessions           Session[]
+  orderStatusChanges OrderStatusHistory[]
+  settingsUpdated    Setting[]
+  notificationLogs   NotificationLog[]
+
+  @@index([isActive])
+  @@map("admin_users")
+}
+
+// Auth.js adapter models — required for future Google OAuth without schema changes
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// =============================================================================
+// GEOGRAPHY & SERVICE AREAS (multi-city ready)
+// =============================================================================
+
+model City {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  countryCode  String   @default("UA") @map("country_code") @db.VarChar(2)
+  locale       String   @default("uk") @db.VarChar(5)
+  currency     String   @default("UAH") @db.VarChar(3)
+  timezone     String   @default("Europe/Kyiv")
+  mapCenterLat Decimal  @map("map_center_lat") @db.Decimal(10, 7)
+  mapCenterLng Decimal  @map("map_center_lng") @db.Decimal(10, 7)
+  mapZoom      Int      @default(11) @map("map_zoom")
+  isActive     Boolean  @default(true) @map("is_active")
+  isDefault    Boolean  @default(false) @map("is_default")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  serviceAreas ServiceArea[]
+  pricingRules PricingRule[]
+  orders       Order[]
+  holidays     Holiday[]
+
+  @@index([countryCode, isActive])
+  @@index([isDefault])
+  @@map("cities")
+}
+
+model ServiceArea {
+  id              String          @id @default(cuid())
+  name            String
+  type            ServiceAreaType @default(RADIUS)
+  cityId          String?         @map("city_id")
+  centerLat       Decimal?        @map("center_lat") @db.Decimal(10, 7)
+  centerLng       Decimal?        @map("center_lng") @db.Decimal(10, 7)
+  radiusKm        Decimal?        @map("radius_km") @db.Decimal(8, 2)
+  polygonGeoJson  Json?           @map("polygon_geo_json")
+  surchargeAmount Decimal         @default(0) @map("surcharge_amount") @db.Decimal(10, 2)
+  isActive        Boolean         @default(true) @map("is_active")
+  priority        Int             @default(0)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  city   City?   @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  orders Order[]
+
+  @@index([cityId, isActive])
+  @@index([isActive, priority])
+  @@map("service_areas")
+}
+
+// =============================================================================
+// PRICING ENGINE
+// =============================================================================
+
+model PricingRule {
+  id                        String    @id @default(cuid())
+  name                      String
+  cityId                    String?   @map("city_id")
+  baseFee                   Decimal   @map("base_fee") @db.Decimal(10, 2)
+  perKmRate                 Decimal   @map("per_km_rate") @db.Decimal(10, 2)
+  minCharge                 Decimal   @map("min_charge") @db.Decimal(10, 2)
+  nightSurchargePercent     Decimal   @default(0) @map("night_surcharge_percent") @db.Decimal(5, 2)
+  nightStartHour            Int       @default(22) @map("night_start_hour")
+  nightEndHour              Int       @default(6) @map("night_end_hour")
+  weekendSurchargePercent   Decimal   @default(0) @map("weekend_surcharge_percent") @db.Decimal(5, 2)
+  holidaySurchargePercent   Decimal   @default(0) @map("holiday_surcharge_percent") @db.Decimal(5, 2)
+  difficultLoadingSurcharge Decimal   @default(0) @map("difficult_loading_surcharge") @db.Decimal(10, 2)
+  isActive                  Boolean   @default(true) @map("is_active")
+  validFrom                 DateTime? @map("valid_from")
+  validTo                   DateTime? @map("valid_to")
+  createdAt                 DateTime  @default(now()) @map("created_at")
+  updatedAt                 DateTime  @updatedAt @map("updated_at")
+
+  city              City?                  @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  vehicleSurcharges VehicleTypeSurcharge[]
+  orders            Order[]
+
+  @@index([isActive, validFrom, validTo])
+  @@index([cityId, isActive])
+  @@map("pricing_rules")
+}
+
+model VehicleTypeSurcharge {
+  id            String      @id @default(cuid())
+  pricingRuleId String      @map("pricing_rule_id")
+  vehicleType   VehicleType @map("vehicle_type")
+  amount        Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  pricingRule PricingRule @relation(fields: [pricingRuleId], references: [id], onDelete: Cascade)
+
+  @@unique([pricingRuleId, vehicleType])
+  @@index([pricingRuleId])
+  @@map("vehicle_type_surcharges")
+}
+
+model Holiday {
+  id          String   @id @default(cuid())
+  name        String
+  date        DateTime @db.Date
+  isRecurring Boolean  @default(true) @map("is_recurring")
+  countryCode String   @default("UA") @map("country_code") @db.VarChar(2)
+  cityId      String?  @map("city_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  city City? @relation(fields: [cityId], references: [id], onDelete: SetNull)
+
+  @@unique([date, countryCode, cityId])
+  @@index([date, countryCode])
+  @@index([cityId])
+  @@map("holidays")
+}
+
+// =============================================================================
+// ORDERS
+// =============================================================================
+
+model Order {
+  id              String      @id @default(cuid())
+  referenceNumber String      @unique @map("reference_number") @db.VarChar(20)
+  status          OrderStatus @default(PENDING)
+
+  // Pickup location
+  pickupAddress String  @map("pickup_address")
+  pickupLat     Decimal @map("pickup_lat") @db.Decimal(10, 7)
+  pickupLng     Decimal @map("pickup_lng") @db.Decimal(10, 7)
+
+  // Destination
+  destinationAddress String  @map("destination_address")
+  destinationLat     Decimal @map("destination_lat") @db.Decimal(10, 7)
+  destinationLng     Decimal @map("destination_lng") @db.Decimal(10, 7)
+
+  // Route metadata
+  distanceKm      Decimal @map("distance_km") @db.Decimal(8, 2)
+  durationMinutes Int     @map("duration_minutes")
+  routePolyline   String? @map("route_polyline") @db.Text
+
+  // Pricing snapshot — immutable record of calculation at order time
+  pricingRuleId  String? @map("pricing_rule_id")
+  priceBreakdown Json    @map("price_breakdown")
+  totalPrice     Decimal @map("total_price") @db.Decimal(10, 2)
+  currency       String  @default("UAH") @db.VarChar(3)
+
+  // Order details
+  vehicleType        VehicleType @map("vehicle_type")
+  isDifficultLoading Boolean     @default(false) @map("is_difficult_loading")
+
+  // Customer contact (no account required at MVP)
+  customerName  String  @map("customer_name")
+  customerPhone String  @map("customer_phone") @db.VarChar(20)
+  customerEmail String? @map("customer_email")
+  comments      String? @db.Text
+
+  // Relations — optional foreign keys for scalability
+  cityId        String? @map("city_id")
+  serviceAreaId String? @map("service_area_id")
+
+  // Future scalability hooks (nullable, no FK until feature is built)
+  operatorId String? @map("operator_id")
+  customerId String? @map("customer_id")
+
+  // Extensible metadata for future features (payments, tracking, CRM)
+  metadata Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  city          City?                @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  serviceArea   ServiceArea?         @relation(fields: [serviceAreaId], references: [id], onDelete: SetNull)
+  pricingRule   PricingRule?         @relation(fields: [pricingRuleId], references: [id], onDelete: SetNull)
+  statusHistory OrderStatusHistory[]
+  notifications NotificationLog[]
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([customerPhone])
+  @@index([cityId, status])
+  @@index([referenceNumber])
+  @@map("orders")
+}
+
+model OrderStatusHistory {
+  id          String       @id @default(cuid())
+  orderId     String       @map("order_id")
+  fromStatus  OrderStatus? @map("from_status")
+  toStatus    OrderStatus  @map("to_status")
+  changedById String?      @map("changed_by_id")
+  note        String?      @db.Text
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  changedBy AdminUser? @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt(sort: Desc)])
+  @@index([changedById])
+  @@map("order_status_history")
+}
+
+// =============================================================================
+// NOTIFICATIONS
+// =============================================================================
+
+model NotificationLog {
+  id           String              @id @default(cuid())
+  orderId      String?             @map("order_id")
+  channel      NotificationChannel
+  event        NotificationEvent
+  status       NotificationStatus  @default(PENDING)
+  recipient    String
+  payload      Json?
+  errorMessage String?             @map("error_message") @db.Text
+  sentAt       DateTime?           @map("sent_at")
+  createdAt    DateTime            @default(now()) @map("created_at")
+
+  order       Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  adminUserId String?    @map("admin_user_id")
+
+  @@index([orderId, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([channel, event])
+  @@map("notification_logs")
+}
+
+// =============================================================================
+// APPLICATION SETTINGS (branding, contacts, locale — no hardcoded values)
+// =============================================================================
+
+model Setting {
+  id          String      @id @default(cuid())
+  key         String      @unique @db.VarChar(100)
+  value       String      @db.Text
+  type        SettingType @default(STRING)
+  group       String      @default("general") @db.VarChar(50)
+  description String?     @db.Text
+  updatedById String?     @map("updated_by_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  updatedBy AdminUser? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([group])
+  @@map("settings")
+}

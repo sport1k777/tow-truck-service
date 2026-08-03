@@ -15,6 +15,7 @@ RUN npm ci --ignore-scripts
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -24,7 +25,10 @@ ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
 # Satisfies schema during `next build` — replaced at runtime in production
 ENV AUTH_SECRET=build-time-secret-minimum-32-characters-long
+# Prisma schema references DATABASE_URL; dummy value for client generation only
+ENV DATABASE_URL=postgresql://build:build@localhost:5432/build?schema=public
 
+RUN test -f prisma/schema.prisma
 RUN npx prisma generate
 RUN npm run build
 

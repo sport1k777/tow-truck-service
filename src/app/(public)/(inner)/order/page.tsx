@@ -1,19 +1,15 @@
-import { PageShell } from '@/components/layout/page-shell';
+import { BookingPageContent } from '@/components/booking/booking-page-content';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 
 export async function generateMetadata() {
   return generatePageMetadata({
     title: 'Замовити евакуатор',
-    description: 'Онлайн-замовлення евакуатора. Вкажіть адресу, перегляньте маршрут та вартість.',
+    description:
+      'Онлайн-замовлення евакуатора по Україні. Вкажіть адресу, контакти та марку авто — диспетчер підтвердить заявку.',
     path: '/order',
   });
 }
 
 export default function OrderPage() {
-  return (
-    <PageShell
-      title="Замовити евакуатор"
-      description="Форма замовлення буде реалізована в Phase 7 (Frontend Development)."
-    />
-  );
+  return <BookingPageContent />;
 }

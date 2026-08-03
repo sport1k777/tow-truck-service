@@ -1,0 +1,13 @@
+// Prisma schema — full database design in Phase 4.
+// This placeholder enables project scaffolding and code generation.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Phase 4 will define: Order, PricingRule, ServiceArea, Setting, AdminUser, etc.

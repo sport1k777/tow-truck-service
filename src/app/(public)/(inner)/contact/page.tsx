@@ -3,7 +3,7 @@ import { getDisplayPhone, getTelHref, getWhatsAppHref } from '@/lib/contact';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 import { SettingsService } from '@/modules/settings/settings.service';
 
-export async function generateMetadata() {
+export function generateMetadata() {
   return generatePageMetadata({
     title: 'Контакти',
     description: 'Зв\'яжіться з нашою службою евакуації. Телефон, WhatsApp, email.',
@@ -34,12 +34,12 @@ export default async function ContactPage() {
               rel="noopener noreferrer"
               className="text-sky-400/90 transition-colors hover:text-sky-300"
             >
-              {getDisplayPhone(settings.phone)}
+              {getDisplayPhone(settings.whatsappNumber || settings.phone)}
             </a>
           </p>
         )}
         {settings.email && <p>Email: {settings.email}</p>}
-        {!settings.phone && !settings.email && (
+        {!settings.phone && !settings.whatsappNumber && !settings.email && (
           <p>Контактна інформація буде налаштована в адмін-панелі.</p>
         )}
       </div>

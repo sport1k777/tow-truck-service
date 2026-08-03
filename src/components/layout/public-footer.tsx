@@ -10,44 +10,33 @@ import {
   Send,
   Share2,
 } from 'lucide-react';
-import { SettingsService } from '@/modules/settings/settings.service';
+import { SETTINGS_DEFAULTS } from '@/modules/settings/settings.defaults';
 import {
   getDisplayPhone,
   getTelHref,
   getWhatsAppHref,
 } from '@/lib/contact';
+import { getPublicEmail, resolveSocialLinks } from '@/lib/contact-display';
 
-const PLACEHOLDER_EMAIL = 'info@example.com';
+import { PUBLIC_FOOTER_NAV_ITEMS } from '@/config/navigation';
 
-const NAV_ITEMS = [
-  { href: '/', label: 'Головна' },
-  { href: '/#services', label: 'Послуги' },
-  { href: '/#how-it-works', label: 'Як це працює' },
-  { href: '/#pricing', label: 'Ціни' },
-  { href: '/#faq', label: 'FAQ' },
-  { href: '/#contact', label: 'Контакти' },
+const SOCIAL_LINK_DEFINITIONS = [
+  { id: 'instagram', href: '', label: 'Instagram', icon: Instagram },
+  { id: 'telegram', href: '', label: 'Telegram', icon: Send },
+  { id: 'facebook', href: '', label: 'Facebook', icon: Share2 },
 ] as const;
 
-const SOCIAL_PLACEHOLDERS = [
-  { id: 'instagram', href: '#', label: 'Instagram', icon: Instagram },
-  { id: 'telegram', href: '#', label: 'Telegram', icon: Send },
-  { id: 'facebook', href: '#', label: 'Facebook', icon: Share2 },
-] as const;
-
-export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
-  const settings = await SettingsService.getBusinessSettings();
+export function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
+  const settings = SETTINGS_DEFAULTS;
   const companyName = settings.companyName || 'Евакуатор';
   const isDark = variant === 'dark';
 
   const displayPhone = getDisplayPhone(settings.phone);
   const displayWhatsApp = getDisplayPhone(settings.whatsappNumber || settings.phone);
-  const displayEmail = settings.email || PLACEHOLDER_EMAIL;
+  const displayEmail = getPublicEmail(settings.email);
   const displayHours = settings.workingHours || '24/7';
 
-  const socialLinks = SOCIAL_PLACEHOLDERS.map((item) => ({
-    ...item,
-    href: settings.socialLinks[item.id] || item.href,
-  }));
+  const socialLinks = resolveSocialLinks(SOCIAL_LINK_DEFINITIONS, settings.socialLinks);
 
   if (!isDark) {
     return (
@@ -98,22 +87,22 @@ export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'l
               )}
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
-              Professional tow truck service across Ukraine. Available 24/7 with transparent pricing
-              and fast dispatch.
+              Професійна служба евакуації по всій Україні. Цілодобово, прозорі ціни та швидкий
+              виїзд.
             </p>
           </div>
 
           {/* Navigation */}
           <nav className="lg:col-span-3" aria-label="Footer navigation">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-white/35">
-              Navigation
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-white/60">
+              Навігація
             </h2>
             <ul className="mt-4 space-y-2.5">
-              {NAV_ITEMS.map((item) => (
+              {PUBLIC_FOOTER_NAV_ITEMS.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-sm text-white/55 transition-colors duration-200 hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:underline"
+                    className="inline-flex min-h-11 items-center text-sm text-white transition-colors duration-200 hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:underline"
                   >
                     {item.label}
                   </Link>
@@ -124,13 +113,13 @@ export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'l
 
           {/* Contact */}
           <div className="lg:col-span-5">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-white/35">
-              Contact
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-white/60">
+              Контакти
             </h2>
             <ul className="mt-4 space-y-3">
               <FooterContactItem
                 icon={Phone}
-                label="Phone"
+                label="Телефон"
                 value={displayPhone}
                 href={getTelHref()}
               />
@@ -141,14 +130,16 @@ export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'l
                 href={getWhatsAppHref()}
                 external
               />
-              <FooterContactItem
-                icon={Mail}
-                label="Email"
-                value={displayEmail}
-                href={`mailto:${displayEmail}`}
-              />
-              <FooterContactItem icon={Clock} label="Working hours" value={displayHours} />
-              <FooterContactItem icon={Globe} label="Service area" value="All Ukraine" />
+              {displayEmail && (
+                <FooterContactItem
+                  icon={Mail}
+                  label="Email"
+                  value={displayEmail}
+                  href={`mailto:${displayEmail}`}
+                />
+              )}
+              <FooterContactItem icon={Clock} label="Години роботи" value={displayHours} />
+              <FooterContactItem icon={Globe} label="Зона обслуговування" value="Вся Україна" />
             </ul>
           </div>
         </div>
@@ -162,32 +153,34 @@ export async function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'l
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href="/privacy"
-              className="text-sm text-white/45 transition-colors hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:underline"
+              className="inline-flex min-h-11 items-center text-sm text-white/90 transition-colors hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:underline"
             >
-              Privacy Policy
+              Політика конфіденційності
             </Link>
             <Link
               href="/terms"
-              className="text-sm text-white/45 transition-colors hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:underline"
+              className="inline-flex min-h-11 items-center text-sm text-white/90 transition-colors hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:underline"
             >
-              Terms of Service
+              Умови використання
             </Link>
           </div>
 
+          {socialLinks.length > 0 && (
           <div className="flex items-center gap-2">
             {socialLinks.map(({ id, href, label, icon: Icon }) => (
               <a
                 key={id}
                 href={href}
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="footer-social-icon flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/45 backdrop-blur-sm transition-all duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-social-icon flex h-11 w-11 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/80 backdrop-blur-sm transition-all duration-300"
                 aria-label={label}
               >
                 <Icon className="h-4 w-4" aria-hidden="true" />
               </a>
             ))}
           </div>
+          )}
         </div>
       </div>
     </footer>
@@ -213,10 +206,10 @@ function FooterContactItem({
         <Icon className="h-3.5 w-3.5" aria-hidden="true" />
       </span>
       <span>
-        <span className="block text-[11px] font-medium uppercase tracking-wider text-white/35">
+        <span className="block text-[11px] font-medium uppercase tracking-wider text-white/60">
           {label}
         </span>
-        <span className="mt-0.5 block text-sm text-white/70 transition-colors group-hover:text-white">
+        <span className="mt-0.5 block text-sm text-white/90 transition-colors group-hover:text-white">
           {value}
         </span>
       </span>
@@ -228,7 +221,7 @@ function FooterContactItem({
       <li>
         <a
           href={href}
-          className="group block transition-opacity hover:opacity-90"
+          className="group inline-flex min-h-11 items-center py-1 transition-opacity hover:opacity-90"
           {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         >
           {content}

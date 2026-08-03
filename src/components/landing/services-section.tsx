@@ -135,7 +135,7 @@ function ServiceCard({ service }: { service: Service }) {
 
       <a
         href="#pricing"
-        className="service-learn-more relative mt-5 inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-sky-400/80 transition-colors duration-300 group-hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:ring-2 focus-visible:ring-sky-400/50"
+        className="service-learn-more relative mt-5 inline-flex min-h-11 items-center gap-1.5 rounded-sm text-sm font-medium text-sky-400 transition-colors duration-300 group-hover:text-sky-300 focus-visible:outline-none focus-visible:text-sky-300 focus-visible:ring-2 focus-visible:ring-sky-400/50"
       >
         Детальніше
         <ArrowRight

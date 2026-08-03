@@ -118,7 +118,7 @@ export function CalculatorForm({
         <label htmlFor="comments" className="flex items-center gap-2 text-sm font-medium text-white/80">
           <MessageSquare className="h-4 w-4 text-white/50" aria-hidden="true" />
           Коментар
-          <span className="text-xs font-normal text-white/35">(необов&apos;язково)</span>
+          <span className="text-xs font-normal text-white/60">(необов&apos;язково)</span>
         </label>
         <textarea
           id="comments"

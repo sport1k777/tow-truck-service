@@ -113,13 +113,13 @@ export function CalculatorRouteMap({
       {showStats && (
         <div className="pointer-events-none absolute right-3 top-3 flex gap-2">
           <div className="rounded-lg border border-white/10 bg-[#030712]/85 px-3 py-1.5 backdrop-blur-md">
-            <p className="text-[10px] uppercase tracking-wider text-white/40">Відстань</p>
+            <p className="text-[10px] uppercase tracking-wider text-white/60">Відстань</p>
             <p className="text-sm font-semibold text-white">
               {distanceKm!.toLocaleString('uk-UA', { maximumFractionDigits: 1 })} км
             </p>
           </div>
           <div className="rounded-lg border border-white/10 bg-[#030712]/85 px-3 py-1.5 backdrop-blur-md">
-            <p className="text-[10px] uppercase tracking-wider text-white/40">Час</p>
+            <p className="text-[10px] uppercase tracking-wider text-white/60">Час</p>
             <p className="text-sm font-semibold text-white">{durationMinutes} хв</p>
           </div>
         </div>

@@ -7,24 +7,32 @@ import { ServicesSection } from '@/components/landing/services-section';
 import { TestimonialsSection } from '@/components/landing/testimonials-section';
 import { WhyChooseUsSection } from '@/components/landing/why-choose-us-section';
 import { PriceCalculatorSection } from '@/components/calculator/price-calculator-section';
+import { SiteJsonLd } from '@/components/seo/site-json-ld';
+import { SETTINGS_DEFAULTS } from '@/modules/settings/settings.defaults';
+import { baseAppConfig } from '@/config/base.config';
 import { generatePageMetadata } from '@/modules/seo/metadata';
-import { SettingsService } from '@/modules/settings/settings.service';
 
-export async function generateMetadata() {
+export const dynamic = 'force-static';
+
+export function generateMetadata() {
   return generatePageMetadata({
     title: 'Евакуатор — Швидкий виклик 24/7',
-    description:
-      'Професійна евакуація автомобілів по всій Україні. Миттєвий розрахунок вартості, онлайн-замовлення за 30 секунд. Цілодобово.',
+    description: baseAppConfig.defaultDescription,
     path: '/',
   });
 }
 
-export default async function HomePage() {
-  const settings = await SettingsService.getBusinessSettings();
-  const companyName = settings.companyName || 'Евакуатор';
+export default function HomePage() {
+  const settings = SETTINGS_DEFAULTS;
+  const companyName = settings.companyName || baseAppConfig.defaultSiteName;
 
   return (
     <>
+      <SiteJsonLd
+        companyName={companyName}
+        telephone={settings.phone}
+        email={settings.email}
+      />
       <HeroHeader companyName={companyName} />
       <HeroSection />
       <PriceCalculatorSection />

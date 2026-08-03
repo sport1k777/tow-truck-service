@@ -27,7 +27,7 @@ export function HeroSection() {
         {/* LEFT — content */}
         <div className="flex flex-col justify-center px-6 pb-16 pt-28 sm:px-10 lg:px-14 lg:py-28 xl:px-16">
           <div
-            className="hero-animate hero-animate-1 mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-white/75 backdrop-blur-md"
+            className="hero-animate hero-animate-1 mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-white/90 backdrop-blur-md"
             role="status"
           >
             <span className="relative flex h-2 w-2" aria-hidden="true">
@@ -42,12 +42,12 @@ export function HeroSection() {
             className="hero-animate hero-animate-2 max-w-[18ch] text-[2.5rem] font-semibold leading-[1.06] tracking-[-0.02em] text-white sm:text-5xl xl:text-[3.5rem]"
           >
             Евакуатор{' '}
-            <span className="bg-gradient-to-r from-sky-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
+            <span className="text-sky-300">
               за 30 секунд
             </span>
           </h1>
 
-          <p className="hero-animate hero-animate-3 mt-6 max-w-md text-base leading-[1.7] text-white/55 sm:text-[1.0625rem]">
+          <p className="hero-animate hero-animate-3 mt-6 max-w-md text-base leading-[1.7] text-white/80 sm:text-[1.0625rem]">
             Професійна евакуація автомобілів по всій Україні. Миттєвий розрахунок вартості,
             маршрут на карті та онлайн-замовлення — без зайвих дзвінків і очікування.
           </p>
@@ -65,7 +65,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="/order"
-              className="hero-cta-secondary inline-flex h-[3.25rem] items-center justify-center rounded-full px-8 text-[0.9375rem] font-medium text-white/85"
+              className="hero-cta-secondary inline-flex h-[3.25rem] items-center justify-center rounded-full px-8 text-[0.9375rem] font-medium text-white"
             >
               Розрахувати вартість
             </Link>

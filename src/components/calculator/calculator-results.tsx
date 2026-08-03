@@ -67,7 +67,7 @@ export function CalculatorResults({
             className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3"
           >
             <Icon className="mb-2 h-4 w-4 text-white/25" aria-hidden="true" />
-            <p className="text-[11px] uppercase tracking-wider text-white/35">{label}</p>
+            <p className="text-[11px] uppercase tracking-wider text-white/60">{label}</p>
             <p className="mt-0.5 text-lg font-semibold text-white/30">{value}</p>
           </div>
         ))}

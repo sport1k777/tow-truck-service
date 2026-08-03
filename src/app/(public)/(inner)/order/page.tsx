@@ -1,7 +1,7 @@
 import { BookingPageContent } from '@/components/booking/booking-page-content';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 
-export async function generateMetadata() {
+export function generateMetadata() {
   return generatePageMetadata({
     title: 'Замовити евакуатор',
     description:

@@ -1,37 +1,65 @@
 import type { Metadata } from 'next';
-import { SettingsService } from '@/modules/settings/settings.service';
+import { baseAppConfig } from '@/config/base.config';
+import { getAppUrl } from '@/lib/app-url';
 import { DEFAULT_LOCALE } from '@/lib/locale.defaults';
+import { SETTINGS_DEFAULTS } from '@/modules/settings/settings.defaults';
 
 interface PageMetadataOptions {
   title: string;
   description: string;
   path?: string;
   noIndex?: boolean;
+  ogImage?: string;
 }
 
-/**
- * Generates Next.js Metadata for public pages with Ukrainian SEO defaults.
- * Phase 7: JSON-LD structured data helpers.
- */
-export async function generatePageMetadata(options: PageMetadataOptions): Promise<Metadata> {
-  const settings = await SettingsService.getBusinessSettings();
-  const siteName = settings.companyName || 'Tow Truck Service';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+/** Sync metadata builder — avoids Suspense fallbacks that cause layout shift. */
+export function generatePageMetadata(options: PageMetadataOptions): Metadata {
+  const siteName = SETTINGS_DEFAULTS.companyName || baseAppConfig.defaultSiteName;
+  const appUrl = getAppUrl();
+  const canonicalPath = options.path ?? '/';
+  const canonicalUrl = `${appUrl}${canonicalPath}`;
+  const ogImageUrl = options.ogImage ?? `${appUrl}/opengraph-image`;
+
+  const fullTitle = `${options.title} | ${siteName}`;
 
   return {
-    title: `${options.title} | ${siteName}`,
+    title: fullTitle,
     description: options.description,
     metadataBase: new URL(appUrl),
     alternates: {
-      canonical: options.path ? `${appUrl}${options.path}` : appUrl,
+      canonical: canonicalUrl,
+      languages: {
+        [DEFAULT_LOCALE]: canonicalUrl,
+      },
     },
     openGraph: {
       title: options.title,
       description: options.description,
+      url: canonicalUrl,
       locale: DEFAULT_LOCALE,
-      type: 'website',
+      type: baseAppConfig.seo.defaultOgType,
       siteName,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: siteName,
+        },
+      ],
     },
-    robots: options.noIndex ? { index: false, follow: false } : { index: true, follow: true },
+    twitter: {
+      card: baseAppConfig.seo.twitterCard,
+      title: options.title,
+      description: options.description,
+      images: [ogImageUrl],
+    },
+    robots: options.noIndex
+      ? { index: false, follow: false }
+      : { index: true, follow: true, googleBot: { index: true, follow: true } },
+    icons: {
+      icon: [{ url: '/icon', type: 'image/png' }],
+      apple: [{ url: '/apple-icon', type: 'image/png' }],
+    },
   };
 }

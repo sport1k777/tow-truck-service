@@ -1,27 +1,25 @@
-import { z } from 'zod';
+import {
+  envSchema,
+  PRODUCTION_RECOMMENDED_ENV_KEYS,
+  PRODUCTION_REQUIRED_ENV_KEYS,
+  type Env,
+} from '@/config/env.schema';
 
-const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
-  DATABASE_URL: z.string().min(1).optional(),
-  AUTH_SECRET: z.string().min(32).optional(),
-  AUTH_URL: z.string().url().optional(),
-  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().optional(),
-  NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY: z.string().optional(),
-  GOOGLE_MAPS_SERVER_KEY: z.string().optional(),
-  WHATSAPP_API_TOKEN: z.string().optional(),
-  WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
-  WHATSAPP_BUSINESS_ACCOUNT_ID: z.string().optional(),
-  WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string().optional(),
-  TELEGRAM_BOT_TOKEN: z.string().optional(),
-  TELEGRAM_ADMIN_CHAT_ID: z.string().optional(),
-  RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().email().optional(),
-  EMAIL_ADMIN: z.string().email().optional(),
-  CRON_SECRET: z.string().optional(),
-});
+export type { Env };
 
-export type Env = z.infer<typeof envSchema>;
+function warnMissingRecommendedEnv(missing: string[]): void {
+  if (missing.length === 0) {
+    return;
+  }
+
+  console.warn(
+    `[env] Recommended production variables are not set: ${missing.join(', ')}`,
+  );
+}
+
+function isNextProductionBuild(): boolean {
+  return process.env.NEXT_PHASE === 'phase-production-build';
+}
 
 function validateEnv(): Env {
   const parsed = envSchema.safeParse(process.env);
@@ -31,16 +29,20 @@ function validateEnv(): Env {
     throw new Error('Invalid environment variables');
   }
 
-  if (parsed.data.NODE_ENV === 'production') {
-    const requiredInProduction = ['DATABASE_URL', 'AUTH_SECRET'] as const;
-    for (const key of requiredInProduction) {
-      if (!parsed.data[key]) {
+  const data = parsed.data;
+
+  if (data.NODE_ENV === 'production' && !isNextProductionBuild()) {
+    for (const key of PRODUCTION_REQUIRED_ENV_KEYS) {
+      if (!data[key]) {
         throw new Error(`Missing required environment variable: ${key}`);
       }
     }
+
+    const missingRecommended = PRODUCTION_RECOMMENDED_ENV_KEYS.filter((key) => !data[key]);
+    warnMissingRecommendedEnv(missingRecommended);
   }
 
-  return parsed.data;
+  return data;
 }
 
 export const env = validateEnv();

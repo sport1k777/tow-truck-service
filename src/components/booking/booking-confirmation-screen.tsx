@@ -149,7 +149,7 @@ export function BookingConfirmationScreen({
               className="cta-whatsapp hero-cta-primary inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-white"
             >
               <span aria-hidden="true">💬</span>
-              Open WhatsApp Conversation
+              Відкрити WhatsApp
             </a>
             <button
               type="button"
@@ -157,7 +157,7 @@ export function BookingConfirmationScreen({
               className="hero-cta-secondary inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center gap-2 rounded-full px-4 text-sm font-medium text-white/90"
             >
               <PlusCircle className="h-4 w-4" aria-hidden="true" />
-              Create Another Order
+              Створити нове замовлення
             </button>
           </div>
         </div>

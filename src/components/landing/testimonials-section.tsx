@@ -2,7 +2,7 @@
 
 import { Star } from 'lucide-react';
 
-type ServiceType = 'Emergency Tow' | 'Long Distance' | 'Accident Recovery';
+type ServiceType = 'Екстрена евакуація' | 'Міжміське перевезення' | 'Евакуація після ДТП';
 
 interface Testimonial {
   id: string;
@@ -23,7 +23,7 @@ const TESTIMONIALS: Testimonial[] = [
     city: 'Київ',
     review:
       'Зламалась машина о півночі на Оболоні. Евакуатор приїхав за 35 хвилин, водій професійний. Ціна збіглася з калькулятором на сайті.',
-    serviceType: 'Emergency Tow',
+    serviceType: 'Екстрена евакуація',
   },
   {
     id: 'olena-lviv',
@@ -33,7 +33,7 @@ const TESTIMONIALS: Testimonial[] = [
     city: 'Львів',
     review:
       'Потрібно було перевезти авто до Харкова. Усе чітко по часу, жодних прихованих доплат. Рекомендую для міжміських перевезень.',
-    serviceType: 'Long Distance',
+    serviceType: 'Міжміське перевезення',
   },
   {
     id: 'viktor-odesa',
@@ -43,7 +43,7 @@ const TESTIMONIALS: Testimonial[] = [
     city: 'Одеса',
     review:
       'Після ДТП на трасі швидко організували евакуацію. Авто доставили на СТО без додаткових пошкоджень. Дякую за спокій у стресовій ситуації.',
-    serviceType: 'Accident Recovery',
+    serviceType: 'Евакуація після ДТП',
   },
   {
     id: 'maria-kharkiv',
@@ -53,7 +53,7 @@ const TESTIMONIALS: Testimonial[] = [
     city: 'Харків',
     review:
       'Замовила через сайт за хвилину — дуже зручно. Оператор передзвонив, підтвердив адресу, евакуатор був на місці швидше, ніж очікувала.',
-    serviceType: 'Emergency Tow',
+    serviceType: 'Екстрена евакуація',
   },
   {
     id: 'dmytro-dnipro',
@@ -63,7 +63,7 @@ const TESTIMONIALS: Testimonial[] = [
     city: 'Дніпро',
     review:
       'Везли позашляховик у інше місто — 400 км без проблем. Водій тримав звʼязок у дорозі, авто прибуло вчасно і в ідеальному стані.',
-    serviceType: 'Long Distance',
+    serviceType: 'Міжміське перевезення',
   },
   {
     id: 'natalia-vinnytsia',
@@ -73,14 +73,14 @@ const TESTIMONIALS: Testimonial[] = [
     city: 'Вінниця',
     review:
       'Потрапили в незначну аварію в центрі міста. Приїхали оперативно, акуратно завантажили авто. Сервіс на високому рівні, буду звертатись знову.',
-    serviceType: 'Accident Recovery',
+    serviceType: 'Евакуація після ДТП',
   },
 ];
 
 const SERVICE_TYPE_STYLES: Record<ServiceType, string> = {
-  'Emergency Tow': 'border-sky-500/20 bg-sky-500/10 text-sky-300/90',
-  'Long Distance': 'border-blue-500/20 bg-blue-500/10 text-blue-300/90',
-  'Accident Recovery': 'border-indigo-500/20 bg-indigo-500/10 text-indigo-300/90',
+  'Екстрена евакуація': 'border-sky-500/20 bg-sky-500/10 text-sky-300/90',
+  'Міжміське перевезення': 'border-blue-500/20 bg-blue-500/10 text-blue-300/90',
+  'Евакуація після ДТП': 'border-indigo-500/20 bg-indigo-500/10 text-indigo-300/90',
 };
 
 interface TestimonialsSectionProps {
@@ -101,15 +101,15 @@ export function TestimonialsSection({ companyName }: TestimonialsSectionProps) {
         <div className="landing-header">
           <p className="landing-eyebrow">Відгуки клієнтів</p>
           <h2 id="testimonials-heading" className="landing-title">
-            Drivers Trust {companyName}
+            Клієнти довіряють {companyName}
           </h2>
-          <p className="landing-subtitle">Real feedback from customers across Ukraine.</p>
+          <p className="landing-subtitle">Реальні відгуки клієнтів з різних міст України.</p>
         </div>
 
         {/* Mobile: swipeable carousel */}
         <ul
           className="testimonial-carousel -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:hidden"
-          aria-label="Customer testimonials"
+          aria-label="Відгуки клієнтів"
         >
           {TESTIMONIALS.map((testimonial, index) => (
             <li
@@ -137,11 +137,7 @@ export function TestimonialsSection({ companyName }: TestimonialsSectionProps) {
 
         <div className="mt-14 flex flex-col items-center gap-2 text-center">
           <StarRating count={5} size="lg" />
-          <p className="text-sm font-medium text-white/70">
-            Average customer rating{' '}
-            <span className="text-white">4.9</span>
-            <span className="text-white/40"> / 5</span>
-          </p>
+          <p className="text-sm font-medium text-white/70">Відгуки наших клієнтів</p>
         </div>
       </div>
     </section>
@@ -192,7 +188,7 @@ function StarRating({ count, size }: { count: number; size: 'sm' | 'lg' }) {
   const gap = size === 'lg' ? 'gap-1' : 'gap-0.5';
 
   return (
-    <div className={`flex items-center justify-center ${gap}`} aria-label={`${count} out of 5 stars`}>
+    <div className={`flex items-center justify-center ${gap}`} role="img" aria-label={`${count} з 5 зірок`}>
       {Array.from({ length: count }).map((_, i) => (
         <Star
           key={i}

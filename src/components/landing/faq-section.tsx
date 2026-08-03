@@ -12,51 +12,51 @@ interface FaqItem {
 const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'arrival-time',
-    question: 'How quickly can the tow truck arrive?',
+    question: 'Як швидко приїде евакуатор?',
     answer:
-      'In most cities, the average arrival time is 30–40 minutes after your order is confirmed. Response time depends on your location, traffic, and current demand. You will receive an estimated arrival window when you place your order.',
+      'У більшості міст середній час прибуття — 30–40 хвилин після підтвердження замовлення. Термін залежить від локації, трафіку та завантаженості. Під час оформлення заявки ви отримаєте орієнтовне вікно прибуття.',
   },
   {
     id: 'price-calculation',
-    question: 'How is the price calculated?',
+    question: 'Як розраховується ціна?',
     answer:
-      'The price is based on pickup and drop-off distance, vehicle type, time of day, and any additional services required (such as winch recovery or accident handling). Use the price calculator on this page for an instant estimate before booking — no hidden fees.',
+      'Вартість залежить від відстані забору та доставки, типу авто, часу доби та додаткових послуг (лебідка, евакуація після ДТП тощо). Скористайтесь калькулятором на цій сторінці для миттєвої оцінки — без прихованих доплат.',
   },
   {
     id: 'night-order',
-    question: 'Can I order a tow truck at night?',
+    question: 'Чи можна замовити евакуатор вночі?',
     answer:
-      'Yes. We operate 24 hours a day, 7 days a week, including nights, weekends, and public holidays. Night orders are handled the same way as daytime requests — call or book online at any time.',
+      'Так. Ми працюємо цілодобово, 7 днів на тиждень, включно з нічним часом, вихідними та святами. Нічні замовлення обробляються так само, як і денні — телефоном або онлайн.',
   },
   {
     id: 'ukraine-coverage',
-    question: 'Do you work throughout Ukraine?',
+    question: 'Чи працюєте ви по всій Україні?',
     answer:
-      'Yes. We provide towing and vehicle transport across Ukraine — from emergency city pickups to long-distance intercity deliveries. Enter your locations in the calculator to check availability for your route.',
+      'Так. Ми надаємо послуги евакуації та перевезення авто по всій Україні — від екстреного забору в місті до міжміських перевезень. Введіть адреси в калькулятор, щоб перевірити маршрут.',
   },
   {
     id: 'motorcycles',
-    question: 'Can motorcycles be transported?',
+    question: 'Чи можна перевезти мотоцикл?',
     answer:
-      'Absolutely. We have specialized equipment and trained operators for safe motorcycle and scooter transport. Secure strapping and careful loading ensure your bike arrives without damage.',
+      'Так. У нас є спеціальне обладнання та досвідчені оператори для безпечного перевезення мотоциклів і скутерів. Надійне кріплення та акуратне навантаження гарантують цілісність транспорту.',
   },
   {
     id: 'card-payment',
-    question: 'Can I pay by card?',
+    question: 'Чи можна оплатити карткою?',
     answer:
-      'Yes. We accept card payments, cash, and bank transfer depending on the service. Payment options are confirmed when you place your order or when the driver arrives on site.',
+      'Так. Приймаємо оплату карткою, готівкою та банківським переказом — залежно від послуги. Способи оплати уточнюються під час замовлення або прибуття водія.',
   },
   {
     id: 'advance-booking',
-    question: 'Can I schedule a tow truck in advance?',
+    question: 'Чи можна замовити евакуатор заздалегідь?',
     answer:
-      'Yes. You can pre-book a tow truck for a specific date and time — ideal for planned transport to a service station, car show, or intercity move. Select your preferred time slot during the online booking process.',
+      'Так. Можна попередньо забронювати евакуатор на конкретну дату та час — зручно для планового перевезення на СТО, виставку або між містами. Оберіть зручний час під час онлайн-замовлення.',
   },
   {
     id: 'contact-dispatcher',
-    question: 'How can I contact the dispatcher?',
+    question: 'Як звʼязатися з диспетчером?',
     answer:
-      'You can reach our dispatcher by phone, through the online order form on this website, or via the contact page. After placing an order, you will receive confirmation and can track status updates directly.',
+      'Звʼяжіться з диспетчером телефоном, через форму замовлення на сайті або на сторінці контактів. Після оформлення заявки ви отримаєте підтвердження та зможете відстежувати статус.',
   },
 ];
 
@@ -117,10 +117,10 @@ export function FaqSection() {
         <div className="landing-header">
           <p className="landing-eyebrow">FAQ</p>
           <h2 id="faq-heading" className="landing-title">
-            Frequently Asked Questions
+            Часті запитання
           </h2>
           <p className="landing-subtitle">
-            Everything you need to know before ordering a tow truck.
+            Відповіді на найпоширеніші питання перед замовленням евакуатора.
           </p>
         </div>
 

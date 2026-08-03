@@ -1,3 +1,5 @@
+import { getAppConfig } from '@/config';
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogContext {
@@ -13,6 +15,7 @@ interface LogEntry extends LogContext {
   timestamp: string;
   level: LogLevel;
   message: string;
+  environment: string;
 }
 
 function formatLog(level: LogLevel, message: string, context?: LogContext): LogEntry {
@@ -20,6 +23,7 @@ function formatLog(level: LogLevel, message: string, context?: LogContext): LogE
     timestamp: new Date().toISOString(),
     level,
     message,
+    environment: getAppConfig().environment,
     ...context,
   };
 }
@@ -34,8 +38,12 @@ function writeLog(entry: LogEntry): void {
     case 'warn':
       console.warn(output);
       break;
+    case 'info':
+      // eslint-disable-next-line no-console -- structured production logging
+      console.info(output);
+      break;
     default:
-      if (process.env.NODE_ENV !== 'production') {
+      if (getAppConfig().features.logDebug) {
         // eslint-disable-next-line no-console -- structured dev logging
         console.log(output);
       }
@@ -44,7 +52,7 @@ function writeLog(entry: LogEntry): void {
 
 export const logger = {
   debug(message: string, context?: LogContext) {
-    if (process.env.NODE_ENV === 'development') {
+    if (getAppConfig().features.logDebug) {
       writeLog(formatLog('debug', message, context));
     }
   },

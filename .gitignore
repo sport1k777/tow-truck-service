@@ -69,6 +69,8 @@ web_modules/
 .env
 .env.*
 !.env.example
+!.env.production.example
+!.env.docker.example
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -77,6 +79,10 @@ web_modules/
 # Next.js build output
 .next
 out
+
+# Lighthouse audit artifacts
+lighthouse*.json
+lh-*.json
 
 # Nuxt.js build / generate output
 .nuxt

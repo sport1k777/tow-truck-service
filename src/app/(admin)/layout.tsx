@@ -1,4 +1,14 @@
 import Link from 'next/link';
+import { generatePageMetadata } from '@/modules/seo/metadata';
+
+export function generateMetadata() {
+  return generatePageMetadata({
+    title: 'Адмін-панель',
+    description: 'Керування замовленнями та налаштуваннями служби евакуації.',
+    path: '/admin',
+    noIndex: true,
+  });
+}
 
 const adminNavItems = [
   { href: '/admin/dashboard', label: 'Панель' },

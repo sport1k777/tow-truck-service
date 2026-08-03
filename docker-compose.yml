@@ -1,0 +1,48 @@
+# Docker Compose — VPS deployment (single command: docker compose up -d --build)
+# Copy .env.docker.example → .env.docker and adjust values before starting.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-towtruck}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-towtruck}
+      POSTGRES_DB: ${POSTGRES_DB:-tow_truck_service}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-towtruck} -d ${POSTGRES_DB:-tow_truck_service}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-3000}:3000'
+    env_file:
+      - .env.docker
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-towtruck}:${POSTGRES_PASSWORD:-towtruck}@postgres:5432/${POSTGRES_DB:-tow_truck_service}?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  postgres_data:

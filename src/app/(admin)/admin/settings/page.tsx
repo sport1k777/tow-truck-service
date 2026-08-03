@@ -3,7 +3,7 @@ export default function AdminSettingsPage() {
     <div>
       <h1 className="text-2xl font-bold">Налаштування</h1>
       <p className="mt-2 text-muted-foreground">
-        Брендинг, контакти, локалізація — Phase 7.
+        Брендинг, контакти, локалізація — незабаром.
       </p>
     </div>
   );

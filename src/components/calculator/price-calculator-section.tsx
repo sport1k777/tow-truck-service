@@ -30,7 +30,7 @@ function PriceCalculatorSectionContent() {
   return (
     <section
       id="pricing"
-      className="landing-section scroll-mt-24 bg-[#030712]"
+      className="landing-section bg-[#030712]"
       aria-labelledby="calculator-heading"
     >
       <div className="landing-section-divider" aria-hidden="true" />

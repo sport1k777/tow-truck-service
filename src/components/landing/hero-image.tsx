@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-const HERO_IMAGE = '/images/hero-background.png';
+const HERO_IMAGE = '/images/hero-background.webp';
 const HERO_WIDTH = 1024;
 const HERO_HEIGHT = 819;
 
@@ -12,7 +12,6 @@ interface HeroArtworkProps {
 /**
  * Renders the approved hero asset with edge masking so it blends
  * into the page background — no visible rectangular frame.
- * `unoptimized` keeps the file pixel-identical.
  */
 export function HeroArtwork({ variant, priority = true }: HeroArtworkProps) {
   if (variant === 'desktop') {
@@ -28,9 +27,9 @@ export function HeroArtwork({ variant, priority = true }: HeroArtworkProps) {
             width={HERO_WIDTH}
             height={HERO_HEIGHT}
             priority={priority}
-            unoptimized
+            quality={85}
             className="hero-artwork-image absolute left-[44%] top-[50%] h-auto w-[128%] max-w-none -translate-x-1/2 -translate-y-1/2 xl:left-[45%] xl:w-[132%]"
-            sizes="60vw"
+            sizes="(min-width: 1280px) 58vw, 62vw"
           />
         </div>
       </div>
@@ -38,7 +37,7 @@ export function HeroArtwork({ variant, priority = true }: HeroArtworkProps) {
   }
 
   return (
-    <div className="hero-artwork-stage-mobile relative mx-auto w-full max-w-3xl lg:hidden">
+    <div className="hero-artwork-stage-mobile relative mx-auto aspect-[1024/819] w-full max-w-3xl lg:hidden">
       <div className="hero-artwork-mask-mobile relative w-full">
         <Image
           src={HERO_IMAGE}
@@ -46,8 +45,8 @@ export function HeroArtwork({ variant, priority = true }: HeroArtworkProps) {
           width={HERO_WIDTH}
           height={HERO_HEIGHT}
           priority={priority}
-          unoptimized
-          className="hero-artwork-image-mobile mx-auto h-auto w-[118%] max-w-none -translate-x-[3%]"
+          quality={85}
+          className="hero-artwork-image-mobile mx-auto h-full w-[118%] max-w-none -translate-x-[3%] object-contain"
           sizes="100vw"
         />
       </div>

@@ -1,29 +1,29 @@
 import type { MetadataRoute } from 'next';
+import { getAppUrl } from '@/lib/app-url';
+
+interface PublicRouteConfig {
+  path: string;
+  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>;
+  priority: number;
+}
+
+const PUBLIC_ROUTES: PublicRouteConfig[] = [
+  { path: '/', changeFrequency: 'weekly', priority: 1 },
+  { path: '/order', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/services', changeFrequency: 'monthly', priority: 0.8 },
+  { path: '/contact', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/faq', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/about', changeFrequency: 'monthly', priority: 0.5 },
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const baseUrl = getAppUrl();
+  const lastModified = new Date();
 
-  return [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
-    { url: `${baseUrl}/order`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
-    {
-      url: `${baseUrl}/services`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    { url: `${baseUrl}/faq`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-  ];
+  return PUBLIC_ROUTES.map(({ path, changeFrequency, priority }) => ({
+    url: `${baseUrl}${path}`,
+    lastModified,
+    changeFrequency,
+    priority,
+  }));
 }

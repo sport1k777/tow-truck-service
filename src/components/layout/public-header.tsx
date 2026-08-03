@@ -5,6 +5,14 @@ interface PublicHeaderProps {
   variant?: 'dark' | 'light';
 }
 
+const NAV_ITEMS = [
+  { href: '/', label: 'Головна' },
+  { href: '/services', label: 'Послуги' },
+  { href: '/#how-it-works', label: 'Як це працює' },
+  { href: '/#pricing', label: 'Ціни' },
+  { href: '/contact', label: 'Контакти' },
+] as const;
+
 export async function PublicHeader({ variant = 'dark' }: PublicHeaderProps) {
   const settings = await SettingsService.getBusinessSettings();
   const companyName = settings.companyName || 'Евакуатор';
@@ -30,38 +38,31 @@ export async function PublicHeader({ variant = 'dark' }: PublicHeaderProps) {
         >
           {companyName}
         </Link>
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <Link
-            href="/services"
-            className={
-              isDark
-                ? 'rounded-lg px-3 py-2 text-sm text-white/60 transition-colors hover:text-white'
-                : 'px-3 py-2 text-sm hover:underline'
-            }
-          >
-            Послуги
-          </Link>
-          <Link
-            href="/contact"
-            className={
-              isDark
-                ? 'hidden rounded-lg px-3 py-2 text-sm text-white/60 transition-colors hover:text-white sm:inline-flex'
-                : 'hidden px-3 py-2 text-sm hover:underline sm:inline-flex'
-            }
-          >
-            Контакти
-          </Link>
-          <Link
-            href="/order"
-            className={
-              isDark
-                ? 'ml-1 inline-flex h-9 items-center justify-center rounded-full bg-white/10 px-4 text-sm font-medium text-white transition-all hover:bg-white/15 sm:ml-2 sm:h-10 sm:px-5'
-                : 'inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground'
-            }
-          >
-            Замовити
-          </Link>
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Навігація">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={
+                isDark
+                  ? 'rounded-lg px-3 py-2 text-sm text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/50'
+                  : 'px-3 py-2 text-sm hover:underline focus-visible:outline-none'
+              }
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
+        <Link
+          href="/order"
+          className={
+            isDark
+              ? 'hero-cta-primary inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-semibold text-white sm:h-10 sm:px-5'
+              : 'inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground'
+          }
+        >
+          Замовити
+        </Link>
       </div>
     </header>
   );

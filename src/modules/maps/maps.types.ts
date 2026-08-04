@@ -38,8 +38,8 @@ export interface RouteResult {
 /** Full route payload for map rendering and future driver tracking / ETA. */
 export interface RouteCalculationResponse {
   route: RouteResult;
-  /** Retained for DirectionsRenderer — client-only, not persisted. */
-  directionsResult: google.maps.DirectionsResult;
+  /** Routes API route object — client-only, for map rendering. */
+  routesRoute: google.maps.routes.Route;
 }
 
 export interface AddressSuggestion {
@@ -47,6 +47,12 @@ export interface AddressSuggestion {
   description: string;
   mainText: string;
   secondaryText: string;
+}
+
+/** Places API (New) prediction handle — resolved to PlaceLocation on selection. */
+export interface AddressSuggestionSelection {
+  suggestion: AddressSuggestion;
+  placePrediction: google.maps.places.PlacePrediction;
 }
 
 export interface MapsRuntimeConfig {

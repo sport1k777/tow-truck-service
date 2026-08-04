@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { useMaps } from '@/modules/maps/maps-provider';
-import { createPlaceAutocomplete, parsePlaceFromAutocomplete } from '@/modules/maps/maps.service';
+import {
+  createAutocompleteSessionToken,
+  fetchAddressSuggestions,
+  resolvePlaceFromSuggestion,
+} from '@/modules/maps/maps.service';
+import type { AddressSuggestionSelection } from '@/modules/maps/maps.types';
 import type { PlaceLocation } from '@/modules/maps/maps.types';
 
 interface AddressAutocompleteProps {
@@ -18,6 +23,8 @@ interface AddressAutocompleteProps {
   onPlaceSelect: (place: PlaceLocation) => void;
 }
 
+const SUGGESTION_DEBOUNCE_MS = 300;
+
 export function AddressAutocomplete({
   id,
   label,
@@ -29,39 +36,179 @@ export function AddressAutocomplete({
   onAddressChange,
   onPlaceSelect,
 }: AddressAutocompleteProps) {
+  const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { status, google } = useMaps();
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const listenerRef = useRef<google.maps.MapsEventListener | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
+  const debounceRef = useRef<number | null>(null);
+  const requestIdRef = useRef(0);
 
-  useEffect(() => {
-    if (status !== 'ready' || !google || !inputRef.current) {
+  const { status, google } = useMaps();
+  const [suggestions, setSuggestions] = useState<AddressSuggestionSelection[]>([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
+
+  const resetSessionToken = useCallback(() => {
+    if (!google) {
+      sessionTokenRef.current = null;
       return;
     }
 
-    autocompleteRef.current = createPlaceAutocomplete(google, inputRef.current);
+    sessionTokenRef.current = createAutocompleteSessionToken(google);
+  }, [google]);
 
-    listenerRef.current = autocompleteRef.current.addListener('place_changed', () => {
-      const place = autocompleteRef.current?.getPlace();
-      if (!place) {
+  const closeSuggestions = useCallback(() => {
+    setSuggestions([]);
+    setActiveIndex(-1);
+    setIsOpen(false);
+  }, []);
+
+  const loadSuggestions = useCallback(
+    async (input: string) => {
+      if (status !== 'ready' || !google) {
+        closeSuggestions();
         return;
       }
 
-      const parsed = parsePlaceFromAutocomplete(place);
-      if (parsed) {
-        onPlaceSelect(parsed);
+      const trimmedInput = input.trim();
+      if (trimmedInput.length < 2) {
+        closeSuggestions();
+        return;
       }
-    });
 
+      if (!sessionTokenRef.current) {
+        resetSessionToken();
+      }
+
+      const token = sessionTokenRef.current;
+      if (!token) {
+        return;
+      }
+
+      const requestId = ++requestIdRef.current;
+
+      try {
+        const nextSuggestions = await fetchAddressSuggestions(google, trimmedInput, token);
+
+        if (requestId !== requestIdRef.current) {
+          return;
+        }
+
+        setSuggestions(nextSuggestions);
+        setActiveIndex(nextSuggestions.length > 0 ? 0 : -1);
+        setIsOpen(nextSuggestions.length > 0);
+      } catch {
+        if (requestId !== requestIdRef.current) {
+          return;
+        }
+
+        closeSuggestions();
+      }
+    },
+    [closeSuggestions, google, resetSessionToken, status],
+  );
+
+  const selectSuggestion = useCallback(
+    async (selection: AddressSuggestionSelection) => {
+      if (!google || isResolving) {
+        return;
+      }
+
+      setIsResolving(true);
+      closeSuggestions();
+      onAddressChange(selection.suggestion.description);
+
+      try {
+        const parsed = await resolvePlaceFromSuggestion(selection.placePrediction);
+        if (parsed) {
+          onPlaceSelect(parsed);
+        }
+      } catch {
+        // Keep the selected description in the input when place details fail.
+      } finally {
+        setIsResolving(false);
+        resetSessionToken();
+      }
+    },
+    [closeSuggestions, google, isResolving, onAddressChange, onPlaceSelect, resetSessionToken],
+  );
+
+  useEffect(() => {
+    if (!isOpen || activeIndex < 0) {
+      return;
+    }
+
+    document.getElementById(`${listboxId}-option-${activeIndex}`)?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex, isOpen, listboxId]);
+
+  useEffect(() => {
+    if (status === 'ready' && google && !sessionTokenRef.current) {
+      resetSessionToken();
+    }
+  }, [google, resetSessionToken, status]);
+
+  useEffect(() => {
     return () => {
-      listenerRef.current?.remove();
-      listenerRef.current = null;
-      autocompleteRef.current = null;
+      if (debounceRef.current !== null) {
+        window.clearTimeout(debounceRef.current);
+      }
     };
-  }, [status, google, onPlaceSelect]);
+  }, []);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        closeSuggestions();
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [closeSuggestions]);
+
+  const handleInputChange = (nextValue: string) => {
+    onAddressChange(nextValue);
+
+    if (debounceRef.current !== null) {
+      window.clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = window.setTimeout(() => {
+      void loadSuggestions(nextValue);
+    }, SUGGESTION_DEBOUNCE_MS);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen || suggestions.length === 0) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % suggestions.length);
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveIndex((prev) => (prev <= 0 ? suggestions.length - 1 : prev - 1));
+      return;
+    }
+
+    if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault();
+      void selectSuggestion(suggestions[activeIndex]);
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      closeSuggestions();
+    }
+  };
 
   return (
-    <div className="space-y-2">
+    <div ref={containerRef} className="relative space-y-2">
       <label htmlFor={id} className="flex items-center gap-2 text-sm font-medium text-white/80">
         <Icon className={`h-4 w-4 ${iconClassName ?? 'text-white/50'}`} aria-hidden="true" />
         {label}
@@ -71,13 +218,57 @@ export function AddressAutocomplete({
         id={id}
         type="text"
         value={value}
-        onChange={(e) => onAddressChange(e.target.value)}
+        onChange={(e) => handleInputChange(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onFocus={() => {
+          if (value.trim().length >= 2) {
+            void loadSuggestions(value);
+          } else if (suggestions.length > 0) {
+            setIsOpen(true);
+          }
+        }}
         placeholder={placeholder}
         autoComplete="off"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? listboxId : undefined}
+        aria-activedescendant={
+          isOpen && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
+        }
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
+        disabled={isResolving}
         className="calculator-input w-full"
       />
+      {isOpen && suggestions.length > 0 && (
+        <div
+          id={listboxId}
+          role="listbox"
+          className="pac-container pac-container--anchored absolute left-0 right-0 top-full z-[10000]"
+        >
+          {suggestions.map((selection, index) => (
+            <button
+              key={selection.suggestion.placeId}
+              id={`${listboxId}-option-${index}`}
+              type="button"
+              role="option"
+              aria-selected={index === activeIndex}
+              className={`pac-item block w-full text-left ${index === activeIndex ? 'pac-item-selected' : ''}`}
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                void selectSuggestion(selection);
+              }}
+            >
+              <span className="pac-item-query">{selection.suggestion.mainText}</span>
+              {selection.suggestion.secondaryText ? (
+                <span>{` ${selection.suggestion.secondaryText}`}</span>
+              ) : null}
+            </button>
+          ))}
+        </div>
+      )}
       {error && (
         <p id={`${id}-error`} className="text-xs text-red-400" role="alert">
           {error}

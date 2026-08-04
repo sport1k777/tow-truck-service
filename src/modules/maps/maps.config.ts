@@ -22,9 +22,35 @@ export const MAPS_LOADER_OPTIONS = {
 export const MAPS_DEFAULT_CENTER = DEFAULT_MAP_CENTER;
 export const MAPS_DEFAULT_ZOOM = DEFAULT_MAP_ZOOM;
 
+/** Legacy widget options — kept for reference; autocomplete uses Places API (New). */
 export const MAPS_AUTOCOMPLETE_OPTIONS = {
   componentRestrictions: DEFAULT_MAPS_CONFIG.componentRestrictions,
   fields: ['formatted_address', 'geometry', 'place_id', 'name'] as const,
+};
+
+/** Places API (New) autocomplete request defaults. */
+export const MAPS_AUTOCOMPLETE_REQUEST_OPTIONS = {
+  includedRegionCodes: [DEFAULT_MAPS_CONFIG.componentRestrictions.country],
+  language: DEFAULT_MAPS_CONFIG.language,
+  region: DEFAULT_MAPS_CONFIG.region,
+} as const;
+
+/** Prefer street-level results over cities when ranking autocomplete suggestions. */
+export const MAPS_ADDRESS_TYPE_RANK: Record<string, number> = {
+  street_address: 100,
+  premise: 90,
+  subpremise: 85,
+  route: 80,
+  establishment: 70,
+  point_of_interest: 60,
+  geocode: 50,
+  postal_code: 40,
+  neighborhood: 30,
+  administrative_area_level_3: 20,
+  locality: 10,
+  administrative_area_level_2: 8,
+  administrative_area_level_1: 5,
+  country: 1,
 };
 
 /** Premium dark blue/black map theme aligned with the landing calculator. */

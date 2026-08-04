@@ -1,3 +1,4 @@
+import { MAPS_LOADER_OPTIONS } from './maps.config';
 import type {
   GeoBounds,
   GeoCoordinates,
@@ -7,9 +8,9 @@ import type {
   RouteWaypoint,
 } from './maps.types';
 
-function toLatLngLiteral(
+function toRouteEndpoint(
   waypoint: RouteWaypoint,
-): google.maps.LatLngLiteral | string {
+): string | google.maps.LatLngLiteral {
   if (waypoint.location) {
     return waypoint.location;
   }
@@ -25,9 +26,9 @@ export function secondsToMinutes(seconds: number): number {
   return Math.max(1, Math.round(seconds / 60));
 }
 
-export function parseBounds(bounds: google.maps.LatLngBounds): GeoBounds {
-  const ne = bounds.getNorthEast();
-  const sw = bounds.getSouthWest();
+export function parseViewportBounds(viewport: google.maps.LatLngBounds): GeoBounds {
+  const ne = viewport.getNorthEast();
+  const sw = viewport.getSouthWest();
 
   return {
     northeast: { lat: ne.lat(), lng: ne.lng() },
@@ -35,78 +36,77 @@ export function parseBounds(bounds: google.maps.LatLngBounds): GeoBounds {
   };
 }
 
-export function parseDirectionsRoute(
-  directionsResult: google.maps.DirectionsResult,
+function parseRoutesApiRoute(
+  routesRoute: google.maps.routes.Route,
   request: RouteCalculationRequest,
+  googleMaps: typeof google,
 ): RouteResult {
-  const leg = directionsResult.routes[0]?.legs[0];
+  const distanceMeters = routesRoute.distanceMeters;
+  const durationMillis = routesRoute.durationMillis ?? routesRoute.staticDurationMillis;
+  const path = routesRoute.path;
+  const viewport = routesRoute.viewport;
+  const leg = routesRoute.legs?.[0];
 
-  if (!leg?.distance?.value || !leg.duration?.value) {
+  if (!distanceMeters || !durationMillis || !path?.length || !viewport) {
     throw new Error('ROUTE_NOT_FOUND');
   }
 
-  const polyline = directionsResult.routes[0]?.overview_polyline ?? '';
+  const polyline = googleMaps.maps.geometry.encoding.encodePath(
+    path.map((point) => ({ lat: point.lat, lng: point.lng })),
+  );
 
   if (!polyline) {
     throw new Error('ROUTE_POLYLINE_MISSING');
   }
 
-  const bounds = directionsResult.routes[0]?.bounds;
-  if (!bounds) {
-    throw new Error('ROUTE_BOUNDS_MISSING');
-  }
+  const startLocation = leg?.startLocation;
+  const endLocation = leg?.endLocation;
 
   return {
-    distanceKm: metersToKilometers(leg.distance.value),
-    durationMinutes: secondsToMinutes(leg.duration.value),
+    distanceKm: metersToKilometers(distanceMeters),
+    durationMinutes: secondsToMinutes(durationMillis / 1000),
     polyline,
-    bounds: parseBounds(bounds),
+    bounds: parseViewportBounds(viewport),
     origin: {
-      address: leg.start_address || request.origin.address,
+      address: request.origin.address,
       placeId: request.origin.placeId,
-      location: leg.start_location
-        ? { lat: leg.start_location.lat(), lng: leg.start_location.lng() }
+      location: startLocation
+        ? { lat: startLocation.lat, lng: startLocation.lng }
         : request.origin.location,
     },
     destination: {
-      address: leg.end_address || request.destination.address,
+      address: request.destination.address,
       placeId: request.destination.placeId,
-      location: leg.end_location
-        ? { lat: leg.end_location.lat(), lng: leg.end_location.lng() }
+      location: endLocation
+        ? { lat: endLocation.lat, lng: endLocation.lng }
         : request.destination.location,
     },
   };
 }
 
 export async function calculateDrivingRoute(
-  directionsService: google.maps.DirectionsService,
+  googleMaps: typeof google,
   request: RouteCalculationRequest,
 ): Promise<RouteCalculationResponse> {
-  const origin = toLatLngLiteral(request.origin);
-  const destination = toLatLngLiteral(request.destination);
+  await googleMaps.maps.importLibrary('routes');
 
-  const directionsResult = await new Promise<google.maps.DirectionsResult>((resolve, reject) => {
-    directionsService.route(
-      {
-        origin,
-        destination,
-        travelMode: google.maps.TravelMode.DRIVING,
-        provideRouteAlternatives: false,
-      },
-      (result, status) => {
-        if (status === google.maps.DirectionsStatus.OK && result) {
-          resolve(result);
-          return;
-        }
-
-        reject(new Error(status || 'ROUTE_CALCULATION_FAILED'));
-      },
-    );
+  const { routes } = await googleMaps.maps.routes.Route.computeRoutes({
+    origin: toRouteEndpoint(request.origin),
+    destination: toRouteEndpoint(request.destination),
+    travelMode: googleMaps.maps.TravelMode.DRIVING,
+    fields: ['path', 'distanceMeters', 'durationMillis', 'viewport', 'legs'],
+    language: MAPS_LOADER_OPTIONS.language,
+    region: MAPS_LOADER_OPTIONS.region,
   });
 
+  const routesRoute = routes?.[0];
+  if (!routesRoute) {
+    throw new Error('ROUTE_NOT_FOUND');
+  }
+
   return {
-    route: parseDirectionsRoute(directionsResult, request),
-    directionsResult,
+    route: parseRoutesApiRoute(routesRoute, request, googleMaps),
+    routesRoute,
   };
 }
 

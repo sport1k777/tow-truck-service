@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useMaps } from '@/modules/maps/maps-provider';
-import { createDirectionsService } from '@/modules/maps/maps.service';
 import { calculateDrivingRoute } from '@/modules/maps/route-calculator';
 import type { RouteCalculationRequest, RouteCalculationResponse } from '@/modules/maps/maps.types';
 
@@ -26,6 +25,7 @@ interface UseCalculatorRouteResult {
 }
 
 const ROUTE_DEBOUNCE_MS = 700;
+const ROUTE_IMMEDIATE_DEBOUNCE_MS = 0;
 
 function canCalculateRoute(options: UseCalculatorRouteOptions): boolean {
   if (!options.pickupAddress.trim() || !options.destinationAddress.trim()) {
@@ -83,16 +83,16 @@ export function useCalculatorRoute(options: UseCalculatorRouteOptions): UseCalcu
     }
 
     const currentRequestId = ++requestIdRef.current;
+    const debounceMs =
+      options.pickupLocation && options.destinationLocation
+        ? ROUTE_IMMEDIATE_DEBOUNCE_MS
+        : ROUTE_DEBOUNCE_MS;
     const timer = window.setTimeout(async () => {
       setRouteStatus('calculating');
       setRouteError(null);
 
       try {
-        const directionsService = createDirectionsService(google);
-        const response = await calculateDrivingRoute(
-          directionsService,
-          buildRouteRequest(options),
-        );
+        const response = await calculateDrivingRoute(google, buildRouteRequest(options));
 
         if (currentRequestId !== requestIdRef.current) {
           return;
@@ -109,7 +109,7 @@ export function useCalculatorRoute(options: UseCalculatorRouteOptions): UseCalcu
         setRouteStatus('error');
         setRouteError('Не вдалося побудувати маршрут. Перевірте адреси та спробуйте ще раз.');
       }
-    }, ROUTE_DEBOUNCE_MS);
+    }, debounceMs);
 
     return () => {
       window.clearTimeout(timer);

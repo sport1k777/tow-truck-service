@@ -2,13 +2,18 @@ import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 import {
   getGoogleMapsApiKey,
   MAP_DARK_STYLES,
-  MAPS_AUTOCOMPLETE_OPTIONS,
+  MAPS_ADDRESS_TYPE_RANK,
+  MAPS_AUTOCOMPLETE_REQUEST_OPTIONS,
   MAPS_DEFAULT_CENTER,
   MAPS_DEFAULT_ZOOM,
   MAPS_LOADER_OPTIONS,
   ROUTE_POLYLINE_OPTIONS,
 } from './maps.config';
-import type { MapsRuntimeConfig, PlaceLocation } from './maps.types';
+import type {
+  AddressSuggestionSelection,
+  MapsRuntimeConfig,
+  PlaceLocation,
+} from './maps.types';
 import { DEFAULT_MAPS_CONFIG } from '@/lib/locale.defaults';
 
 let googleMapsPromise: Promise<typeof google> | null = null;
@@ -40,6 +45,7 @@ export async function loadGoogleMapsApi(): Promise<typeof google> {
       importLibrary('maps'),
       importLibrary('places'),
       importLibrary('geometry'),
+      importLibrary('routes'),
     ]).then(() => google);
   }
 
@@ -73,20 +79,124 @@ export function parsePlaceFromAutocomplete(
   };
 }
 
-export function createPlaceAutocomplete(
+export function createAutocompleteSessionToken(
   googleMaps: typeof google,
-  input: HTMLInputElement,
-): google.maps.places.Autocomplete {
-  return new googleMaps.maps.places.Autocomplete(input, {
-    componentRestrictions: MAPS_AUTOCOMPLETE_OPTIONS.componentRestrictions,
-    fields: [...MAPS_AUTOCOMPLETE_OPTIONS.fields],
+): google.maps.places.AutocompleteSessionToken {
+  return new googleMaps.maps.places.AutocompleteSessionToken();
+}
+
+function rankAddressSuggestionTypes(types: string[]): number {
+  if (types.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...types.map((type) => MAPS_ADDRESS_TYPE_RANK[type] ?? 20));
+}
+
+export async function fetchAddressSuggestions(
+  googleMaps: typeof google,
+  input: string,
+  sessionToken: google.maps.places.AutocompleteSessionToken,
+): Promise<AddressSuggestionSelection[]> {
+  const trimmedInput = input.trim();
+  if (trimmedInput.length < 2) {
+    return [];
+  }
+
+  const { suggestions } = await googleMaps.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+    input: trimmedInput,
+    sessionToken,
+    includedRegionCodes: [...MAPS_AUTOCOMPLETE_REQUEST_OPTIONS.includedRegionCodes],
+    language: MAPS_AUTOCOMPLETE_REQUEST_OPTIONS.language,
+    region: MAPS_AUTOCOMPLETE_REQUEST_OPTIONS.region,
+  });
+
+  const mapped = suggestions.flatMap((suggestion) => {
+    const placePrediction = suggestion.placePrediction;
+    if (!placePrediction) {
+      return [];
+    }
+
+    const mainText = placePrediction.mainText?.text?.trim() ?? '';
+    const secondaryText = placePrediction.secondaryText?.text?.trim() ?? '';
+    const description = placePrediction.text?.text?.trim() || [mainText, secondaryText].filter(Boolean).join(', ');
+
+    if (!description) {
+      return [];
+    }
+
+    return [
+      {
+        suggestion: {
+          placeId: placePrediction.placeId,
+          description,
+          mainText: mainText || description,
+          secondaryText,
+        },
+        placePrediction,
+      },
+    ];
+  });
+
+  return mapped.sort(
+    (a, b) =>
+      rankAddressSuggestionTypes(b.placePrediction.types) -
+      rankAddressSuggestionTypes(a.placePrediction.types),
+  );
+}
+
+export async function resolvePlaceFromSuggestion(
+  placePrediction: google.maps.places.PlacePrediction,
+): Promise<PlaceLocation | null> {
+  const place = placePrediction.toPlace();
+  await place.fetchFields({
+    fields: ['id', 'formattedAddress', 'displayName', 'location'],
+  });
+
+  const address = place.formattedAddress?.trim() || place.displayName?.trim();
+  if (!address) {
+    return null;
+  }
+
+  const location = place.location;
+
+  return {
+    address,
+    placeId: place.id ?? null,
+    location: location ? { lat: location.lat(), lng: location.lng() } : null,
+  };
+}
+
+export function createRoutePolylines(
+  routesRoute: google.maps.routes.Route,
+): google.maps.Polyline[] {
+  return routesRoute.createPolylines({
+    polylineOptions: ROUTE_POLYLINE_OPTIONS,
   });
 }
 
-export function createDirectionsService(
-  googleMaps: typeof google,
-): google.maps.DirectionsService {
-  return new googleMaps.maps.DirectionsService();
+export function renderRouteOnMap(
+  map: google.maps.Map,
+  routesRoute: google.maps.routes.Route,
+): google.maps.Polyline[] {
+  const polylines = createRoutePolylines(routesRoute);
+  polylines.forEach((polyline) => polyline.setMap(map));
+  return polylines;
+}
+
+export function clearRoutePolylinesFromMap(polylines: google.maps.Polyline[]): void {
+  polylines.forEach((polyline) => polyline.setMap(null));
+}
+
+export function fitMapToRouteViewport(
+  map: google.maps.Map,
+  routesRoute: google.maps.routes.Route,
+  padding = 56,
+): void {
+  const viewport = routesRoute.viewport;
+  if (viewport) {
+    map.fitBounds(viewport, padding);
+  }
 }
 
 export function createStyledMap(
@@ -106,31 +216,6 @@ export function createStyledMap(
     backgroundColor: '#030712',
     styles: MAP_DARK_STYLES,
   });
-}
-
-export function createRouteDirectionsRenderer(
-  googleMaps: typeof google,
-  map: google.maps.Map,
-): google.maps.DirectionsRenderer {
-  return new googleMaps.maps.DirectionsRenderer({
-    map,
-    suppressPolylines: false,
-    polylineOptions: ROUTE_POLYLINE_OPTIONS,
-    markerOptions: {
-      opacity: 0.95,
-    },
-  });
-}
-
-export function renderDirectionsOnMap(
-  renderer: google.maps.DirectionsRenderer,
-  directionsResult: google.maps.DirectionsResult,
-): void {
-  renderer.setDirections(directionsResult);
-}
-
-export function clearDirectionsFromMap(renderer: google.maps.DirectionsRenderer): void {
-  renderer.setDirections(null);
 }
 
 export function fitMapToBounds(

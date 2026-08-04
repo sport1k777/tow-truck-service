@@ -5,11 +5,10 @@ import { Loader2, MapPin, Navigation } from 'lucide-react';
 import { MAPS_PLACEHOLDER_MESSAGES } from '@/modules/maps/maps.config';
 import { useMaps } from '@/modules/maps/maps-provider';
 import {
-  clearDirectionsFromMap,
-  createRouteDirectionsRenderer,
+  clearRoutePolylinesFromMap,
   createStyledMap,
-  fitMapToBounds,
-  renderDirectionsOnMap,
+  fitMapToRouteViewport,
+  renderRouteOnMap,
 } from '@/modules/maps/maps.service';
 import type { RouteCalculationResponse } from '@/modules/maps/maps.types';
 
@@ -32,7 +31,7 @@ export function CalculatorRouteMap({
 }: CalculatorRouteMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const rendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
+  const polylinesRef = useRef<google.maps.Polyline[]>([]);
   const { status, google, error, isConfigured } = useMaps();
 
   const isRouteActive = Boolean(route);
@@ -45,24 +44,20 @@ export function CalculatorRouteMap({
     }
 
     mapRef.current = createStyledMap(google, mapContainerRef.current);
-    rendererRef.current = createRouteDirectionsRenderer(google, mapRef.current);
   }, [status, google]);
 
   useEffect(() => {
-    if (!rendererRef.current || !mapRef.current) {
+    if (!mapRef.current) {
       return;
     }
 
-    if (route?.directionsResult) {
-      renderDirectionsOnMap(rendererRef.current, route.directionsResult);
-      const bounds = route.directionsResult.routes[0]?.bounds;
-      if (bounds) {
-        fitMapToBounds(mapRef.current, bounds);
-      }
-      return;
-    }
+    clearRoutePolylinesFromMap(polylinesRef.current);
+    polylinesRef.current = [];
 
-    clearDirectionsFromMap(rendererRef.current);
+    if (route?.routesRoute) {
+      polylinesRef.current = renderRouteOnMap(mapRef.current, route.routesRoute);
+      fitMapToRouteViewport(mapRef.current, route.routesRoute);
+    }
   }, [route]);
 
   return (

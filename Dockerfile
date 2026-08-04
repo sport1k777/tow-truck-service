@@ -20,11 +20,9 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-# Build-time public env (Next.js inlines NEXT_PUBLIC_* into the client bundle)
+# Build-time public URL (override at runtime via compose / Vercel env)
 ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
-ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
-ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
 # Satisfies schema during `next build` — replaced at runtime in production
 ENV AUTH_SECRET=build-time-secret-minimum-32-characters-long
 # Prisma schema references DATABASE_URL; dummy value for client generation only

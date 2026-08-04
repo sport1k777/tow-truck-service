@@ -6,15 +6,17 @@ import { MAPS_PLACEHOLDER_MESSAGES } from '@/modules/maps/maps.config';
 import { useMaps } from '@/modules/maps/maps-provider';
 import {
   clearRoutePolylinesFromMap,
+  centerMapOnLocation,
   createStyledMap,
   fitMapToRouteViewport,
   renderRouteOnMap,
 } from '@/modules/maps/maps.service';
-import type { RouteCalculationResponse } from '@/modules/maps/maps.types';
+import type { GeoCoordinates, RouteCalculationResponse } from '@/modules/maps/maps.types';
 
 interface CalculatorRouteMapProps {
   pickupAddress: string;
   destinationAddress: string;
+  focusLocation: GeoCoordinates | null;
   route: RouteCalculationResponse | null;
   distanceKm?: number | null;
   durationMinutes?: number | null;
@@ -24,6 +26,7 @@ interface CalculatorRouteMapProps {
 export function CalculatorRouteMap({
   pickupAddress,
   destinationAddress,
+  focusLocation,
   route,
   distanceKm,
   durationMinutes,
@@ -59,6 +62,14 @@ export function CalculatorRouteMap({
       fitMapToRouteViewport(mapRef.current, route.routesRoute);
     }
   }, [route]);
+
+  useEffect(() => {
+    if (!mapRef.current || !focusLocation) {
+      return;
+    }
+
+    centerMapOnLocation(mapRef.current, focusLocation);
+  }, [focusLocation]);
 
   return (
     <div className="calculator-map relative h-full min-h-[280px] w-full overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a1628] sm:min-h-[360px] lg:min-h-0 lg:rounded-none lg:rounded-r-2xl lg:border-0 lg:border-l lg:border-white/[0.06]">

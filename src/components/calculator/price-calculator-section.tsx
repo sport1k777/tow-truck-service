@@ -1,14 +1,24 @@
 'use client';
 
 import Link from 'next/link';
+import { useCallback, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { MapsProvider } from '@/modules/maps/maps-provider';
 import { CalculatorRouteMap } from '@/components/maps/calculator-route-map';
 import { CalculatorForm } from './calculator-form';
 import { CalculatorResults } from './calculator-results';
 import { useCalculator } from './use-calculator';
+import type { GeoCoordinates } from '@/modules/maps/maps.types';
+import type { PlaceLocation } from '@/modules/maps/maps.types';
 
 function PriceCalculatorSectionContent() {
+  const [mapFocusLocation, setMapFocusLocation] = useState<GeoCoordinates | null>(null);
+
+  const handlePickupGeolocationSelect = useCallback((place: PlaceLocation) => {
+    if (place.location) {
+      setMapFocusLocation(place.location);
+    }
+  }, []);
   const {
     form,
     errors,
@@ -64,6 +74,7 @@ function PriceCalculatorSectionContent() {
                   isCalculating={isCalculating}
                   onFieldChange={updateField}
                   onPickupPlaceSelect={setPickupPlace}
+                  onPickupGeolocationSelect={handlePickupGeolocationSelect}
                   onDestinationPlaceSelect={setDestinationPlace}
                   onCalculate={calculate}
                 />
@@ -94,6 +105,7 @@ function PriceCalculatorSectionContent() {
               <CalculatorRouteMap
                 pickupAddress={form.pickupAddress}
                 destinationAddress={form.destinationAddress}
+                focusLocation={mapFocusLocation}
                 route={route}
                 distanceKm={displayDistanceKm}
                 durationMinutes={displayDurationMinutes ?? undefined}

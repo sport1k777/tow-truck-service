@@ -7,10 +7,12 @@ import {
   MAPS_DEFAULT_CENTER,
   MAPS_DEFAULT_ZOOM,
   MAPS_LOADER_OPTIONS,
+  MAPS_LOCATION_ZOOM,
   ROUTE_POLYLINE_OPTIONS,
 } from './maps.config';
 import type {
   AddressSuggestionSelection,
+  GeoCoordinates,
   MapsRuntimeConfig,
   PlaceLocation,
 } from './maps.types';
@@ -46,6 +48,7 @@ export async function loadGoogleMapsApi(): Promise<typeof google> {
       importLibrary('places'),
       importLibrary('geometry'),
       importLibrary('routes'),
+      importLibrary('geocoding'),
     ]).then(() => google);
   }
 
@@ -224,4 +227,50 @@ export function fitMapToBounds(
   padding = 56,
 ): void {
   map.fitBounds(bounds, padding);
+}
+
+export function getBrowserGeolocation(): Promise<GeolocationPosition> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('GEOLOCATION_UNSUPPORTED'));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true,
+      timeout: 10_000,
+      maximumAge: 0,
+    });
+  });
+}
+
+export async function reverseGeocodeCoordinates(
+  googleMaps: typeof google,
+  coordinates: GeoCoordinates,
+): Promise<PlaceLocation | null> {
+  await googleMaps.maps.importLibrary('geocoding');
+
+  const geocoder = new googleMaps.maps.Geocoder();
+  const response = await geocoder.geocode({ location: coordinates });
+  const result = response.results[0];
+  const address = result?.formatted_address?.trim();
+
+  if (!address) {
+    return null;
+  }
+
+  return {
+    address,
+    placeId: result.place_id ?? null,
+    location: coordinates,
+  };
+}
+
+export function centerMapOnLocation(
+  map: google.maps.Map,
+  location: GeoCoordinates,
+  zoom = MAPS_LOCATION_ZOOM,
+): void {
+  map.setCenter(location);
+  map.setZoom(zoom);
 }

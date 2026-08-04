@@ -88,6 +88,11 @@ export const ROUTE_POLYLINE_OPTIONS: google.maps.PolylineOptions = {
   strokeWeight: 5,
 };
 
+export const MAPS_LOCATION_ZOOM = 15;
+
+export const MAPS_GEOLOCATION_DENIED_MESSAGE =
+  'Не вдалося визначити ваше місцезнаходження.';
+
 export const MAPS_PLACEHOLDER_MESSAGES = {
   notConfigured:
     'Карта тимчасово недоступна. Додайте NEXT_PUBLIC_GOOGLE_MAPS_API_KEY для автоматичного розрахунку маршруту.',

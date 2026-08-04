@@ -2,11 +2,15 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useMaps } from '@/modules/maps/maps-provider';
+import { MAPS_GEOLOCATION_DENIED_MESSAGE } from '@/modules/maps/maps.config';
 import {
   createAutocompleteSessionToken,
   fetchAddressSuggestions,
+  getBrowserGeolocation,
   resolvePlaceFromSuggestion,
+  reverseGeocodeCoordinates,
 } from '@/modules/maps/maps.service';
 import type { AddressSuggestionSelection } from '@/modules/maps/maps.types';
 import type { PlaceLocation } from '@/modules/maps/maps.types';
@@ -19,8 +23,10 @@ interface AddressAutocompleteProps {
   value: string;
   placeholder: string;
   error?: string;
+  showLocationButton?: boolean;
   onAddressChange: (address: string) => void;
   onPlaceSelect: (place: PlaceLocation) => void;
+  onGeolocationSelect?: (location: PlaceLocation) => void;
 }
 
 const SUGGESTION_DEBOUNCE_MS = 300;
@@ -33,8 +39,10 @@ export function AddressAutocomplete({
   value,
   placeholder,
   error,
+  showLocationButton = false,
   onAddressChange,
   onPlaceSelect,
+  onGeolocationSelect,
 }: AddressAutocompleteProps) {
   const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,6 +56,10 @@ export function AddressAutocomplete({
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const displayError = locationError ?? error;
 
   const resetSessionToken = useCallback(() => {
     if (!google) {
@@ -134,6 +146,59 @@ export function AddressAutocomplete({
     [closeSuggestions, google, isResolving, onAddressChange, onPlaceSelect, resetSessionToken],
   );
 
+  const handleLocationClick = useCallback(async () => {
+    if (isResolving || isLocating) {
+      return;
+    }
+
+    setLocationError(null);
+    setIsLocating(true);
+    closeSuggestions();
+
+    try {
+      if (status !== 'ready' || !google) {
+        return;
+      }
+
+      const position = await getBrowserGeolocation();
+      const coordinates = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+
+      const place = await reverseGeocodeCoordinates(google, coordinates);
+      const resolvedPlace =
+        place ??
+        ({
+          address: `${coordinates.lat.toFixed(6)}, ${coordinates.lng.toFixed(6)}`,
+          placeId: null,
+          location: coordinates,
+        } satisfies PlaceLocation);
+
+      onAddressChange(resolvedPlace.address);
+      onPlaceSelect(resolvedPlace);
+      onGeolocationSelect?.(resolvedPlace);
+    } catch (caughtError) {
+      if (
+        caughtError instanceof GeolocationPositionError &&
+        caughtError.code === GeolocationPositionError.PERMISSION_DENIED
+      ) {
+        setLocationError(MAPS_GEOLOCATION_DENIED_MESSAGE);
+      }
+    } finally {
+      setIsLocating(false);
+    }
+  }, [
+    closeSuggestions,
+    google,
+    isLocating,
+    isResolving,
+    onAddressChange,
+    onGeolocationSelect,
+    onPlaceSelect,
+    status,
+  ]);
+
   useEffect(() => {
     if (!isOpen || activeIndex < 0) {
       return;
@@ -168,6 +233,10 @@ export function AddressAutocomplete({
   }, [closeSuggestions]);
 
   const handleInputChange = (nextValue: string) => {
+    if (locationError) {
+      setLocationError(null);
+    }
+
     onAddressChange(nextValue);
 
     if (debounceRef.current !== null) {
@@ -213,34 +282,54 @@ export function AddressAutocomplete({
         <Icon className={`h-4 w-4 ${iconClassName ?? 'text-white/50'}`} aria-hidden="true" />
         {label}
       </label>
-      <input
-        ref={inputRef}
-        id={id}
-        type="text"
-        value={value}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onFocus={() => {
-          if (value.trim().length >= 2) {
-            void loadSuggestions(value);
-          } else if (suggestions.length > 0) {
-            setIsOpen(true);
+      <div className="relative">
+        <input
+          ref={inputRef}
+          id={id}
+          type="text"
+          value={value}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            if (value.trim().length >= 2) {
+              void loadSuggestions(value);
+            } else if (suggestions.length > 0) {
+              setIsOpen(true);
+            }
+          }}
+          placeholder={placeholder}
+          autoComplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? listboxId : undefined}
+          aria-activedescendant={
+            isOpen && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
           }
-        }}
-        placeholder={placeholder}
-        autoComplete="off"
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? listboxId : undefined}
-        aria-activedescendant={
-          isOpen && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
-        }
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-        disabled={isResolving}
-        className="calculator-input w-full"
-      />
+          aria-invalid={!!displayError}
+          aria-describedby={displayError ? `${id}-error` : undefined}
+          disabled={isResolving || isLocating}
+          className={`calculator-input w-full${showLocationButton ? ' calculator-input--with-action' : ''}`}
+        />
+        {showLocationButton ? (
+          <button
+            type="button"
+            className="calculator-input-location-btn"
+            onClick={() => {
+              void handleLocationClick();
+            }}
+            disabled={isResolving || isLocating}
+            aria-label="Визначити поточне місцезнаходження"
+            title="Визначити поточне місцезнаходження"
+          >
+            {isLocating ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <span aria-hidden="true">📍</span>
+            )}
+          </button>
+        ) : null}
+      </div>
       {isOpen && suggestions.length > 0 && (
         <div
           id={listboxId}
@@ -269,9 +358,9 @@ export function AddressAutocomplete({
           ))}
         </div>
       )}
-      {error && (
+      {displayError && (
         <p id={`${id}-error`} className="text-xs text-red-400" role="alert">
-          {error}
+          {displayError}
         </p>
       )}
     </div>

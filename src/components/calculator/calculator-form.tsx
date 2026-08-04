@@ -15,6 +15,7 @@ interface CalculatorFormProps {
     value: CalculatorFormState[K],
   ) => void;
   onPickupPlaceSelect: (place: PlaceLocation) => void;
+  onPickupGeolocationSelect?: (place: PlaceLocation) => void;
   onDestinationPlaceSelect: (place: PlaceLocation) => void;
   onCalculate: () => void;
 }
@@ -25,6 +26,7 @@ export function CalculatorForm({
   isCalculating,
   onFieldChange,
   onPickupPlaceSelect,
+  onPickupGeolocationSelect,
   onDestinationPlaceSelect,
   onCalculate,
 }: CalculatorFormProps) {
@@ -47,6 +49,8 @@ export function CalculatorForm({
         error={errors.pickupAddress}
         onAddressChange={(address) => onFieldChange('pickupAddress', address)}
         onPlaceSelect={onPickupPlaceSelect}
+        onGeolocationSelect={onPickupGeolocationSelect}
+        showLocationButton={true}
       />
 
       <AddressAutocomplete

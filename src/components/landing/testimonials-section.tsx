@@ -106,28 +106,14 @@ export function TestimonialsSection({ companyName }: TestimonialsSectionProps) {
           <p className="landing-subtitle">Реальні відгуки клієнтів з різних міст України.</p>
         </div>
 
-        {/* Mobile: swipeable carousel */}
         <ul
-          className="testimonial-carousel -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:hidden"
+          className="testimonial-carousel -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:px-0 md:pb-0"
           aria-label="Відгуки клієнтів"
         >
           {TESTIMONIALS.map((testimonial, index) => (
             <li
               key={testimonial.id}
-              className="testimonial-card-animate w-[min(85vw,320px)] shrink-0 snap-center"
-              style={{ animationDelay: `${index * 0.06}s` }}
-            >
-              <TestimonialCard testimonial={testimonial} />
-            </li>
-          ))}
-        </ul>
-
-        {/* Desktop: 3-column grid */}
-        <ul className="hidden gap-5 md:grid md:grid-cols-3">
-          {TESTIMONIALS.map((testimonial, index) => (
-            <li
-              key={testimonial.id}
-              className="testimonial-card-animate"
+              className="testimonial-card-animate w-[min(85vw,320px)] shrink-0 snap-center md:w-auto md:shrink"
               style={{ animationDelay: `${index * 0.06}s` }}
             >
               <TestimonialCard testimonial={testimonial} />

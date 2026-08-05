@@ -1,5 +1,6 @@
 import {
   buildLocalBusinessJsonLd,
+  buildOrganizationJsonLd,
   buildWebSiteJsonLd,
   serializeJsonLd,
 } from '@/modules/seo/json-ld';
@@ -29,6 +30,12 @@ export function SiteJsonLd({
     email,
   });
 
+  const organization = buildOrganizationJsonLd({
+    companyName,
+    url,
+    telephone,
+  });
+
   const webSite = buildWebSiteJsonLd({
     companyName,
     description,
@@ -40,6 +47,10 @@ export function SiteJsonLd({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(localBusiness) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(organization) }}
       />
       <script
         type="application/ld+json"

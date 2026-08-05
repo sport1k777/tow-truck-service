@@ -3,17 +3,17 @@
  * Display format for UI; E.164 / wa.me digits for links.
  */
 
-export const COMPANY_PHONE_DISPLAY = '+380 (96) 127 30 52';
+export const COMPANY_PHONE_DISPLAY = '+38093 972 20 96';
 
 /** E.164 without spaces — used in tel: and WhatsApp wa.me paths */
-export const COMPANY_PHONE_E164 = '+380961273052';
+export const COMPANY_PHONE_E164 = '+380939722096';
 
-export const COMPANY_PHONE_TEL = 'tel:+380961273052';
+export const COMPANY_PHONE_TEL = 'tel:+380939722096';
 
 /** wa.me uses digits only, no + prefix */
-export const COMPANY_WHATSAPP_NUMBER = '380961273052';
+export const COMPANY_WHATSAPP_NUMBER = '380939722096';
 
-export const COMPANY_WHATSAPP_URL = 'https://wa.me/380961273052';
+export const COMPANY_WHATSAPP_URL = 'https://wa.me/380939722096';
 
 export function getTelHref(): string {
   return COMPANY_PHONE_TEL;

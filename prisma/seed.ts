@@ -84,14 +84,14 @@ async function main() {
     },
     {
       key: 'contact.phone',
-      value: '+380 (96) 127 30 52',
+      value: '+38093 972 20 96',
       type: SettingType.STRING,
       group: 'contact',
       description: 'Main business phone number (+380...)',
     },
     {
       key: 'contact.whatsapp',
-      value: '+380961273052',
+      value: '+380939722096',
       type: SettingType.STRING,
       group: 'contact',
       description: 'WhatsApp Business number (+380...)',

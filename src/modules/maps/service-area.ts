@@ -1,10 +1,24 @@
 import type { PlaceAddressComponent } from './maps.types';
+import {
+  SERVICE_AREA_AVAILABLE_MESSAGE,
+  SERVICE_AREA_NAME,
+  SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
+} from './service-area.constants';
 
-export const SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE =
-  'Послуги евакуатора доступні лише для маршрутів, де місце завантаження або місце доставки знаходиться в Рівненській області.';
+export {
+  SERVICE_AREA_AVAILABLE_MESSAGE,
+  SERVICE_AREA_NAME,
+  SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
+};
 
-export const SERVICE_AREA_AVAILABLE_MESSAGE = 'Послуга доступна у вашій зоні';
-export const SERVICE_AREA_NAME = 'Рівненська область';
+export interface ServiceAreaValidationConfig {
+  allowedRegions?: string[];
+  outOfCoverageMessage?: string;
+  availableMessage?: string;
+  areaName?: string;
+}
+
+const DEFAULT_ALLOWED_REGIONS = ['рівненська область', 'rivne oblast'];
 
 const ADMINISTRATIVE_AREA_LEVEL_1 = 'administrative_area_level_1';
 
@@ -18,13 +32,16 @@ function normalizeAdministrativeAreaName(value: string): string {
     .replace(/\s+/g, ' ');
 }
 
-const RIVNE_OBLAST_ADMIN_AREA_NAMES = new Set(['рівненська область', 'rivne oblast']);
-
-function isRivneOblastAdministrativeArea(name: string): boolean {
-  return RIVNE_OBLAST_ADMIN_AREA_NAMES.has(normalizeAdministrativeAreaName(name));
+function isAllowedAdministrativeArea(name: string, allowedRegions: string[]): boolean {
+  const normalized = normalizeAdministrativeAreaName(name);
+  const allowed = new Set(allowedRegions.map(normalizeAdministrativeAreaName));
+  return allowed.has(normalized);
 }
 
-export function isInRivneOblast(components: PlaceAddressComponent[]): boolean {
+export function isInServiceArea(
+  components: PlaceAddressComponent[],
+  allowedRegions: string[] = DEFAULT_ALLOWED_REGIONS,
+): boolean {
   return components.some((component) => {
     if (!component.types.includes(ADMINISTRATIVE_AREA_LEVEL_1)) {
       return false;
@@ -32,17 +49,25 @@ export function isInRivneOblast(components: PlaceAddressComponent[]): boolean {
 
     return [component.longText, component.shortText]
       .filter(Boolean)
-      .some(isRivneOblastAdministrativeArea);
+      .some((name) => isAllowedAdministrativeArea(name!, allowedRegions));
   });
+}
+
+/** @deprecated Use isInServiceArea */
+export function isInRivneOblast(components: PlaceAddressComponent[]): boolean {
+  return isInServiceArea(components);
 }
 
 export function isRouteWithinServiceArea(
   pickupComponents: PlaceAddressComponent[] | null | undefined,
   destinationComponents: PlaceAddressComponent[] | null | undefined,
+  allowedRegions: string[] = DEFAULT_ALLOWED_REGIONS,
 ): boolean {
-  const pickupInArea = pickupComponents?.length ? isInRivneOblast(pickupComponents) : false;
+  const pickupInArea = pickupComponents?.length
+    ? isInServiceArea(pickupComponents, allowedRegions)
+    : false;
   const destinationInArea = destinationComponents?.length
-    ? isInRivneOblast(destinationComponents)
+    ? isInServiceArea(destinationComponents, allowedRegions)
     : false;
 
   return pickupInArea || destinationInArea;
@@ -68,23 +93,36 @@ export interface ServiceAreaValidationResult {
   message: string | null;
 }
 
-export function validateServiceAreaRoute(options: {
-  pickupPlaceId: string | null;
-  destinationPlaceId: string | null;
-  pickupComponents: PlaceAddressComponent[] | null | undefined;
-  destinationComponents: PlaceAddressComponent[] | null | undefined;
-}): ServiceAreaValidationResult {
-  if (!canValidateServiceArea(
-    options.pickupPlaceId,
-    options.destinationPlaceId,
-    options.pickupComponents,
-    options.destinationComponents,
-  )) {
+export function validateServiceAreaRoute(
+  options: {
+    pickupPlaceId: string | null;
+    destinationPlaceId: string | null;
+    pickupComponents: PlaceAddressComponent[] | null | undefined;
+    destinationComponents: PlaceAddressComponent[] | null | undefined;
+  },
+  config?: ServiceAreaValidationConfig,
+): ServiceAreaValidationResult {
+  const allowedRegions = config?.allowedRegions ?? DEFAULT_ALLOWED_REGIONS;
+  const outOfCoverageMessage =
+    config?.outOfCoverageMessage ?? SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE;
+
+  if (
+    !canValidateServiceArea(
+      options.pickupPlaceId,
+      options.destinationPlaceId,
+      options.pickupComponents,
+      options.destinationComponents,
+    )
+  ) {
     return { status: 'pending', isBlocked: false, message: null };
   }
 
   if (
-    isRouteWithinServiceArea(options.pickupComponents, options.destinationComponents)
+    isRouteWithinServiceArea(
+      options.pickupComponents,
+      options.destinationComponents,
+      allowedRegions,
+    )
   ) {
     return { status: 'valid', isBlocked: false, message: null };
   }
@@ -92,6 +130,6 @@ export function validateServiceAreaRoute(options: {
   return {
     status: 'invalid',
     isBlocked: true,
-    message: SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
+    message: outOfCoverageMessage,
   };
 }

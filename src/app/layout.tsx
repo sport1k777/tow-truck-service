@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { baseAppConfig } from '@/config/base.config';
 import { generatePageMetadata } from '@/modules/seo/metadata';
+import { AppProviders } from '@/components/providers/app-providers';
 import './globals.css';
 
 const inter = Inter({
@@ -37,7 +38,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="uk">
-      <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }

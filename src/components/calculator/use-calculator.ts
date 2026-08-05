@@ -10,6 +10,7 @@ import {
   calculateCalculatorQuote,
   calculateLivePrice,
 } from './calculator.pricing';
+import { useCalculatorConfig } from './calculator-config-context';
 import {
   loadStoredCalculatorForm,
   persistCalculatorForm,
@@ -81,6 +82,7 @@ function buildAutoCalcKey(form: CalculatorFormState, distanceKm: number | null):
 
 export function useCalculator() {
   const { isConfigured, status: mapsStatus } = useMaps();
+  const { pricingConfig, serviceAreaConfig } = useCalculatorConfig();
   const [form, setForm] = useState<CalculatorFormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<CalculatorFormErrors>({});
   const [status, setStatus] = useState<CalculatorStatus>('idle');
@@ -99,17 +101,25 @@ export function useCalculator() {
 
   const serviceAreaValidation = useMemo(
     () =>
-      validateServiceAreaRoute({
-        pickupPlaceId: form.pickupPlaceId,
-        destinationPlaceId: form.destinationPlaceId,
-        pickupComponents: form.pickupAddressComponents,
-        destinationComponents: form.destinationAddressComponents,
-      }),
+      validateServiceAreaRoute(
+        {
+          pickupPlaceId: form.pickupPlaceId,
+          destinationPlaceId: form.destinationPlaceId,
+          pickupComponents: form.pickupAddressComponents,
+          destinationComponents: form.destinationAddressComponents,
+        },
+        {
+          allowedRegions: serviceAreaConfig.allowedRegions,
+          outOfCoverageMessage: serviceAreaConfig.outOfCoverageMessage,
+        },
+      ),
     [
       form.pickupPlaceId,
       form.destinationPlaceId,
       form.pickupAddressComponents,
       form.destinationAddressComponents,
+      serviceAreaConfig.allowedRegions,
+      serviceAreaConfig.outOfCoverageMessage,
     ],
   );
 
@@ -118,8 +128,8 @@ export function useCalculator() {
       return null;
     }
 
-    return calculateLivePrice(form, distanceKm);
-  }, [form, distanceKm, serviceAreaValidation.isBlocked]);
+    return calculateLivePrice(form, distanceKm, pricingConfig);
+  }, [form, distanceKm, serviceAreaValidation.isBlocked, pricingConfig]);
 
   const clearTransientErrors = useCallback(() => {
     setErrors({});
@@ -236,7 +246,7 @@ export function useCalculator() {
         return false;
       }
 
-      const price = calculateLivePrice(form, distanceKm);
+      const price = calculateLivePrice(form, distanceKm, pricingConfig);
       if (!price || !route) {
         if (!options.silent) {
           setErrors({ route: 'Не вдалося розрахувати вартість для цього маршруту.' });
@@ -248,7 +258,7 @@ export function useCalculator() {
       setErrors({});
 
       try {
-        const quote = await calculateCalculatorQuote(form, price, route);
+        const quote = await calculateCalculatorQuote(form, price, route, serviceAreaConfig);
         setResult(quote);
         setStatus('success');
         return true;
@@ -267,6 +277,8 @@ export function useCalculator() {
       routeStatus,
       distanceKm,
       serviceAreaValidation,
+      pricingConfig,
+      serviceAreaConfig,
     ],
   );
 

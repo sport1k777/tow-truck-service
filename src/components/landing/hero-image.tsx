@@ -11,13 +11,14 @@ const HERO_SIZES_MOBILE = '(max-width: 767px) 100vw, (max-width: 1023px) 768px, 
 interface HeroArtworkProps {
   variant: 'desktop' | 'mobile';
   priority?: boolean;
+  imageUrl?: string;
 }
 
 /**
  * Renders the approved hero asset with edge masking so it blends
  * into the page background — no visible rectangular frame.
  */
-export function HeroArtwork({ variant, priority }: HeroArtworkProps) {
+export function HeroArtwork({ variant, priority, imageUrl = HERO_IMAGE }: HeroArtworkProps) {
   const isDesktop = variant === 'desktop';
   const shouldPreload = priority ?? isDesktop;
 
@@ -29,7 +30,7 @@ export function HeroArtwork({ variant, priority }: HeroArtworkProps) {
       >
         <div className="hero-artwork-mask relative h-full w-full">
           <Image
-            src={HERO_IMAGE}
+            src={imageUrl}
             alt=""
             width={HERO_WIDTH}
             height={HERO_HEIGHT}
@@ -48,7 +49,7 @@ export function HeroArtwork({ variant, priority }: HeroArtworkProps) {
     <div className="hero-artwork-stage-mobile relative mx-auto aspect-[1024/819] w-full max-w-3xl lg:hidden">
       <div className="hero-artwork-mask-mobile relative w-full">
         <Image
-          src={HERO_IMAGE}
+          src={imageUrl}
           alt="Професійний евакуатор з автомобілем на фоні карти України"
           width={HERO_WIDTH}
           height={HERO_HEIGHT}

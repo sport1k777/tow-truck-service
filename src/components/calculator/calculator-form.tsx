@@ -4,6 +4,7 @@ import { ArrowUpDown, Car, Loader2, MapPin, MessageSquare, Zap } from 'lucide-re
 import { AddressAutocomplete } from '@/components/maps/address-autocomplete';
 import type { CalculatorFormErrors, CalculatorFormState } from './calculator.types';
 import { VEHICLE_TYPE_OPTIONS } from './calculator.pricing';
+import { useCalculatorConfig } from './calculator-config-context';
 import type { PlaceLocation } from '@/modules/maps/maps.types';
 
 interface CalculatorFormProps {
@@ -34,6 +35,9 @@ export function CalculatorForm({
   onSwapAddresses,
   onCalculate,
 }: CalculatorFormProps) {
+  const { vehicleOptions } = useCalculatorConfig();
+  const options = vehicleOptions.length > 0 ? vehicleOptions : VEHICLE_TYPE_OPTIONS;
+
   return (
     <form
       className="space-y-5"
@@ -110,7 +114,7 @@ export function CalculatorForm({
           onChange={(e) => onFieldChange('vehicleType', e.target.value as CalculatorFormState['vehicleType'])}
           className="calculator-input w-full appearance-none"
         >
-          {VEHICLE_TYPE_OPTIONS.map((option) => (
+          {options.map((option) => (
             <option key={option.value} value={option.value} className="bg-[#0a1628] text-white">
               {option.label}
             </option>

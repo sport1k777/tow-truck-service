@@ -1,5 +1,12 @@
 import { PrismaClient, AdminRole, SettingType, VehicleType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import {
+  SEED_EXTRA_SERVICES,
+  SEED_FAQ,
+  SEED_HERO_IMAGES,
+  SEED_TESTIMONIALS,
+  SEED_VEHICLE_CATEGORIES,
+} from './seed-data';
 
 const prisma = new PrismaClient();
 
@@ -21,6 +28,24 @@ async function main() {
       timezone: 'Europe/Kyiv',
       mapCenterLat: 50.4501,
       mapCenterLng: 30.5234,
+      mapZoom: 11,
+      isActive: true,
+      isDefault: false,
+    },
+  });
+
+  const rivne = await prisma.city.upsert({
+    where: { slug: 'rivne' },
+    update: {},
+    create: {
+      name: 'Рівне',
+      slug: 'rivne',
+      countryCode: 'UA',
+      locale: 'uk',
+      currency: 'UAH',
+      timezone: 'Europe/Kyiv',
+      mapCenterLat: 50.6199,
+      mapCenterLng: 26.2516,
       mapZoom: 11,
       isActive: true,
       isDefault: true,
@@ -56,7 +81,7 @@ async function main() {
   }> = [
     {
       key: 'company.name',
-      value: '',
+      value: 'Евакуатор',
       type: SettingType.STRING,
       group: 'branding',
       description: 'Company display name',
@@ -105,10 +130,38 @@ async function main() {
     },
     {
       key: 'contact.website',
-      value: '',
+      value: 'https://evakuator24.biz.ua',
       type: SettingType.STRING,
       group: 'contact',
       description: 'Website URL',
+    },
+    {
+      key: 'contact.telegram',
+      value: '',
+      type: SettingType.STRING,
+      group: 'contact',
+      description: 'Telegram username or link',
+    },
+    {
+      key: 'contact.viber',
+      value: '',
+      type: SettingType.STRING,
+      group: 'contact',
+      description: 'Viber number or link',
+    },
+    {
+      key: 'contact.address',
+      value: 'Рівненська область, Україна',
+      type: SettingType.STRING,
+      group: 'contact',
+      description: 'Business address',
+    },
+    {
+      key: 'contact.maps_link',
+      value: '',
+      type: SettingType.STRING,
+      group: 'contact',
+      description: 'Google Maps link',
     },
     {
       key: 'contact.social_links',
@@ -154,14 +207,14 @@ async function main() {
     },
     {
       key: 'maps.center_lat',
-      value: '50.4501',
+      value: '50.6199',
       type: SettingType.NUMBER,
       group: 'maps',
       description: 'Default map center latitude',
     },
     {
       key: 'maps.center_lng',
-      value: '30.5234',
+      value: '26.2516',
       type: SettingType.NUMBER,
       group: 'maps',
       description: 'Default map center longitude',
@@ -172,6 +225,76 @@ async function main() {
       type: SettingType.NUMBER,
       group: 'maps',
       description: 'Default map zoom level',
+    },
+    {
+      key: 'seo.title',
+      value: 'Евакуатор — Швидкий виклик 24/7',
+      type: SettingType.STRING,
+      group: 'seo',
+      description: 'SEO title',
+    },
+    {
+      key: 'seo.description',
+      value: 'Професійна служба евакуації автомобілів в Україні. Швидкий розрахунок вартості, онлайн-замовлення, цілодобова підтримка.',
+      type: SettingType.STRING,
+      group: 'seo',
+      description: 'SEO description',
+    },
+    {
+      key: 'seo.keywords',
+      value: 'евакуатор, евакуація авто, евакуатор 24/7, Рівненська область',
+      type: SettingType.STRING,
+      group: 'seo',
+      description: 'SEO keywords',
+    },
+    {
+      key: 'seo.og_image',
+      value: '/opengraph-image',
+      type: SettingType.STRING,
+      group: 'seo',
+      description: 'Open Graph image URL',
+    },
+    {
+      key: 'seo.canonical_url',
+      value: 'https://evakuator24.biz.ua',
+      type: SettingType.STRING,
+      group: 'seo',
+      description: 'Canonical URL',
+    },
+    {
+      key: 'service_area.mode',
+      value: 'regions',
+      type: SettingType.STRING,
+      group: 'service_area',
+      description: 'Service area mode: regions or radius',
+    },
+    {
+      key: 'service_area.allowed_regions',
+      value: JSON.stringify(['рівненська область', 'rivne oblast']),
+      type: SettingType.JSON,
+      group: 'service_area',
+      description: 'Allowed administrative regions',
+    },
+    {
+      key: 'service_area.out_of_coverage_message',
+      value: 'Послуги евакуатора доступні лише для маршрутів, де місце завантаження або місце доставки знаходиться в Рівненській області.',
+      type: SettingType.STRING,
+      group: 'service_area',
+      description: 'Out of coverage message',
+    },
+    {
+      key: 'service_area.available_message',
+      value: 'Послуга доступна у вашій зоні',
+      type: SettingType.STRING,
+      group: 'service_area',
+      description: 'Available message',
+    },
+    {
+      key: 'service_area.name',
+      value: 'Рівненська область',
+      type: SettingType.STRING,
+      group: 'service_area',
+      description: 'Service area display name',
     },
   ];
 
@@ -191,20 +314,35 @@ async function main() {
   // ---------------------------------------------------------------------------
   const pricingRule = await prisma.pricingRule.upsert({
     where: { id: 'seed-default-pricing' },
-    update: {},
+    update: {
+      baseFee: 900,
+      minCharge: 900,
+      perKmRate: 25,
+      cityPerKmRate: 25,
+      outsideCityPerKmRate: 30,
+      emergencySurchargeFlat: 300,
+      nightSurchargePercent: 20,
+      weekendSurchargePercent: 15,
+      holidaySurchargePercent: 30,
+      difficultLoadingSurcharge: 500,
+      cityId: rivne.id,
+    },
     create: {
       id: 'seed-default-pricing',
       name: 'Стандартний тариф',
-      cityId: kyiv.id,
-      baseFee: 500,
+      cityId: rivne.id,
+      baseFee: 900,
       perKmRate: 25,
-      minCharge: 700,
-      nightSurchargePercent: 25,
+      cityPerKmRate: 25,
+      outsideCityPerKmRate: 30,
+      minCharge: 900,
+      emergencySurchargeFlat: 300,
+      nightSurchargePercent: 20,
       nightStartHour: 22,
       nightEndHour: 6,
       weekendSurchargePercent: 15,
       holidaySurchargePercent: 30,
-      difficultLoadingSurcharge: 300,
+      difficultLoadingSurcharge: 500,
       isActive: true,
     },
   });
@@ -239,21 +377,71 @@ async function main() {
   // Service area — Kyiv radius coverage (approximate)
   // ---------------------------------------------------------------------------
   await prisma.serviceArea.upsert({
-    where: { id: 'seed-kyiv-radius' },
-    update: {},
+    where: { id: 'seed-rivne-radius' },
+    update: {
+      name: 'Рівненська область',
+      centerLat: 50.6199,
+      centerLng: 26.2516,
+      radiusKm: 80,
+      cityId: rivne.id,
+      isActive: true,
+    },
     create: {
-      id: 'seed-kyiv-radius',
-      name: 'Київ та область',
+      id: 'seed-rivne-radius',
+      name: 'Рівненська область',
       type: 'RADIUS',
-      cityId: kyiv.id,
-      centerLat: 50.4501,
-      centerLng: 30.5234,
-      radiusKm: 50,
+      cityId: rivne.id,
+      centerLat: 50.6199,
+      centerLng: 26.2516,
+      radiusKm: 80,
       surchargeAmount: 0,
       isActive: true,
       priority: 0,
     },
   });
+
+  for (const category of SEED_VEHICLE_CATEGORIES) {
+    await prisma.vehicleCategory.upsert({
+      where: { slug: category.slug },
+      update: category,
+      create: category,
+    });
+  }
+
+  for (const service of SEED_EXTRA_SERVICES) {
+    await prisma.extraService.upsert({
+      where: { slug: service.slug },
+      update: {
+        ...service,
+        config: service.config as object,
+      },
+      create: {
+        ...service,
+        config: service.config as object,
+      },
+    });
+  }
+
+  for (const item of SEED_FAQ) {
+    const existing = await prisma.faqItem.findFirst({ where: { question: item.question } });
+    if (!existing) {
+      await prisma.faqItem.create({ data: item });
+    }
+  }
+
+  for (const item of SEED_TESTIMONIALS) {
+    const existing = await prisma.testimonial.findFirst({ where: { name: item.name, city: item.city } });
+    if (!existing) {
+      await prisma.testimonial.create({ data: item });
+    }
+  }
+
+  for (const image of SEED_HERO_IMAGES) {
+    const existing = await prisma.heroImage.findFirst({ where: { url: image.url } });
+    if (!existing) {
+      await prisma.heroImage.create({ data: image });
+    }
+  }
 
   // ---------------------------------------------------------------------------
   // Ukrainian public holidays (recurring annually)
@@ -292,7 +480,7 @@ async function main() {
   }
 
   console.log('Seed completed successfully.');
-  console.log(`  City: ${kyiv.name} (${kyiv.slug})`);
+  console.log(`  City: ${rivne.name} (${rivne.slug})`);
   console.log(`  Admin: ${admin.email} (password: ChangeMe123!)`);
   console.log(`  Pricing rule: ${pricingRule.name}`);
   console.log(`  Settings: ${settings.length} keys`);

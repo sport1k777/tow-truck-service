@@ -16,6 +16,7 @@ export type PricingVehicleType =
 export interface PricingVehicleRate {
   perKmRate: number;
   label: string;
+  flatSurcharge?: number;
 }
 
 export interface PricingPercentageSurcharge {
@@ -39,12 +40,16 @@ export interface PricingConfig {
   currency: string;
   currencySymbol: string;
   baseCallOutFee: number;
+  minCharge: number;
+  cityPerKmRate: number;
+  outsideCityPerKmRate: number;
   vehicleRates: Record<PricingVehicleType, PricingVehicleRate>;
   additionalServices: {
     nightSurcharge: PricingNightSurcharge;
     emergencyDispatch: PricingFlatSurcharge;
     difficultLoading: PricingFlatSurcharge;
     weekendSurcharge: PricingPercentageSurcharge;
+    holidaySurcharge: PricingPercentageSurcharge;
   };
 }
 
@@ -52,6 +57,9 @@ export const DEFAULT_PRICING_CONFIG: PricingConfig = {
   currency: 'UAH',
   currencySymbol: '₴',
   baseCallOutFee: 900,
+  minCharge: 900,
+  cityPerKmRate: 25,
+  outsideCityPerKmRate: 30,
   vehicleRates: {
     PASSENGER_CAR: {
       perKmRate: 25,
@@ -93,6 +101,11 @@ export const DEFAULT_PRICING_CONFIG: PricingConfig = {
       percent: 15,
       label: 'Доплата за вихідні',
     },
+    holidaySurcharge: {
+      enabled: true,
+      percent: 30,
+      label: 'Святкова доплата',
+    },
   },
 };
 
@@ -100,11 +113,13 @@ export function getDefaultPricingConfig(): PricingConfig {
   return DEFAULT_PRICING_CONFIG;
 }
 
-export function getCalculatorVehicleOptions(): Array<{
+export function getCalculatorVehicleOptions(
+  config: PricingConfig = DEFAULT_PRICING_CONFIG,
+): Array<{
   value: PricingVehicleType;
   label: string;
 }> {
-  return Object.entries(DEFAULT_PRICING_CONFIG.vehicleRates).map(([value, rate]) => ({
+  return Object.entries(config.vehicleRates).map(([value, rate]) => ({
     value: value as PricingVehicleType,
     label: rate.label,
   }));

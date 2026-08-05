@@ -14,8 +14,12 @@ export interface BrandingSettings {
   secondaryColor: string | null;
   phone: string;
   whatsappNumber: string | null;
+  telegram: string | null;
+  viber: string | null;
   email: string | null;
   websiteUrl: string | null;
+  address: string | null;
+  mapsLink: string | null;
   socialLinks: Record<string, string>;
 }
 
@@ -33,4 +37,20 @@ export interface LocaleSettings {
 
 export interface BusinessSettings extends BrandingSettings, LocaleSettings {
   workingHours: string | null;
+}
+
+export interface SeoSettings {
+  title: string;
+  description: string;
+  keywords: string;
+  ogImage: string;
+  canonicalUrl: string;
+}
+
+export interface ServiceAreaSettings {
+  mode: 'regions' | 'radius';
+  allowedRegions: string[];
+  outOfCoverageMessage: string;
+  availableMessage: string;
+  areaName: string;
 }

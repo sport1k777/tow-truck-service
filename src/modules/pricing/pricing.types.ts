@@ -9,6 +9,8 @@ export interface PricingInput {
   timestamp: Date;
   isDifficultLoading?: boolean;
   isEmergencyDispatch?: boolean;
+  isHoliday?: boolean;
+  isOutsideCity?: boolean;
 }
 
 export interface PriceBreakdownItem {

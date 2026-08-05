@@ -8,6 +8,10 @@ import { CalculatorRouteMap } from '@/components/maps/calculator-route-map';
 import { CalculatorForm } from './calculator-form';
 import { CalculatorResults } from './calculator-results';
 import { useCalculator } from './use-calculator';
+import {
+  CalculatorConfigProvider,
+  type CalculatorRuntimeConfig,
+} from './calculator-config-context';
 import type { GeoCoordinates } from '@/modules/maps/maps.types';
 import type { PlaceLocation } from '@/modules/maps/maps.types';
 
@@ -127,10 +131,12 @@ function PriceCalculatorSectionContent() {
   );
 }
 
-export function PriceCalculatorSection() {
+export function PriceCalculatorSection({ config }: { config: CalculatorRuntimeConfig }) {
   return (
-    <MapsProvider>
-      <PriceCalculatorSectionContent />
-    </MapsProvider>
+    <CalculatorConfigProvider value={config}>
+      <MapsProvider>
+        <PriceCalculatorSectionContent />
+      </MapsProvider>
+    </CalculatorConfigProvider>
   );
 }

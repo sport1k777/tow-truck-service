@@ -11,7 +11,13 @@ const TRUST_ITEMS = [
   { icon: Clock, label: '24/7' },
 ] as const;
 
-export function HeroSection() {
+export function HeroSection({
+  desktopImageUrl,
+  mobileImageUrl,
+}: {
+  desktopImageUrl?: string;
+  mobileImageUrl?: string;
+}) {
   return (
     <section
       className="relative overflow-hidden bg-[#030712]"
@@ -21,7 +27,7 @@ export function HeroSection() {
       <div className="hero-artwork-ambient pointer-events-none absolute inset-0" aria-hidden="true" />
 
       {/* Artwork layer — bleeds into background with soft masks */}
-      <HeroArtwork variant="desktop" />
+      <HeroArtwork variant="desktop" imageUrl={desktopImageUrl} />
 
       <div className="relative z-10 mx-auto grid max-w-7xl lg:min-h-screen lg:grid-cols-[minmax(0,520px)_1fr] lg:items-center xl:grid-cols-[minmax(0,560px)_1fr]">
         {/* LEFT — content */}
@@ -92,7 +98,7 @@ export function HeroSection() {
 
       {/* Mobile / tablet */}
       <div className="relative z-10 px-2 pb-20 pt-6 sm:px-4 sm:pt-8 lg:hidden">
-        <HeroArtwork variant="mobile" priority={false} />
+        <HeroArtwork variant="mobile" priority={false} imageUrl={mobileImageUrl} />
       </div>
     </section>
   );

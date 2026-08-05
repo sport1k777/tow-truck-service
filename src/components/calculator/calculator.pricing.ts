@@ -2,6 +2,7 @@ import {
   DEFAULT_PRICING_CONFIG,
   getCalculatorVehicleOptions,
   PRICING_VEHICLE_TYPES,
+  type PricingConfig,
 } from '@/modules/pricing/pricing.config';
 import { calculatePrice } from '@/modules/pricing/pricing.engine';
 import type { PriceCalculationResult } from '@/modules/pricing/pricing.types';
@@ -24,6 +25,7 @@ export const CALCULATOR_DEFAULTS = {
 export function calculateLivePrice(
   form: CalculatorFormState,
   distanceKm: number | null,
+  config: PricingConfig = DEFAULT_PRICING_CONFIG,
 ): PriceCalculationResult | null {
   if (distanceKm === null || distanceKm <= 0) {
     return null;
@@ -37,7 +39,7 @@ export function calculateLivePrice(
       isEmergencyDispatch: form.isEmergencyDispatch,
       isDifficultLoading: form.isDifficultLoading,
     },
-    DEFAULT_PRICING_CONFIG,
+    config,
   );
 }
 
@@ -45,12 +47,20 @@ export async function calculateCalculatorQuote(
   form: CalculatorFormState,
   price: PriceCalculationResult,
   route: RouteCalculationResponse,
+  serviceAreaConfig?: {
+    allowedRegions?: string[];
+    outOfCoverageMessage?: string;
+    availableMessage?: string;
+    areaName?: string;
+  },
 ): Promise<CalculatorResult> {
   await new Promise((resolve) => setTimeout(resolve, 400));
 
+  const allowedRegions = serviceAreaConfig?.allowedRegions;
   const isAvailable = isRouteWithinServiceArea(
     form.pickupAddressComponents,
     form.destinationAddressComponents,
+    allowedRegions,
   );
 
   return {
@@ -62,8 +72,10 @@ export async function calculateCalculatorQuote(
     price,
     availability: {
       isAvailable,
-      message: isAvailable ? SERVICE_AREA_AVAILABLE_MESSAGE : SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
-      areaName: isAvailable ? SERVICE_AREA_NAME : undefined,
+      message: isAvailable
+        ? (serviceAreaConfig?.availableMessage ?? SERVICE_AREA_AVAILABLE_MESSAGE)
+        : (serviceAreaConfig?.outOfCoverageMessage ?? SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE),
+      areaName: isAvailable ? (serviceAreaConfig?.areaName ?? SERVICE_AREA_NAME) : undefined,
     },
     calculatedAt: new Date().toISOString(),
   };

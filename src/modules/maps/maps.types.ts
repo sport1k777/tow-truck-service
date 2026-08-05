@@ -8,11 +8,19 @@ export interface GeoBounds {
   southwest: GeoCoordinates;
 }
 
+/** Structured address component from Google Place or Geocoder results. */
+export interface PlaceAddressComponent {
+  longText: string;
+  shortText: string;
+  types: string[];
+}
+
 /** Selected place from Places Autocomplete — reusable for order creation. */
 export interface PlaceLocation {
   address: string;
   placeId: string | null;
   location: GeoCoordinates | null;
+  addressComponents: PlaceAddressComponent[];
 }
 
 export interface RouteWaypoint {

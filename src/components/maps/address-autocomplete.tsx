@@ -167,13 +167,13 @@ export function AddressAutocomplete({
       };
 
       const place = await reverseGeocodeCoordinates(google, coordinates);
-      const resolvedPlace =
-        place ??
-        ({
+      const resolvedPlace: PlaceLocation =
+        place ?? {
           address: `${coordinates.lat.toFixed(6)}, ${coordinates.lng.toFixed(6)}`,
           placeId: null,
           location: coordinates,
-        } satisfies PlaceLocation);
+          addressComponents: [],
+        };
 
       onAddressChange(resolvedPlace.address);
       onPlaceSelect(resolvedPlace);

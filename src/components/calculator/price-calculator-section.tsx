@@ -32,9 +32,11 @@ function PriceCalculatorSectionContent() {
     updateField,
     setPickupPlace,
     setDestinationPlace,
+    swapAddresses,
     calculate,
     isCalculating,
     isCalculatingRoute,
+    isServiceAreaBlocked,
   } = useCalculator();
 
   return (
@@ -72,16 +74,22 @@ function PriceCalculatorSectionContent() {
                   form={form}
                   errors={errors}
                   isCalculating={isCalculating}
+                  isServiceAreaBlocked={isServiceAreaBlocked}
                   onFieldChange={updateField}
                   onPickupPlaceSelect={setPickupPlace}
                   onPickupGeolocationSelect={handlePickupGeolocationSelect}
                   onDestinationPlaceSelect={setDestinationPlace}
+                  onSwapAddresses={swapAddresses}
                   onCalculate={calculate}
                 />
 
                 <Link
                   href="/order"
-                  className="hero-cta-secondary inline-flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-medium text-white/90"
+                  aria-disabled={isServiceAreaBlocked}
+                  tabIndex={isServiceAreaBlocked ? -1 : undefined}
+                  className={`hero-cta-secondary inline-flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-medium text-white/90${
+                    isServiceAreaBlocked ? ' pointer-events-none opacity-60' : ''
+                  }`}
                 >
                   Замовити евакуатор
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />

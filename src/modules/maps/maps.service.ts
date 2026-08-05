@@ -14,6 +14,7 @@ import type {
   AddressSuggestionSelection,
   GeoCoordinates,
   MapsRuntimeConfig,
+  PlaceAddressComponent,
   PlaceLocation,
 } from './maps.types';
 import { DEFAULT_MAPS_CONFIG } from '@/lib/locale.defaults';
@@ -79,7 +80,36 @@ export function parsePlaceFromAutocomplete(
     address,
     placeId: place.place_id ?? null,
     location: location ? { lat: location.lat(), lng: location.lng() } : null,
+    addressComponents: mapGeocoderAddressComponents(place.address_components),
   };
+}
+
+export function mapPlacesAddressComponents(
+  components: google.maps.places.AddressComponent[] | undefined,
+): PlaceAddressComponent[] {
+  if (!components?.length) {
+    return [];
+  }
+
+  return components.map((component) => ({
+    longText: component.longText?.trim() ?? '',
+    shortText: component.shortText?.trim() ?? '',
+    types: [...component.types],
+  }));
+}
+
+export function mapGeocoderAddressComponents(
+  components: google.maps.GeocoderAddressComponent[] | undefined,
+): PlaceAddressComponent[] {
+  if (!components?.length) {
+    return [];
+  }
+
+  return components.map((component) => ({
+    longText: component.long_name?.trim() ?? '',
+    shortText: component.short_name?.trim() ?? '',
+    types: [...component.types],
+  }));
 }
 
 export function createAutocompleteSessionToken(
@@ -153,7 +183,7 @@ export async function resolvePlaceFromSuggestion(
 ): Promise<PlaceLocation | null> {
   const place = placePrediction.toPlace();
   await place.fetchFields({
-    fields: ['id', 'formattedAddress', 'displayName', 'location'],
+    fields: ['id', 'formattedAddress', 'displayName', 'location', 'addressComponents'],
   });
 
   const address = place.formattedAddress?.trim() || place.displayName?.trim();
@@ -167,6 +197,7 @@ export async function resolvePlaceFromSuggestion(
     address,
     placeId: place.id ?? null,
     location: location ? { lat: location.lat(), lng: location.lng() } : null,
+    addressComponents: mapPlacesAddressComponents(place.addressComponents),
   };
 }
 
@@ -263,6 +294,7 @@ export async function reverseGeocodeCoordinates(
     address,
     placeId: result.place_id ?? null,
     location: coordinates,
+    addressComponents: mapGeocoderAddressComponents(result.address_components),
   };
 }
 

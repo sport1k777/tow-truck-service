@@ -6,6 +6,12 @@ import {
 import { calculatePrice } from '@/modules/pricing/pricing.engine';
 import type { PriceCalculationResult } from '@/modules/pricing/pricing.types';
 import type { RouteCalculationResponse } from '@/modules/maps/maps.types';
+import {
+  isRouteWithinServiceArea,
+  SERVICE_AREA_AVAILABLE_MESSAGE,
+  SERVICE_AREA_NAME,
+  SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
+} from '@/modules/maps/service-area';
 import type { CalculatorFormState, CalculatorResult } from './calculator.types';
 
 export const VEHICLE_TYPE_OPTIONS = getCalculatorVehicleOptions();
@@ -42,6 +48,11 @@ export async function calculateCalculatorQuote(
 ): Promise<CalculatorResult> {
   await new Promise((resolve) => setTimeout(resolve, 400));
 
+  const isAvailable = isRouteWithinServiceArea(
+    form.pickupAddressComponents,
+    form.destinationAddressComponents,
+  );
+
   return {
     route: {
       distanceKm: route.route.distanceKm,
@@ -50,9 +61,9 @@ export async function calculateCalculatorQuote(
     },
     price,
     availability: {
-      isAvailable: true,
-      message: 'Послуга доступна у вашій зоні',
-      areaName: 'Київ та область',
+      isAvailable,
+      message: isAvailable ? SERVICE_AREA_AVAILABLE_MESSAGE : SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
+      areaName: isAvailable ? SERVICE_AREA_NAME : undefined,
     },
     calculatedAt: new Date().toISOString(),
   };

@@ -8,15 +8,23 @@ import {
   AdminGrid,
   AdminSubmitBar,
   AdminTextarea,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { saveSeoAction } from '@/actions/admin.actions';
 
-export default async function AdminSeoPage() {
+export default async function AdminSeoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const seo = await SettingsService.getSeoSettings();
 
   return (
     <>
       <AdminPageHeader title="SEO" description="Title, description, keywords, OG image та canonical URL." />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <AdminCard>
         <form action={saveSeoAction} className="space-y-6">
           <AdminField label="Title"><AdminInput name="title" defaultValue={seo.title} /></AdminField>

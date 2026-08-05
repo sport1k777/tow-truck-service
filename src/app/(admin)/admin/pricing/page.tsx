@@ -1,8 +1,13 @@
 import { prisma } from '@/lib/prisma';
-import { AdminPageHeader, AdminCard, AdminField, AdminInput, AdminButton, AdminGrid, AdminSubmitBar } from '@/components/admin/admin-ui';
+import { AdminPageHeader, AdminCard, AdminField, AdminInput, AdminButton, AdminGrid, AdminSubmitBar, AdminSavedNotice, parseSavedParam } from '@/components/admin/admin-ui';
 import { savePricingAction } from '@/actions/admin.actions';
 
-export default async function AdminPricingPage() {
+export default async function AdminPricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const rule = await prisma.pricingRule.findFirst({
     where: { isActive: true },
     orderBy: { updatedAt: 'desc' },
@@ -11,9 +16,10 @@ export default async function AdminPricingPage() {
   return (
     <>
       <AdminPageHeader
-        title="Ціни та тарифи"
-        description="Базовий виїзд, мінімальне замовлення, тарифи в місті/за містом і доплати."
+        title="Pricing"
+        description="Base fees, per-km rates, free kilometers, and all surcharges."
       />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <AdminCard>
         <form action={savePricingAction} className="space-y-6">
           {rule ? <input type="hidden" name="ruleId" value={rule.id} /> : null}
@@ -65,7 +71,7 @@ export default async function AdminPricingPage() {
             </AdminField>
           </AdminGrid>
           <AdminSubmitBar>
-            <AdminButton type="submit">Зберегти тарифи</AdminButton>
+            <AdminButton type="submit">Save pricing</AdminButton>
           </AdminSubmitBar>
         </form>
       </AdminCard>

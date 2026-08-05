@@ -8,40 +8,49 @@ import {
   AdminButton,
   AdminGrid,
   AdminSubmitBar,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { ImageUploadField } from '@/components/admin/image-upload-field';
+import { AdminHeroImagesSection } from '@/components/admin/admin-hero-images';
 import { saveSettingsAction } from '@/actions/admin.actions';
 
-export default async function AdminSettingsPage() {
+export default async function AdminSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const settings = await SettingsService.getBusinessSettings();
   const faviconUrl = (await SettingsService.get(SETTING_KEYS.FAVICON_URL)) ?? '';
 
   return (
     <>
       <AdminPageHeader
-        title="Налаштування"
-        description="Логотип, favicon, кольори бренду, соціальні мережі та карта."
+        title="Settings"
+        description="Logo, favicon, hero images, brand colors, social links, and map defaults."
       />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <AdminCard>
         <form action={saveSettingsAction} className="space-y-6">
           <AdminGrid>
-            <AdminField label="URL логотипу">
+            <AdminField label="Logo URL">
               <AdminInput name="logoUrl" defaultValue={settings.logoUrl ?? ''} placeholder="/uploads/logo.png" />
             </AdminField>
-            <ImageUploadField label="Завантажити логотип" />
-            <AdminField label="URL favicon">
+            <ImageUploadField label="Upload logo" />
+            <AdminField label="Favicon URL">
               <AdminInput name="faviconUrl" defaultValue={faviconUrl} placeholder="/uploads/favicon.ico" />
             </AdminField>
-            <ImageUploadField label="Завантажити favicon" />
-            <AdminField label="Основний колір">
+            <ImageUploadField label="Upload favicon" />
+            <AdminField label="Primary color">
               <AdminInput name="primaryColor" type="color" defaultValue={settings.primaryColor ?? '#0ea5e9'} />
             </AdminField>
-            <AdminField label="Додатковий колір">
+            <AdminField label="Secondary color">
               <AdminInput name="secondaryColor" type="color" defaultValue={settings.secondaryColor ?? '#2563eb'} />
             </AdminField>
           </AdminGrid>
 
-          <h3 className="text-sm font-medium text-white/80">Соціальні мережі</h3>
+          <h3 className="text-sm font-medium text-white/80">Social links</h3>
           <AdminGrid>
             <AdminField label="Instagram">
               <AdminInput name="instagram" defaultValue={settings.socialLinks.instagram ?? ''} />
@@ -57,7 +66,7 @@ export default async function AdminSettingsPage() {
             </AdminField>
           </AdminGrid>
 
-          <h3 className="text-sm font-medium text-white/80">Центр карти за замовчуванням</h3>
+          <h3 className="text-sm font-medium text-white/80">Default map center</h3>
           <AdminGrid>
             <AdminField label="Latitude">
               <AdminInput name="mapCenterLat" type="number" step="0.000001" defaultValue={settings.mapCenterLat} />
@@ -71,10 +80,14 @@ export default async function AdminSettingsPage() {
           </AdminGrid>
 
           <AdminSubmitBar>
-            <AdminButton type="submit">Зберегти налаштування</AdminButton>
+            <AdminButton type="submit">Save settings</AdminButton>
           </AdminSubmitBar>
         </form>
       </AdminCard>
+
+      <div className="mt-8">
+        <AdminHeroImagesSection />
+      </div>
     </>
   );
 }

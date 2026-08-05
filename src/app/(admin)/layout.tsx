@@ -16,5 +16,9 @@ export const dynamic = 'force-dynamic';
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
-  return <AdminShell userName={session?.user?.name}>{children}</AdminShell>;
+  if (!session?.user) {
+    return <div className="admin-theme min-h-screen bg-[#030712]">{children}</div>;
+  }
+
+  return <AdminShell userName={session.user.name}>{children}</AdminShell>;
 }

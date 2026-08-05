@@ -8,18 +8,26 @@ import {
   AdminGrid,
   AdminSubmitBar,
   AdminTextarea,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { saveContentAction } from '@/actions/admin.actions';
 
-export default async function AdminContentPage() {
+export default async function AdminContentPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const content = await SettingsService.getContentSettings();
 
   return (
     <>
       <AdminPageHeader
-        title="Контент сайту"
-        description="Hero-секція, CTA-кнопки, блок «Про нас» та текст у футері."
+        title="Website Content"
+        description="Hero section, CTA buttons, about page, and footer tagline."
       />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <AdminCard>
         <form action={saveContentAction} className="space-y-6">
           <h3 className="text-sm font-medium text-white/80">Hero-секція</h3>
@@ -63,7 +71,7 @@ export default async function AdminContentPage() {
           </AdminField>
 
           <AdminSubmitBar>
-            <AdminButton type="submit">Зберегти контент</AdminButton>
+            <AdminButton type="submit">Save content</AdminButton>
           </AdminSubmitBar>
         </form>
       </AdminCard>

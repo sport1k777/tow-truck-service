@@ -8,15 +8,23 @@ import {
   AdminGrid,
   AdminSubmitBar,
   AdminTextarea,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { deleteFaqAction, saveFaqAction } from '@/actions/admin.actions';
 
-export default async function AdminFaqPage() {
+export default async function AdminFaqPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const items = await prisma.faqItem.findMany({ orderBy: { sortOrder: 'asc' } });
 
   return (
     <>
       <AdminPageHeader title="FAQ" description="Питання та відповіді для головної сторінки." />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <div className="space-y-6">
         {items.map((item) => (
           <AdminCard key={item.id} title={item.question}>

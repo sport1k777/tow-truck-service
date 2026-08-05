@@ -88,12 +88,9 @@ export function AdminButton({
   formAction?: (formData: FormData) => void | Promise<void>;
 }) {
   const variants = {
-    primary:
-      'bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-50',
-    secondary:
-      'border border-white/10 bg-white/5 text-white hover:bg-white/10 disabled:opacity-50',
-    danger:
-      'border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 disabled:opacity-50',
+    primary: 'bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-50',
+    secondary: 'border border-white/10 bg-white/5 text-white hover:bg-white/10 disabled:opacity-50',
+    danger: 'border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 disabled:opacity-50',
   };
 
   return (
@@ -108,16 +105,23 @@ export function AdminButton({
 export function AdminAlert({
   type = 'success',
   children,
+  className = '',
 }: {
   type?: 'success' | 'error';
   children: ReactNode;
+  className?: string;
 }) {
   const styles =
     type === 'success'
       ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-200'
       : 'border-red-500/20 bg-red-500/10 text-red-200';
 
-  return <div className={`rounded-xl border px-4 py-3 text-sm ${styles}`}>{children}</div>;
+  return <div className={`rounded-xl border px-4 py-3 text-sm ${styles} ${className}`}>{children}</div>;
+}
+
+export function AdminSavedNotice({ saved }: { saved?: boolean }) {
+  if (!saved) return null;
+  return <AdminAlert type="success">Saved successfully.</AdminAlert>;
 }
 
 export function AdminGrid({ children }: { children: ReactNode }) {
@@ -126,4 +130,8 @@ export function AdminGrid({ children }: { children: ReactNode }) {
 
 export function AdminSubmitBar({ children }: { children: ReactNode }) {
   return <div className="mt-6 flex flex-wrap gap-3 border-t border-white/10 pt-5">{children}</div>;
+}
+
+export function parseSavedParam(searchParams?: { saved?: string }) {
+  return searchParams?.saved === '1';
 }

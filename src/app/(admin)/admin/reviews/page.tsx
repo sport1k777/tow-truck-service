@@ -8,15 +8,23 @@ import {
   AdminGrid,
   AdminSubmitBar,
   AdminTextarea,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { deleteTestimonialAction, saveTestimonialAction } from '@/actions/admin.actions';
 
-export default async function AdminReviewsPage() {
+export default async function AdminReviewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const reviews = await prisma.testimonial.findMany({ orderBy: { sortOrder: 'asc' } });
 
   return (
     <>
-      <AdminPageHeader title="Відгуки" description="CRUD для блоку відгуків на головній сторінці." />
+      <AdminPageHeader title="Reviews" description="CRUD для блоку відгуків на головній сторінці." />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <div className="space-y-6">
         {reviews.map((review) => (
           <AdminCard key={review.id} title={review.name}>

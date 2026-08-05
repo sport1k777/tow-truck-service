@@ -32,8 +32,8 @@ export default async function AdminDashboardPage() {
   return (
     <>
       <AdminPageHeader
-        title="Панель керування"
-        description="CMS для евакuator-сервісу. Усі зміни застосовуються на сайті автоматично."
+        title="Dashboard"
+        description="Overview of calculations, orders, and CMS content."
       />
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (

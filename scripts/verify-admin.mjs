@@ -144,17 +144,17 @@ async function verifyHttpRoutes() {
       .join('; ');
   }
 
-  const loginPage = await fetch(`${BASE_URL}/login`);
-  if (!loginPage.ok) throw new Error(`Login page ${loginPage.status}`);
+  const loginPage = await fetch(`${BASE_URL}/admin`);
+  if (!loginPage.ok) throw new Error(`Admin login page ${loginPage.status}`);
   const loginHtml = await loginPage.text();
-  if (!loginHtml.includes('Вхід в адмін-панель')) throw new Error('Login page content missing');
-  pass('HTTP: login page loads');
+  if (!loginHtml.includes('Вхід в адмін-панель')) throw new Error('Admin login page content missing');
+  pass('HTTP: admin login page loads');
 
   const dashboard = await fetch(`${BASE_URL}/admin/dashboard`, { redirect: 'manual' });
   if (dashboard.status !== 307 && dashboard.status !== 302) {
     throw new Error(`Dashboard should redirect unauthenticated, got ${dashboard.status}`);
   }
-  pass('HTTP: dashboard protected (redirects to login)');
+  pass('HTTP: dashboard protected (redirects to /admin)');
 
   const home = await fetch(`${BASE_URL}/`);
   if (!home.ok) throw new Error(`Homepage ${home.status}`);
@@ -201,22 +201,20 @@ async function verifyHttpRoutes() {
   const adminDash = await fetch(`${BASE_URL}/admin/dashboard`, { headers: authHeaders });
   if (!adminDash.ok) throw new Error(`Authenticated dashboard ${adminDash.status}`);
   const dashHtml = await adminDash.text();
-  if (!dashHtml.includes('Панель керування')) throw new Error('Dashboard content missing');
+  if (!dashHtml.includes('Dashboard') && !dashHtml.includes('Панель')) throw new Error('Dashboard content missing');
   pass('HTTP: dashboard loads when authenticated');
 
   for (const path of [
     '/admin/pricing',
-    '/admin/contacts',
-    '/admin/reviews',
-    '/admin/faq',
     '/admin/vehicle-types',
     '/admin/extra-services',
-    '/admin/seo',
-    '/admin/hero',
-    '/admin/service-areas',
-    '/admin/settings',
+    '/admin/contacts',
     '/admin/content',
+    '/admin/faq',
+    '/admin/reviews',
+    '/admin/seo',
     '/admin/analytics',
+    '/admin/settings',
   ]) {
     const res = await fetch(`${BASE_URL}${path}`, { headers: authHeaders });
     if (!res.ok) throw new Error(`${path} returned ${res.status}`);

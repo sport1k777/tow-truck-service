@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { upsertSettingsBatch } from '@/modules/settings/settings.repository';
@@ -15,6 +16,10 @@ function revalidatePublicSite() {
   revalidatePath('/');
   revalidatePath('/contact');
   revalidatePath('/faq');
+}
+
+function savedRedirect(path: string) {
+  redirect(`${path}?saved=1`);
 }
 
 async function getAdminId() {
@@ -52,6 +57,7 @@ export async function savePricingAction(formData: FormData) {
   }
 
   revalidatePublicSite();
+  savedRedirect('/admin/pricing');
 }
 
 export async function saveContactsAction(formData: FormData) {
@@ -74,6 +80,7 @@ export async function saveContactsAction(formData: FormData) {
   );
 
   revalidatePublicSite();
+  savedRedirect('/admin/contacts');
 }
 
 export async function saveSeoAction(formData: FormData) {
@@ -91,6 +98,7 @@ export async function saveSeoAction(formData: FormData) {
   );
 
   revalidatePublicSite();
+  savedRedirect('/admin/seo');
 }
 
 export async function saveServiceAreaAction(formData: FormData) {
@@ -161,6 +169,7 @@ export async function saveVehicleCategoryAction(formData: FormData) {
   }
 
   revalidatePublicSite();
+  savedRedirect('/admin/vehicle-types');
 }
 
 export async function deleteVehicleCategoryAction(formData: FormData) {
@@ -169,6 +178,7 @@ export async function deleteVehicleCategoryAction(formData: FormData) {
   if (!id) return;
   await prisma.vehicleCategory.delete({ where: { id } });
   revalidatePublicSite();
+  savedRedirect('/admin/vehicle-types');
 }
 
 export async function saveExtraServiceAction(formData: FormData) {
@@ -194,6 +204,7 @@ export async function saveExtraServiceAction(formData: FormData) {
   }
 
   revalidatePublicSite();
+  savedRedirect('/admin/extra-services');
 }
 
 export async function deleteExtraServiceAction(formData: FormData) {
@@ -202,6 +213,7 @@ export async function deleteExtraServiceAction(formData: FormData) {
   if (!id) return;
   await prisma.extraService.delete({ where: { id } });
   revalidatePublicSite();
+  savedRedirect('/admin/extra-services');
 }
 
 export async function saveFaqAction(formData: FormData) {
@@ -221,6 +233,7 @@ export async function saveFaqAction(formData: FormData) {
   }
 
   revalidatePublicSite();
+  savedRedirect('/admin/faq');
 }
 
 export async function deleteFaqAction(formData: FormData) {
@@ -229,6 +242,7 @@ export async function deleteFaqAction(formData: FormData) {
   if (!id) return;
   await prisma.faqItem.delete({ where: { id } });
   revalidatePublicSite();
+  savedRedirect('/admin/faq');
 }
 
 export async function saveTestimonialAction(formData: FormData) {
@@ -252,6 +266,7 @@ export async function saveTestimonialAction(formData: FormData) {
   }
 
   revalidatePublicSite();
+  savedRedirect('/admin/reviews');
 }
 
 export async function deleteTestimonialAction(formData: FormData) {
@@ -260,6 +275,7 @@ export async function deleteTestimonialAction(formData: FormData) {
   if (!id) return;
   await prisma.testimonial.delete({ where: { id } });
   revalidatePublicSite();
+  savedRedirect('/admin/reviews');
 }
 
 export async function saveHeroImageAction(formData: FormData) {
@@ -282,6 +298,7 @@ export async function saveHeroImageAction(formData: FormData) {
   }
 
   revalidatePublicSite();
+  savedRedirect('/admin/settings');
 }
 
 export async function deleteHeroImageAction(formData: FormData) {
@@ -290,6 +307,7 @@ export async function deleteHeroImageAction(formData: FormData) {
   if (!id) return;
   await prisma.heroImage.delete({ where: { id } });
   revalidatePublicSite();
+  savedRedirect('/admin/settings');
 }
 
 export async function saveSettingsAction(formData: FormData) {
@@ -317,6 +335,7 @@ export async function saveSettingsAction(formData: FormData) {
   );
 
   revalidatePublicSite();
+  savedRedirect('/admin/settings');
 }
 
 export async function saveContentAction(formData: FormData) {
@@ -348,4 +367,5 @@ export async function saveContentAction(formData: FormData) {
 
   revalidatePublicSite();
   revalidatePath('/about');
+  savedRedirect('/admin/content');
 }

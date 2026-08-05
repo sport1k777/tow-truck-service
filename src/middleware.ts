@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const ADMIN_PREFIX = '/admin';
-const LOGIN_PATH = '/login';
+const LOGIN_PATH = '/admin';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
 
-  if (pathname.startsWith(ADMIN_PREFIX)) {
+  if (pathname.startsWith(ADMIN_PREFIX) && pathname !== LOGIN_PATH) {
     const session = await auth();
 
     if (!session?.user) {
@@ -32,9 +32,17 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  if (pathname === '/login') {
+    const loginUrl = new URL(LOGIN_PATH, request.url);
+    request.nextUrl.searchParams.forEach((value, key) => {
+      loginUrl.searchParams.set(key, value);
+    });
+    return NextResponse.redirect(loginUrl);
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/login'],
+  matcher: ['/admin/:path*', '/admin', '/login'],
 };

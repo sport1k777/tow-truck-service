@@ -9,19 +9,27 @@ import {
   AdminSubmitBar,
   AdminSelect,
   AdminTextarea,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { deleteExtraServiceAction, saveExtraServiceAction } from '@/actions/admin.actions';
 import { AdminDeleteButton } from '@/components/admin/admin-delete-button';
 
-export default async function AdminExtraServicesPage() {
+export default async function AdminExtraServicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const services = await prisma.extraService.findMany({ orderBy: { sortOrder: 'asc' } });
 
   return (
     <>
       <AdminPageHeader
-        title="Додаткові послуги"
+        title="Extra Services"
         description="Нічні, термінові, святкові та інші доплати."
       />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <div className="space-y-6">
         {services.map((service) => (
           <AdminCard key={service.id} title={service.label}>

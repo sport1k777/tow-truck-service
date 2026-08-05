@@ -7,15 +7,23 @@ import {
   AdminButton,
   AdminGrid,
   AdminSubmitBar,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { saveContactsAction } from '@/actions/admin.actions';
 
-export default async function AdminContactsPage() {
+export default async function AdminContactsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const settings = await SettingsService.getBusinessSettings();
 
   return (
     <>
-      <AdminPageHeader title="Контакти" description="Телефон, месенджери, email та адреса для публічного сайту." />
+      <AdminPageHeader title="Contacts" description="Phone, messengers, email, and address shown on the public site." />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <AdminCard>
         <form action={saveContactsAction} className="space-y-6">
           <AdminGrid>
@@ -51,7 +59,7 @@ export default async function AdminContactsPage() {
             </AdminField>
           </AdminGrid>
           <AdminSubmitBar>
-            <AdminButton type="submit">Зберегти контакти</AdminButton>
+            <AdminButton type="submit">Save contacts</AdminButton>
           </AdminSubmitBar>
         </form>
       </AdminCard>

@@ -7,20 +7,28 @@ import {
   AdminButton,
   AdminGrid,
   AdminSubmitBar,
+  AdminSavedNotice,
+  parseSavedParam,
 } from '@/components/admin/admin-ui';
 import { deleteVehicleCategoryAction, saveVehicleCategoryAction } from '@/actions/admin.actions';
 import { AdminDeleteButton } from '@/components/admin/admin-delete-button';
 import { AdminTextarea } from '@/components/admin/admin-ui';
 
-export default async function AdminVehicleTypesPage() {
+export default async function AdminVehicleTypesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string }>;
+}) {
+  const params = await searchParams;
   const categories = await prisma.vehicleCategory.findMany({ orderBy: { sortOrder: 'asc' } });
 
   return (
     <>
       <AdminPageHeader
-        title="Типи транспортних засобів"
+        title="Vehicle Types"
         description="Категорії авто для калькулятора з індивідуальною ціною за км."
       />
+      <AdminSavedNotice saved={parseSavedParam(params)} />
       <div className="space-y-6">
         {categories.map((category) => (
           <AdminCard key={category.id} title={category.label}>

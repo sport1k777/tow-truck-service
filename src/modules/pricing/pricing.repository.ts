@@ -63,6 +63,11 @@ export async function loadActivePricingConfig(): Promise<PricingConfig> {
       currency: 'UAH',
       currencySymbol: '₴',
       baseCallOutFee: toNumber(rule.baseFee, DEFAULT_PRICING_CONFIG.baseCallOutFee),
+      outsideCityBaseFee: toNumber(
+        rule.outsideCityBaseFee ?? rule.baseFee,
+        DEFAULT_PRICING_CONFIG.outsideCityBaseFee,
+      ),
+      freeKm: toNumber(rule.freeKm, 0),
       minCharge: toNumber(rule.minCharge, DEFAULT_PRICING_CONFIG.baseCallOutFee),
       cityPerKmRate: toNumber(rule.cityPerKmRate ?? rule.perKmRate, 25),
       outsideCityPerKmRate: toNumber(rule.outsideCityPerKmRate ?? rule.perKmRate, 30),

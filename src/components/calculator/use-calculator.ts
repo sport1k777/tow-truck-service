@@ -107,19 +107,19 @@ export function useCalculator() {
           destinationPlaceId: form.destinationPlaceId,
           pickupComponents: form.pickupAddressComponents,
           destinationComponents: form.destinationAddressComponents,
+          pickupLocation: form.pickupLocation,
+          destinationLocation: form.destinationLocation,
         },
-        {
-          allowedRegions: serviceAreaConfig.allowedRegions,
-          outOfCoverageMessage: serviceAreaConfig.outOfCoverageMessage,
-        },
+        serviceAreaConfig,
       ),
     [
       form.pickupPlaceId,
       form.destinationPlaceId,
       form.pickupAddressComponents,
       form.destinationAddressComponents,
-      serviceAreaConfig.allowedRegions,
-      serviceAreaConfig.outOfCoverageMessage,
+      form.pickupLocation,
+      form.destinationLocation,
+      serviceAreaConfig,
     ],
   );
 
@@ -261,6 +261,23 @@ export function useCalculator() {
         const quote = await calculateCalculatorQuote(form, price, route, serviceAreaConfig);
         setResult(quote);
         setStatus('success');
+
+        void fetch('/api/analytics/calculation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pickupAddress: form.pickupAddress.trim(),
+            destinationAddress: form.destinationAddress.trim(),
+            pickupLat: form.pickupLocation?.lat,
+            pickupLng: form.pickupLocation?.lng,
+            destinationLat: form.destinationLocation?.lat,
+            destinationLng: form.destinationLocation?.lng,
+            distanceKm: route.route.distanceKm,
+            estimatedPrice: price.total,
+            vehicleType: form.vehicleType,
+          }),
+        }).catch(() => undefined);
+
         return true;
       } catch {
         setStatus('error');

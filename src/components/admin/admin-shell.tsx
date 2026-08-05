@@ -16,19 +16,25 @@ import {
   Search,
   ClipboardList,
   LogOut,
+  Settings,
+  FileText,
+  BarChart3,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard', label: 'Панель', icon: LayoutDashboard },
+  { href: '/admin/analytics', label: 'Аналітика', icon: BarChart3 },
   { href: '/admin/pricing', label: 'Ціни', icon: DollarSign },
   { href: '/admin/vehicle-types', label: 'Типи авто', icon: Truck },
   { href: '/admin/extra-services', label: 'Дод. послуги', icon: PlusCircle },
   { href: '/admin/contacts', label: 'Контакти', icon: Phone },
   { href: '/admin/service-areas', label: 'Зона обслуговування', icon: MapPin },
+  { href: '/admin/content', label: 'Контент сайту', icon: FileText },
   { href: '/admin/reviews', label: 'Відгуки', icon: Star },
   { href: '/admin/faq', label: 'FAQ', icon: HelpCircle },
   { href: '/admin/hero', label: 'Hero зображення', icon: ImageIcon },
   { href: '/admin/seo', label: 'SEO', icon: Search },
+  { href: '/admin/settings', label: 'Налаштування', icon: Settings },
   { href: '/admin/orders', label: 'Замовлення', icon: ClipboardList },
 ] as const;
 

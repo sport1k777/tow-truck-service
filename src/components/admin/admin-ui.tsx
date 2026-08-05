@@ -81,9 +81,11 @@ export function AdminSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>
 export function AdminButton({
   variant = 'primary',
   className = '',
+  formAction,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'secondary' | 'danger';
+  formAction?: (formData: FormData) => void | Promise<void>;
 }) {
   const variants = {
     primary:
@@ -97,6 +99,7 @@ export function AdminButton({
   return (
     <button
       {...props}
+      formAction={formAction}
       className={`inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition ${variants[variant]} ${className}`}
     />
   );

@@ -49,8 +49,25 @@ export interface SeoSettings {
 
 export interface ServiceAreaSettings {
   mode: 'regions' | 'radius';
+  validationEnabled: boolean;
   allowedRegions: string[];
   outOfCoverageMessage: string;
   availableMessage: string;
   areaName: string;
+  centerLat: number;
+  centerLng: number;
+  radiusKm: number;
+}
+
+export interface WebsiteContentSettings {
+  heroBadge: string;
+  heroTitle: string;
+  heroTitleHighlight: string;
+  heroSubtitle: string;
+  heroCtaPrimary: string;
+  heroCtaSecondary: string;
+  heroTrustItems: Array<{ label: string; icon: string }>;
+  aboutTitle: string;
+  aboutBody: string;
+  footerTagline: string;
 }

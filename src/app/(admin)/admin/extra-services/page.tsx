@@ -11,6 +11,7 @@ import {
   AdminTextarea,
 } from '@/components/admin/admin-ui';
 import { deleteExtraServiceAction, saveExtraServiceAction } from '@/actions/admin.actions';
+import { AdminDeleteButton } from '@/components/admin/admin-delete-button';
 
 export default async function AdminExtraServicesPage() {
   const services = await prisma.extraService.findMany({ orderBy: { sortOrder: 'asc' } });
@@ -54,13 +55,41 @@ export default async function AdminExtraServicesPage() {
               </AdminField>
               <AdminSubmitBar>
                 <AdminButton type="submit">Зберегти</AdminButton>
-                <AdminButton formAction={deleteExtraServiceAction} variant="danger" type="submit">
-                  Видалити
-                </AdminButton>
+                <AdminDeleteButton formAction={deleteExtraServiceAction} />
               </AdminSubmitBar>
             </form>
           </AdminCard>
         ))}
+        <AdminCard title="Додати послугу">
+          <form action={saveExtraServiceAction} className="space-y-4">
+            <AdminGrid>
+              <AdminField label="Slug">
+                <AdminInput name="slug" placeholder="custom_service" required />
+              </AdminField>
+              <AdminField label="Назва">
+                <AdminInput name="label" placeholder="Нова послуга" required />
+              </AdminField>
+              <AdminField label="Тип">
+                <AdminSelect name="type" defaultValue="FLAT">
+                  <option value="FLAT">Фіксована (₴)</option>
+                  <option value="PERCENT">Відсоток (%)</option>
+                </AdminSelect>
+              </AdminField>
+              <AdminField label="Сума / %">
+                <AdminInput name="amount" type="number" step="0.01" defaultValue={0} />
+              </AdminField>
+              <AdminField label="Порядок">
+                <AdminInput name="sortOrder" type="number" defaultValue={services.length} />
+              </AdminField>
+            </AdminGrid>
+            <AdminField label="Config JSON">
+              <AdminTextarea name="config" defaultValue="{}" />
+            </AdminField>
+            <AdminSubmitBar>
+              <AdminButton type="submit">Додати</AdminButton>
+            </AdminSubmitBar>
+          </form>
+        </AdminCard>
       </div>
     </>
   );

@@ -221,6 +221,8 @@ model PricingRule {
   name                      String
   cityId                    String?   @map("city_id")
   baseFee                   Decimal   @map("base_fee") @db.Decimal(10, 2)
+  outsideCityBaseFee        Decimal?  @map("outside_city_base_fee") @db.Decimal(10, 2)
+  freeKm                    Decimal   @default(0) @map("free_km") @db.Decimal(8, 2)
   perKmRate                 Decimal   @map("per_km_rate") @db.Decimal(10, 2)
   minCharge                 Decimal   @map("min_charge") @db.Decimal(10, 2)
   nightSurchargePercent     Decimal   @default(0) @map("night_surcharge_percent") @db.Decimal(5, 2)
@@ -420,6 +422,8 @@ model VehicleCategory {
   id            String   @id @default(cuid())
   slug          String   @unique @db.VarChar(50)
   label         String
+  description   String?  @db.Text
+  icon          String?  @db.VarChar(50)
   perKmRate     Decimal  @map("per_km_rate") @db.Decimal(10, 2)
   flatSurcharge Decimal  @default(0) @map("flat_surcharge") @db.Decimal(10, 2)
   sortOrder     Int      @default(0) @map("sort_order")
@@ -490,4 +494,27 @@ model HeroImage {
 
   @@index([isActive, sortOrder])
   @@map("hero_images")
+}
+
+// =============================================================================
+// ANALYTICS — calculator usage & conversion tracking
+// =============================================================================
+
+model CalculationEvent {
+  id                 String   @id @default(cuid())
+  pickupAddress      String   @map("pickup_address")
+  destinationAddress String   @map("destination_address")
+  pickupLat          Decimal? @map("pickup_lat") @db.Decimal(10, 7)
+  pickupLng          Decimal? @map("pickup_lng") @db.Decimal(10, 7)
+  destinationLat     Decimal? @map("destination_lat") @db.Decimal(10, 7)
+  destinationLng     Decimal? @map("destination_lng") @db.Decimal(10, 7)
+  distanceKm         Decimal  @map("distance_km") @db.Decimal(8, 2)
+  estimatedPrice     Decimal  @map("estimated_price") @db.Decimal(10, 2)
+  vehicleType        String   @map("vehicle_type") @db.VarChar(50)
+  convertedToOrder   Boolean  @default(false) @map("converted_to_order")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([convertedToOrder, createdAt(sort: Desc)])
+  @@map("calculation_events")
 }

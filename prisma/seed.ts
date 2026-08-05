@@ -7,6 +7,7 @@ import {
   SEED_TESTIMONIALS,
   SEED_VEHICLE_CATEGORIES,
 } from './seed-data';
+import { DEFAULT_WEBSITE_CONTENT } from '../src/modules/settings/content.defaults';
 
 const prisma = new PrismaClient();
 
@@ -294,6 +295,83 @@ async function main() {
       group: 'service_area',
       description: 'Service area display name',
     },
+    {
+      key: 'service_area.validation_enabled',
+      value: 'true',
+      type: SettingType.BOOLEAN,
+      group: 'service_area',
+      description: 'Enable service area validation in calculator',
+    },
+    {
+      key: 'content.hero.badge',
+      value: DEFAULT_WEBSITE_CONTENT.heroBadge,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Hero badge text',
+    },
+    {
+      key: 'content.hero.title',
+      value: DEFAULT_WEBSITE_CONTENT.heroTitle,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Hero title',
+    },
+    {
+      key: 'content.hero.title_highlight',
+      value: DEFAULT_WEBSITE_CONTENT.heroTitleHighlight,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Hero title highlight',
+    },
+    {
+      key: 'content.hero.subtitle',
+      value: DEFAULT_WEBSITE_CONTENT.heroSubtitle,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Hero subtitle',
+    },
+    {
+      key: 'content.hero.cta_primary',
+      value: DEFAULT_WEBSITE_CONTENT.heroCtaPrimary,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Hero primary CTA',
+    },
+    {
+      key: 'content.hero.cta_secondary',
+      value: DEFAULT_WEBSITE_CONTENT.heroCtaSecondary,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Hero secondary CTA',
+    },
+    {
+      key: 'content.hero.trust_items',
+      value: JSON.stringify(DEFAULT_WEBSITE_CONTENT.heroTrustItems),
+      type: SettingType.JSON,
+      group: 'content',
+      description: 'Hero trust items',
+    },
+    {
+      key: 'content.about.title',
+      value: DEFAULT_WEBSITE_CONTENT.aboutTitle,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'About page title',
+    },
+    {
+      key: 'content.about.body',
+      value: DEFAULT_WEBSITE_CONTENT.aboutBody,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'About page body',
+    },
+    {
+      key: 'content.footer_tagline',
+      value: DEFAULT_WEBSITE_CONTENT.footerTagline,
+      type: SettingType.STRING,
+      group: 'content',
+      description: 'Footer tagline',
+    },
   ];
 
   for (const setting of settings) {
@@ -314,6 +392,8 @@ async function main() {
     where: { id: 'seed-default-pricing' },
     update: {
       baseFee: 900,
+      outsideCityBaseFee: 900,
+      freeKm: 0,
       minCharge: 900,
       perKmRate: 25,
       cityPerKmRate: 25,
@@ -330,6 +410,8 @@ async function main() {
       name: 'Стандартний тариф',
       cityId: rivne.id,
       baseFee: 900,
+      outsideCityBaseFee: 900,
+      freeKm: 0,
       perKmRate: 25,
       cityPerKmRate: 25,
       outsideCityPerKmRate: 30,

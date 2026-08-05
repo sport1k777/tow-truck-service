@@ -214,6 +214,9 @@ async function verifyHttpRoutes() {
     '/admin/seo',
     '/admin/hero',
     '/admin/service-areas',
+    '/admin/settings',
+    '/admin/content',
+    '/admin/analytics',
   ]) {
     const res = await fetch(`${BASE_URL}${path}`, { headers: authHeaders });
     if (!res.ok) throw new Error(`${path} returned ${res.status}`);

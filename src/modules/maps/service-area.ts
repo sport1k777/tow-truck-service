@@ -12,7 +12,12 @@ export {
 };
 
 export interface ServiceAreaValidationConfig {
+  validationEnabled?: boolean;
+  mode?: 'regions' | 'radius';
   allowedRegions?: string[];
+  centerLat?: number;
+  centerLng?: number;
+  radiusKm?: number;
   outOfCoverageMessage?: string;
   availableMessage?: string;
   areaName?: string;
@@ -21,6 +26,28 @@ export interface ServiceAreaValidationConfig {
 const DEFAULT_ALLOWED_REGIONS = ['рівненська область', 'rivne oblast'];
 
 const ADMINISTRATIVE_AREA_LEVEL_1 = 'administrative_area_level_1';
+const EARTH_RADIUS_KM = 6371;
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return EARTH_RADIUS_KM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+
+function isWithinRadiusFromCoords(
+  lat: number,
+  lng: number,
+  centerLat: number,
+  centerLng: number,
+  radiusKm: number,
+): boolean {
+  return haversineKm(lat, lng, centerLat, centerLng) <= radiusKm;
+}
 
 function normalizeAdministrativeAreaName(value: string): string {
   return value
@@ -61,8 +88,34 @@ export function isInRivneOblast(components: PlaceAddressComponent[]): boolean {
 export function isRouteWithinServiceArea(
   pickupComponents: PlaceAddressComponent[] | null | undefined,
   destinationComponents: PlaceAddressComponent[] | null | undefined,
-  allowedRegions: string[] = DEFAULT_ALLOWED_REGIONS,
+  config: ServiceAreaValidationConfig = {},
+  pickupLocation?: { lat: number; lng: number } | null,
+  destinationLocation?: { lat: number; lng: number } | null,
 ): boolean {
+  const allowedRegions = config.allowedRegions ?? DEFAULT_ALLOWED_REGIONS;
+
+  if (config.mode === 'radius' && config.centerLat != null && config.centerLng != null && config.radiusKm) {
+    const pickupInRadius = pickupLocation
+      ? isWithinRadiusFromCoords(
+          pickupLocation.lat,
+          pickupLocation.lng,
+          config.centerLat,
+          config.centerLng,
+          config.radiusKm,
+        )
+      : false;
+    const destinationInRadius = destinationLocation
+      ? isWithinRadiusFromCoords(
+          destinationLocation.lat,
+          destinationLocation.lng,
+          config.centerLat,
+          config.centerLng,
+          config.radiusKm,
+        )
+      : false;
+    return pickupInRadius || destinationInRadius;
+  }
+
   const pickupInArea = pickupComponents?.length
     ? isInServiceArea(pickupComponents, allowedRegions)
     : false;
@@ -99,10 +152,15 @@ export function validateServiceAreaRoute(
     destinationPlaceId: string | null;
     pickupComponents: PlaceAddressComponent[] | null | undefined;
     destinationComponents: PlaceAddressComponent[] | null | undefined;
+    pickupLocation?: { lat: number; lng: number } | null;
+    destinationLocation?: { lat: number; lng: number } | null;
   },
   config?: ServiceAreaValidationConfig,
 ): ServiceAreaValidationResult {
-  const allowedRegions = config?.allowedRegions ?? DEFAULT_ALLOWED_REGIONS;
+  if (config?.validationEnabled === false) {
+    return { status: 'valid', isBlocked: false, message: null };
+  }
+
   const outOfCoverageMessage =
     config?.outOfCoverageMessage ?? SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE;
 
@@ -121,7 +179,9 @@ export function validateServiceAreaRoute(
     isRouteWithinServiceArea(
       options.pickupComponents,
       options.destinationComponents,
-      allowedRegions,
+      config,
+      options.pickupLocation,
+      options.destinationLocation,
     )
   ) {
     return { status: 'valid', isBlocked: false, message: null };

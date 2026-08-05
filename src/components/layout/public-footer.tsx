@@ -10,14 +10,13 @@ import {
   Send,
   Share2,
 } from 'lucide-react';
-import { SETTINGS_DEFAULTS } from '@/modules/settings/settings.defaults';
+import type { BusinessSettings } from '@/modules/settings/settings.types';
 import {
   getDisplayPhone,
   getTelHref,
   getWhatsAppHref,
 } from '@/lib/contact';
 import { getPublicEmail, resolveSocialLinks } from '@/lib/contact-display';
-
 import { PUBLIC_FOOTER_NAV_ITEMS } from '@/config/navigation';
 
 const SOCIAL_LINK_DEFINITIONS = [
@@ -26,8 +25,15 @@ const SOCIAL_LINK_DEFINITIONS = [
   { id: 'facebook', href: '', label: 'Facebook', icon: Share2 },
 ] as const;
 
-export function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
-  const settings = SETTINGS_DEFAULTS;
+export function PublicFooter({
+  variant = 'dark',
+  settings,
+  footerTagline,
+}: {
+  variant?: 'dark' | 'light';
+  settings: BusinessSettings;
+  footerTagline?: string;
+}) {
   const companyName = settings.companyName || 'Евакуатор';
   const isDark = variant === 'dark';
 
@@ -35,6 +41,9 @@ export function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'light' 
   const displayWhatsApp = getDisplayPhone(settings.whatsappNumber || settings.phone);
   const displayEmail = getPublicEmail(settings.email);
   const displayHours = settings.workingHours || '24/7';
+  const tagline =
+    footerTagline ??
+    'Професійна служба евакуації по всій Україні. Цілодобово, прозорі ціни та швидкий виїзд.';
 
   const socialLinks = resolveSocialLinks(SOCIAL_LINK_DEFINITIONS, settings.socialLinks);
 
@@ -86,10 +95,7 @@ export function PublicFooter({ variant = 'dark' }: { variant?: 'dark' | 'light' 
                 </span>
               )}
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
-              Професійна служба евакуації по всій Україні. Цілодобово, прозорі ціни та швидкий
-              виїзд.
-            </p>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">{tagline}</p>
           </div>
 
           {/* Navigation */}

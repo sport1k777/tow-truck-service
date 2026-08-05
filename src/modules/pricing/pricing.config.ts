@@ -40,6 +40,8 @@ export interface PricingConfig {
   currency: string;
   currencySymbol: string;
   baseCallOutFee: number;
+  outsideCityBaseFee: number;
+  freeKm: number;
   minCharge: number;
   cityPerKmRate: number;
   outsideCityPerKmRate: number;
@@ -57,6 +59,8 @@ export const DEFAULT_PRICING_CONFIG: PricingConfig = {
   currency: 'UAH',
   currencySymbol: '₴',
   baseCallOutFee: 900,
+  outsideCityBaseFee: 900,
+  freeKm: 0,
   minCharge: 900,
   cityPerKmRate: 25,
   outsideCityPerKmRate: 30,

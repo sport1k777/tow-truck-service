@@ -29,6 +29,8 @@ export async function savePricingAction(formData: FormData) {
   const data = {
     name: formData.get('name')?.toString() || 'Стандартний тариф',
     baseFee: Number(formData.get('baseFee') || 0),
+    outsideCityBaseFee: Number(formData.get('outsideCityBaseFee') || formData.get('baseFee') || 0),
+    freeKm: Number(formData.get('freeKm') || 0),
     minCharge: Number(formData.get('minCharge') || 0),
     perKmRate: Number(formData.get('perKmRate') || 0),
     cityPerKmRate: Number(formData.get('cityPerKmRate') || 0),
@@ -107,6 +109,12 @@ export async function saveServiceAreaAction(formData: FormData) {
       { key: SETTING_KEYS.SERVICE_AREA_MESSAGE, value: formData.get('outOfCoverageMessage')?.toString() || '', group: 'service_area', type: SettingType.STRING },
       { key: SETTING_KEYS.SERVICE_AREA_AVAILABLE_MESSAGE, value: formData.get('availableMessage')?.toString() || '', group: 'service_area', type: SettingType.STRING },
       { key: SETTING_KEYS.SERVICE_AREA_NAME, value: formData.get('areaName')?.toString() || '', group: 'service_area', type: SettingType.STRING },
+      {
+        key: SETTING_KEYS.SERVICE_AREA_VALIDATION_ENABLED,
+        value: formData.get('validationEnabled') === 'on' ? 'true' : 'false',
+        group: 'service_area',
+        type: SettingType.BOOLEAN,
+      },
     ],
     adminId,
   );
@@ -138,6 +146,8 @@ export async function saveVehicleCategoryAction(formData: FormData) {
   const data = {
     slug: formData.get('slug')?.toString() || '',
     label: formData.get('label')?.toString() || '',
+    description: formData.get('description')?.toString() || null,
+    icon: formData.get('icon')?.toString() || null,
     perKmRate: Number(formData.get('perKmRate') || 0),
     flatSurcharge: Number(formData.get('flatSurcharge') || 0),
     sortOrder: Number(formData.get('sortOrder') || 0),
@@ -280,4 +290,62 @@ export async function deleteHeroImageAction(formData: FormData) {
   if (!id) return;
   await prisma.heroImage.delete({ where: { id } });
   revalidatePublicSite();
+}
+
+export async function saveSettingsAction(formData: FormData) {
+  const adminId = await getAdminId();
+
+  const socialLinks = {
+    instagram: formData.get('instagram')?.toString() || '',
+    telegram: formData.get('telegramSocial')?.toString() || '',
+    facebook: formData.get('facebook')?.toString() || '',
+    youtube: formData.get('youtube')?.toString() || '',
+  };
+
+  await upsertSettingsBatch(
+    [
+      { key: SETTING_KEYS.LOGO_URL, value: formData.get('logoUrl')?.toString() || '', group: 'branding', type: SettingType.STRING },
+      { key: SETTING_KEYS.FAVICON_URL, value: formData.get('faviconUrl')?.toString() || '', group: 'branding', type: SettingType.STRING },
+      { key: SETTING_KEYS.PRIMARY_COLOR, value: formData.get('primaryColor')?.toString() || '', group: 'branding', type: SettingType.STRING },
+      { key: SETTING_KEYS.SECONDARY_COLOR, value: formData.get('secondaryColor')?.toString() || '', group: 'branding', type: SettingType.STRING },
+      { key: SETTING_KEYS.SOCIAL_LINKS, value: JSON.stringify(socialLinks), group: 'contact', type: SettingType.JSON },
+      { key: SETTING_KEYS.MAP_CENTER_LAT, value: formData.get('mapCenterLat')?.toString() || '', group: 'maps', type: SettingType.NUMBER },
+      { key: SETTING_KEYS.MAP_CENTER_LNG, value: formData.get('mapCenterLng')?.toString() || '', group: 'maps', type: SettingType.NUMBER },
+      { key: SETTING_KEYS.MAP_ZOOM, value: formData.get('mapZoom')?.toString() || '', group: 'maps', type: SettingType.NUMBER },
+    ],
+    adminId,
+  );
+
+  revalidatePublicSite();
+}
+
+export async function saveContentAction(formData: FormData) {
+  const adminId = await getAdminId();
+
+  const trustItemsRaw = formData.get('trustItems')?.toString() || '[]';
+  let trustItems = trustItemsRaw;
+  try {
+    JSON.parse(trustItemsRaw);
+  } catch {
+    trustItems = '[]';
+  }
+
+  await upsertSettingsBatch(
+    [
+      { key: SETTING_KEYS.HERO_BADGE, value: formData.get('heroBadge')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.HERO_TITLE, value: formData.get('heroTitle')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.HERO_TITLE_HIGHLIGHT, value: formData.get('heroTitleHighlight')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.HERO_SUBTITLE, value: formData.get('heroSubtitle')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.HERO_CTA_PRIMARY, value: formData.get('heroCtaPrimary')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.HERO_CTA_SECONDARY, value: formData.get('heroCtaSecondary')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.HERO_TRUST_ITEMS, value: trustItems, group: 'content', type: SettingType.JSON },
+      { key: SETTING_KEYS.ABOUT_TITLE, value: formData.get('aboutTitle')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.ABOUT_BODY, value: formData.get('aboutBody')?.toString() || '', group: 'content', type: SettingType.STRING },
+      { key: SETTING_KEYS.FOOTER_TAGLINE, value: formData.get('footerTagline')?.toString() || '', group: 'content', type: SettingType.STRING },
+    ],
+    adminId,
+  );
+
+  revalidatePublicSite();
+  revalidatePath('/about');
 }

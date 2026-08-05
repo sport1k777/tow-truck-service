@@ -33,9 +33,10 @@ export function calculatePrice(
   config: PricingConfig,
 ): PriceCalculationResult {
   const vehicleRate = config.vehicleRates[input.vehicleType];
-  const baseAmount = config.baseCallOutFee;
+  const baseAmount = input.isOutsideCity ? config.outsideCityBaseFee : config.baseCallOutFee;
   const perKmRate = input.isOutsideCity ? config.outsideCityPerKmRate : config.cityPerKmRate;
-  const distanceAmount = input.distanceKm * perKmRate;
+  const billableKm = Math.max(0, input.distanceKm - config.freeKm);
+  const distanceAmount = billableKm * perKmRate;
   const vehicleFlatSurcharge = vehicleRate.flatSurcharge ?? 0;
   const subtotal = baseAmount + distanceAmount + vehicleFlatSurcharge;
 
@@ -46,7 +47,7 @@ export function calculatePrice(
       type: 'base',
     },
     {
-      label: `Відстань (${input.distanceKm.toLocaleString('uk-UA', { maximumFractionDigits: 1 })} км × ${perKmRate} ₴/км)`,
+      label: `Відстань (${billableKm.toLocaleString('uk-UA', { maximumFractionDigits: 1 })} км × ${perKmRate} ₴/км${config.freeKm > 0 ? `, безкоштовно ${config.freeKm} км` : ''})`,
       amount: roundAmount(distanceAmount),
       type: 'distance',
     },

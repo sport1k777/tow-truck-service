@@ -47,20 +47,19 @@ export async function calculateCalculatorQuote(
   form: CalculatorFormState,
   price: PriceCalculationResult,
   route: RouteCalculationResponse,
-  serviceAreaConfig?: {
-    allowedRegions?: string[];
-    outOfCoverageMessage?: string;
+  serviceAreaConfig?: import('@/modules/maps/service-area').ServiceAreaValidationConfig & {
     availableMessage?: string;
     areaName?: string;
   },
 ): Promise<CalculatorResult> {
   await new Promise((resolve) => setTimeout(resolve, 400));
 
-  const allowedRegions = serviceAreaConfig?.allowedRegions;
   const isAvailable = isRouteWithinServiceArea(
     form.pickupAddressComponents,
     form.destinationAddressComponents,
-    allowedRegions,
+    serviceAreaConfig,
+    form.pickupLocation,
+    form.destinationLocation,
   );
 
   return {

@@ -13,7 +13,12 @@ export async function getCalculatorRuntimeConfig(): Promise<CalculatorRuntimeCon
     pricingConfig,
     vehicleOptions: getCalculatorVehicleOptions(pricingConfig),
     serviceAreaConfig: {
+      validationEnabled: serviceAreaSettings.validationEnabled,
+      mode: serviceAreaSettings.mode,
       allowedRegions: serviceAreaSettings.allowedRegions,
+      centerLat: serviceAreaSettings.centerLat,
+      centerLng: serviceAreaSettings.centerLng,
+      radiusKm: serviceAreaSettings.radiusKm,
       outOfCoverageMessage: serviceAreaSettings.outOfCoverageMessage,
       availableMessage: serviceAreaSettings.availableMessage,
       areaName: serviceAreaSettings.areaName,

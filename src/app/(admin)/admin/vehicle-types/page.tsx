@@ -9,6 +9,8 @@ import {
   AdminSubmitBar,
 } from '@/components/admin/admin-ui';
 import { deleteVehicleCategoryAction, saveVehicleCategoryAction } from '@/actions/admin.actions';
+import { AdminDeleteButton } from '@/components/admin/admin-delete-button';
+import { AdminTextarea } from '@/components/admin/admin-ui';
 
 export default async function AdminVehicleTypesPage() {
   const categories = await prisma.vehicleCategory.findMany({ orderBy: { sortOrder: 'asc' } });
@@ -37,6 +39,9 @@ export default async function AdminVehicleTypesPage() {
                 <AdminField label="Фікс. доплата (₴)">
                   <AdminInput name="flatSurcharge" type="number" step="1" defaultValue={Number(category.flatSurcharge)} />
                 </AdminField>
+                <AdminField label="Іконка (Lucide)" hint="Car, Truck, Zap, Shield">
+                  <AdminInput name="icon" defaultValue={category.icon ?? ''} />
+                </AdminField>
                 <AdminField label="Порядок">
                   <AdminInput name="sortOrder" type="number" defaultValue={category.sortOrder} />
                 </AdminField>
@@ -44,11 +49,12 @@ export default async function AdminVehicleTypesPage() {
                   <input type="checkbox" name="isActive" defaultChecked={category.isActive} className="h-4 w-4" />
                 </AdminField>
               </AdminGrid>
+              <AdminField label="Опис">
+                <AdminTextarea name="description" defaultValue={category.description ?? ''} className="min-h-[80px]" />
+              </AdminField>
               <AdminSubmitBar>
                 <AdminButton type="submit">Зберегти</AdminButton>
-                <AdminButton formAction={deleteVehicleCategoryAction} variant="danger" type="submit">
-                  Видалити
-                </AdminButton>
+                <AdminDeleteButton formAction={deleteVehicleCategoryAction} />
               </AdminSubmitBar>
             </form>
           </AdminCard>
@@ -65,10 +71,13 @@ export default async function AdminVehicleTypesPage() {
               <AdminField label="₴/км">
                 <AdminInput name="perKmRate" type="number" step="0.01" defaultValue={25} />
               </AdminField>
-              <AdminField label="Фікс. доплата (₴)">
-                <AdminInput name="flatSurcharge" type="number" step="1" defaultValue={0} />
-              </AdminField>
-              <AdminField label="Порядок">
+            <AdminField label="Фікс. доплата (₴)">
+              <AdminInput name="flatSurcharge" type="number" step="1" defaultValue={0} />
+            </AdminField>
+            <AdminField label="Іконка">
+              <AdminInput name="icon" placeholder="Car" />
+            </AdminField>
+            <AdminField label="Порядок">
                 <AdminInput name="sortOrder" type="number" defaultValue={categories.length} />
               </AdminField>
             </AdminGrid>

@@ -38,6 +38,10 @@ export default async function AdminServiceAreasPage() {
             <AdminField label="Назва зони">
               <AdminInput name="areaName" defaultValue={settings.areaName} />
             </AdminField>
+            <AdminField label="Перевірка зони">
+              <input type="checkbox" name="validationEnabled" defaultChecked={settings.validationEnabled} className="h-4 w-4" />
+              <span className="ml-2 text-xs text-white/50">Увімкнути валідацію зони в калькуляторі</span>
+            </AdminField>
           </AdminGrid>
           <AdminField label="Дозволені регіони" hint="Один регіон на рядок (укр/англ)">
             <AdminTextarea

@@ -28,8 +28,9 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [settings, faqItems, testimonials, heroImages, calculatorConfig] = await Promise.all([
+  const [settings, content, faqItems, testimonials, heroImages, calculatorConfig] = await Promise.all([
     SettingsService.getBusinessSettings(),
+    SettingsService.getContentSettings(),
     ContentService.getFaqItems(),
     ContentService.getTestimonials(),
     ContentService.getHeroImages(),
@@ -52,7 +53,7 @@ export default async function HomePage() {
         email={settings.email}
       />
       <HeroHeader companyName={companyName} />
-      <HeroSection desktopImageUrl={heroDesktop} mobileImageUrl={heroMobile} />
+      <HeroSection desktopImageUrl={heroDesktop} mobileImageUrl={heroMobile} content={content} />
       <PriceCalculatorSection config={calculatorConfig} />
       <HowItWorksSection />
       <ServicesSection />

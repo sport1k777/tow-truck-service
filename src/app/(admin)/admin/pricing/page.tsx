@@ -21,11 +21,17 @@ export default async function AdminPricingPage() {
             <AdminField label="Назва тарифу">
               <AdminInput name="name" defaultValue={rule?.name ?? 'Стандартний тариф'} required />
             </AdminField>
-            <AdminField label="Базовий виїзд (₴)">
+            <AdminField label="Базовий виїзд у місті (₴)">
               <AdminInput name="baseFee" type="number" step="1" defaultValue={Number(rule?.baseFee ?? 900)} required />
+            </AdminField>
+            <AdminField label="Базовий виїзд за містом (₴)">
+              <AdminInput name="outsideCityBaseFee" type="number" step="1" defaultValue={Number(rule?.outsideCityBaseFee ?? rule?.baseFee ?? 900)} required />
             </AdminField>
             <AdminField label="Мінімальне замовлення (₴)">
               <AdminInput name="minCharge" type="number" step="1" defaultValue={Number(rule?.minCharge ?? 900)} required />
+            </AdminField>
+            <AdminField label="Безкоштовні км">
+              <AdminInput name="freeKm" type="number" step="0.1" defaultValue={Number(rule?.freeKm ?? 0)} />
             </AdminField>
             <AdminField label="Базова ціна за км (₴)">
               <AdminInput name="perKmRate" type="number" step="0.01" defaultValue={Number(rule?.perKmRate ?? 25)} required />

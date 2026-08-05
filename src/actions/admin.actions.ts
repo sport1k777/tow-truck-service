@@ -283,7 +283,7 @@ export async function saveFaqAction(formData: FormData) {
     question: formData.get('question')?.toString() || '',
     answer: formData.get('answer')?.toString() || '',
     sortOrder: Number(formData.get('sortOrder') || 0),
-    isActive: formData.get('isActive') === 'on',
+    isActive: id ? formData.get('isActive') === 'on' : formData.get('isActive') !== 'off',
   };
 
   if (id) {
@@ -316,7 +316,7 @@ export async function saveTestimonialAction(formData: FormData) {
     review: formData.get('review')?.toString() || '',
     serviceType: formData.get('serviceType')?.toString() || '',
     sortOrder: Number(formData.get('sortOrder') || 0),
-    isActive: formData.get('isActive') === 'on',
+    isActive: id ? formData.get('isActive') === 'on' : formData.get('isActive') !== 'off',
   };
 
   if (id) {

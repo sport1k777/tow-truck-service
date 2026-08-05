@@ -1,6 +1,6 @@
 import { PrismaClient, AdminRole, SettingType, VehicleType } from '@prisma/client';
-import bcrypt from 'bcryptjs';
 import {
+  SEED_ADMIN_PASSWORD_HASH,
   SEED_EXTRA_SERVICES,
   SEED_FAQ,
   SEED_HERO_IMAGES,
@@ -55,14 +55,12 @@ async function main() {
   // ---------------------------------------------------------------------------
   // Admin user — change password immediately in production
   // ---------------------------------------------------------------------------
-  const passwordHash = await bcrypt.hash('ChangeMe123!', 12);
-
   const admin = await prisma.adminUser.upsert({
     where: { email: 'admin@example.com' },
     update: {},
     create: {
       email: 'admin@example.com',
-      passwordHash,
+      passwordHash: SEED_ADMIN_PASSWORD_HASH,
       name: 'Administrator',
       role: AdminRole.SUPER_ADMIN,
       isActive: true,

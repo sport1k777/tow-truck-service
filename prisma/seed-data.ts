@@ -1,5 +1,9 @@
 import type { ExtraServiceType, HeroImageVariant } from '@prisma/client';
 
+/** Pre-computed bcrypt hash for default admin password `ChangeMe123!` (cost 12). */
+export const SEED_ADMIN_PASSWORD_HASH =
+  '$2a$12$ByUP9f9JVkORLie0axDhfejD/7.d9QkWpOB65Uvp8ayAIVzIOB22C';
+
 export const SEED_FAQ = [
   {
     question: 'Як швидко приїде евакуатор?',

@@ -7,6 +7,7 @@ import {
   type PricingConfig,
 } from '@/modules/pricing/pricing.config';
 import type { ServiceAreaValidationConfig } from '@/modules/maps/service-area';
+import type { CityPricingConfig } from '@/modules/pricing/city-pricing';
 import {
   SERVICE_AREA_AVAILABLE_MESSAGE,
   SERVICE_AREA_NAME,
@@ -20,6 +21,7 @@ export interface CalculatorRuntimeConfig {
     availableMessage: string;
     areaName: string;
   };
+  cityPricingConfig: CityPricingConfig;
 }
 
 const DEFAULT_RUNTIME_CONFIG: CalculatorRuntimeConfig = {
@@ -32,6 +34,12 @@ const DEFAULT_RUNTIME_CONFIG: CalculatorRuntimeConfig = {
     outOfCoverageMessage: SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
     availableMessage: SERVICE_AREA_AVAILABLE_MESSAGE,
     areaName: SERVICE_AREA_NAME,
+  },
+  cityPricingConfig: {
+    homeCenterLat: 50.6199,
+    homeCenterLng: 26.2516,
+    cityServiceRadiusKm: 50,
+    freeCityRadiusKm: 0,
   },
 };
 

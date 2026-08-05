@@ -13,12 +13,14 @@ import {
 } from '@/components/admin/admin-ui';
 import { ImageUploadField } from '@/components/admin/image-upload-field';
 import { AdminHeroImagesSection } from '@/components/admin/admin-hero-images';
+import { AdminGallerySection } from '@/components/admin/admin-gallery-section';
+import { AdminSecuritySection } from '@/components/admin/admin-security-section';
 import { saveSettingsAction } from '@/actions/admin.actions';
 
 export default async function AdminSettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const settings = await SettingsService.getBusinessSettings();
@@ -85,8 +87,10 @@ export default async function AdminSettingsPage({
         </form>
       </AdminCard>
 
-      <div className="mt-8">
+      <div className="mt-8 space-y-8">
         <AdminHeroImagesSection />
+        <AdminGallerySection />
+        <AdminSecuritySection error={params.error} />
       </div>
     </>
   );

@@ -14,6 +14,7 @@ import {
   SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
 } from '@/modules/maps/service-area.constants';
 import { DEFAULT_MAP_CENTER } from '@/lib/locale.defaults';
+import { oblastIdsFromRegions } from '@/lib/ukraine-oblasts';
 
 const CACHE_TAG = 'business-settings';
 const REVALIDATE_SECONDS = 60;
@@ -98,6 +99,18 @@ export const SettingsService = {
       mode,
       validationEnabled: validationRaw !== 'false',
       allowedRegions: parseRegions(map.get(SETTING_KEYS.SERVICE_AREA_REGIONS)),
+      allowedOblastIds: (() => {
+        const raw = map.get(SETTING_KEYS.SERVICE_AREA_OBLAST_IDS);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw) as unknown;
+            if (Array.isArray(parsed)) return parsed.map(String);
+          } catch {
+            // fall through
+          }
+        }
+        return oblastIdsFromRegions(parseRegions(map.get(SETTING_KEYS.SERVICE_AREA_REGIONS)));
+      })(),
       outOfCoverageMessage:
         map.get(SETTING_KEYS.SERVICE_AREA_MESSAGE) || SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
       availableMessage:
@@ -106,7 +119,67 @@ export const SettingsService = {
       centerLat: radiusArea.centerLat,
       centerLng: radiusArea.centerLng,
       radiusKm: radiusArea.radiusKm,
+      homeCityId: map.get(SETTING_KEYS.HOME_CITY_ID) ?? null,
+      freeCityRadiusKm: Number(map.get(SETTING_KEYS.FREE_CITY_RADIUS_KM) || 0),
+      cityServiceRadiusKm: Number(
+        map.get(SETTING_KEYS.CITY_SERVICE_RADIUS_KM) || radiusArea.radiusKm || 50,
+      ),
     };
+  },
+
+  async getGalleryImages(): Promise<import('./settings.types').GalleryImage[]> {
+    const raw = await this.get(SETTING_KEYS.GALLERY_IMAGES);
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        return parsed.map((item, index) => ({
+          url: String((item as { url?: string }).url ?? ''),
+          alt: String((item as { alt?: string }).alt ?? ''),
+          sortOrder: Number((item as { sortOrder?: number }).sortOrder ?? index),
+        }));
+      }
+    } catch {
+      return [];
+    }
+    return [];
+  },
+
+  async getHomeCityCenter(): Promise<{ lat: number; lng: number; cityId: string | null }> {
+    const serviceArea = await this.getServiceAreaSettings();
+    if (serviceArea.homeCityId) {
+      try {
+        const { prisma } = await import('@/lib/prisma');
+        const city = await prisma.city.findUnique({ where: { id: serviceArea.homeCityId } });
+        if (city) {
+          return {
+            lat: Number(city.mapCenterLat),
+            lng: Number(city.mapCenterLng),
+            cityId: city.id,
+          };
+        }
+      } catch {
+        // fall through
+      }
+    }
+
+    try {
+      const { prisma } = await import('@/lib/prisma');
+      const defaultCity = await prisma.city.findFirst({
+        where: { isDefault: true, isActive: true },
+      });
+      if (defaultCity) {
+        return {
+          lat: Number(defaultCity.mapCenterLat),
+          lng: Number(defaultCity.mapCenterLng),
+          cityId: defaultCity.id,
+        };
+      }
+    } catch {
+      // fall through
+    }
+
+    return { lat: DEFAULT_MAP_CENTER.lat, lng: DEFAULT_MAP_CENTER.lng, cityId: null };
   },
 
   async getContentSettings(): Promise<WebsiteContentSettings> {

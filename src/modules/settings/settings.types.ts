@@ -51,12 +51,22 @@ export interface ServiceAreaSettings {
   mode: 'regions' | 'radius';
   validationEnabled: boolean;
   allowedRegions: string[];
+  allowedOblastIds: string[];
   outOfCoverageMessage: string;
   availableMessage: string;
   areaName: string;
   centerLat: number;
   centerLng: number;
   radiusKm: number;
+  homeCityId: string | null;
+  freeCityRadiusKm: number;
+  cityServiceRadiusKm: number;
+}
+
+export interface GalleryImage {
+  url: string;
+  alt: string;
+  sortOrder: number;
 }
 
 export interface WebsiteContentSettings {

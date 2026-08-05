@@ -214,6 +214,7 @@ async function verifyHttpRoutes() {
     '/admin/reviews',
     '/admin/seo',
     '/admin/analytics',
+    '/admin/service-areas',
     '/admin/settings',
   ]) {
     const res = await fetch(`${BASE_URL}${path}`, { headers: authHeaders });

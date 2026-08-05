@@ -82,7 +82,7 @@ function buildAutoCalcKey(form: CalculatorFormState, distanceKm: number | null):
 
 export function useCalculator() {
   const { isConfigured, status: mapsStatus } = useMaps();
-  const { pricingConfig, serviceAreaConfig } = useCalculatorConfig();
+  const { pricingConfig, serviceAreaConfig, cityPricingConfig } = useCalculatorConfig();
   const [form, setForm] = useState<CalculatorFormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<CalculatorFormErrors>({});
   const [status, setStatus] = useState<CalculatorStatus>('idle');
@@ -128,8 +128,8 @@ export function useCalculator() {
       return null;
     }
 
-    return calculateLivePrice(form, distanceKm, pricingConfig);
-  }, [form, distanceKm, serviceAreaValidation.isBlocked, pricingConfig]);
+    return calculateLivePrice(form, distanceKm, pricingConfig, cityPricingConfig);
+  }, [form, distanceKm, serviceAreaValidation.isBlocked, pricingConfig, cityPricingConfig]);
 
   const clearTransientErrors = useCallback(() => {
     setErrors({});
@@ -246,7 +246,7 @@ export function useCalculator() {
         return false;
       }
 
-      const price = calculateLivePrice(form, distanceKm, pricingConfig);
+      const price = calculateLivePrice(form, distanceKm, pricingConfig, cityPricingConfig);
       if (!price || !route) {
         if (!options.silent) {
           setErrors({ route: 'Не вдалося розрахувати вартість для цього маршруту.' });
@@ -295,6 +295,7 @@ export function useCalculator() {
       distanceKm,
       serviceAreaValidation,
       pricingConfig,
+      cityPricingConfig,
       serviceAreaConfig,
     ],
   );

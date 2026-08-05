@@ -5,6 +5,11 @@ import {
   type PricingConfig,
 } from '@/modules/pricing/pricing.config';
 import { calculatePrice } from '@/modules/pricing/pricing.engine';
+import {
+  effectiveFreeKm,
+  isRouteOutsideCity,
+  type CityPricingConfig,
+} from '@/modules/pricing/city-pricing';
 import type { PriceCalculationResult } from '@/modules/pricing/pricing.types';
 import type { RouteCalculationResponse } from '@/modules/maps/maps.types';
 import {
@@ -26,10 +31,25 @@ export function calculateLivePrice(
   form: CalculatorFormState,
   distanceKm: number | null,
   config: PricingConfig = DEFAULT_PRICING_CONFIG,
+  cityPricingConfig?: CityPricingConfig,
 ): PriceCalculationResult | null {
   if (distanceKm === null || distanceKm <= 0) {
     return null;
   }
+
+  const isOutsideCity = cityPricingConfig
+    ? isRouteOutsideCity(form.pickupLocation, form.destinationLocation, cityPricingConfig)
+    : false;
+
+  const adjustedFreeKm = cityPricingConfig
+    ? effectiveFreeKm(
+        distanceKm,
+        form.pickupLocation,
+        form.destinationLocation,
+        cityPricingConfig,
+        config.freeKm,
+      )
+    : config.freeKm;
 
   return calculatePrice(
     {
@@ -38,8 +58,9 @@ export function calculateLivePrice(
       timestamp: new Date(),
       isEmergencyDispatch: form.isEmergencyDispatch,
       isDifficultLoading: form.isDifficultLoading,
+      isOutsideCity,
     },
-    config,
+    { ...config, freeKm: adjustedFreeKm },
   );
 }
 

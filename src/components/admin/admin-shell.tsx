@@ -16,6 +16,7 @@ import {
   Settings,
   FileText,
   BarChart3,
+  MapPin,
   Menu,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },
   { href: '/admin/vehicle-types', label: 'Vehicle Types', icon: Truck },
   { href: '/admin/extra-services', label: 'Extra Services', icon: PlusCircle },
+  { href: '/admin/service-areas', label: 'Service Area', icon: MapPin },
   { href: '/admin/contacts', label: 'Contacts', icon: Phone },
   { href: '/admin/content', label: 'Website Content', icon: FileText },
   { href: '/admin/faq', label: 'FAQ', icon: HelpCircle },

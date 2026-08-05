@@ -2,12 +2,14 @@
 
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { upsertSettingsBatch } from '@/modules/settings/settings.repository';
 import { SETTING_KEYS } from '@/modules/settings/settings.defaults';
 import { revalidateSettingsCache } from '@/modules/settings/settings.service';
 import { revalidatePricingCache } from '@/modules/pricing/pricing.service';
+import { oblastLabelsForIds } from '@/lib/ukraine-oblasts';
 import { SettingType, ExtraServiceType, HeroImageVariant } from '@prisma/client';
 
 function revalidatePublicSite() {
@@ -28,8 +30,9 @@ async function getAdminId() {
 }
 
 export async function savePricingAction(formData: FormData) {
-  await getAdminId();
+  const adminId = await getAdminId();
   const ruleId = formData.get('ruleId')?.toString();
+  const cityServiceRadiusKm = Number(formData.get('cityServiceRadiusKm') || 0);
 
   const data = {
     name: formData.get('name')?.toString() || 'Стандартний тариф',
@@ -38,7 +41,7 @@ export async function savePricingAction(formData: FormData) {
     freeKm: Number(formData.get('freeKm') || 0),
     minCharge: Number(formData.get('minCharge') || 0),
     perKmRate: Number(formData.get('perKmRate') || 0),
-    cityPerKmRate: Number(formData.get('cityPerKmRate') || 0),
+    cityPerKmRate: Number(formData.get('cityPerKmRate') || formData.get('perKmRate') || 0),
     outsideCityPerKmRate: Number(formData.get('outsideCityPerKmRate') || 0),
     emergencySurchargeFlat: Number(formData.get('emergencySurchargeFlat') || 0),
     nightSurchargePercent: Number(formData.get('nightSurchargePercent') || 0),
@@ -54,6 +57,28 @@ export async function savePricingAction(formData: FormData) {
     await prisma.pricingRule.update({ where: { id: ruleId }, data });
   } else {
     await prisma.pricingRule.create({ data });
+  }
+
+  if (cityServiceRadiusKm > 0) {
+    await upsertSettingsBatch(
+      [
+        {
+          key: SETTING_KEYS.CITY_SERVICE_RADIUS_KM,
+          value: String(cityServiceRadiusKm),
+          group: 'pricing',
+          type: SettingType.NUMBER,
+        },
+      ],
+      adminId,
+    );
+
+    const area = await prisma.serviceArea.findFirst({ where: { isActive: true }, orderBy: { priority: 'asc' } });
+    if (area) {
+      await prisma.serviceArea.update({
+        where: { id: area.id },
+        data: { radiusKm: cityServiceRadiusKm },
+      });
+    }
   }
 
   revalidatePublicSite();
@@ -104,16 +129,23 @@ export async function saveSeoAction(formData: FormData) {
 export async function saveServiceAreaAction(formData: FormData) {
   const adminId = await getAdminId();
   const mode = formData.get('mode')?.toString() === 'radius' ? 'radius' : 'regions';
-  const regionsRaw = formData.get('allowedRegions')?.toString() || '';
-  const allowedRegions = regionsRaw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const selectedOblastIds = formData.getAll('oblastIds').map(String);
+  const allowedRegions =
+    selectedOblastIds.length > 0
+      ? oblastLabelsForIds(selectedOblastIds)
+      : (formData.get('allowedRegions')?.toString() || '')
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+  const homeCityId = formData.get('homeCityId')?.toString() || '';
+  const freeCityRadiusKm = Number(formData.get('freeCityRadiusKm') || 0);
 
   await upsertSettingsBatch(
     [
       { key: SETTING_KEYS.SERVICE_AREA_MODE, value: mode, group: 'service_area', type: SettingType.STRING },
       { key: SETTING_KEYS.SERVICE_AREA_REGIONS, value: JSON.stringify(allowedRegions), group: 'service_area', type: SettingType.JSON },
+      { key: SETTING_KEYS.SERVICE_AREA_OBLAST_IDS, value: JSON.stringify(selectedOblastIds), group: 'service_area', type: SettingType.JSON },
       { key: SETTING_KEYS.SERVICE_AREA_MESSAGE, value: formData.get('outOfCoverageMessage')?.toString() || '', group: 'service_area', type: SettingType.STRING },
       { key: SETTING_KEYS.SERVICE_AREA_AVAILABLE_MESSAGE, value: formData.get('availableMessage')?.toString() || '', group: 'service_area', type: SettingType.STRING },
       { key: SETTING_KEYS.SERVICE_AREA_NAME, value: formData.get('areaName')?.toString() || '', group: 'service_area', type: SettingType.STRING },
@@ -123,19 +155,28 @@ export async function saveServiceAreaAction(formData: FormData) {
         group: 'service_area',
         type: SettingType.BOOLEAN,
       },
+      { key: SETTING_KEYS.HOME_CITY_ID, value: homeCityId, group: 'service_area', type: SettingType.STRING },
+      { key: SETTING_KEYS.FREE_CITY_RADIUS_KM, value: String(freeCityRadiusKm), group: 'service_area', type: SettingType.NUMBER },
     ],
     adminId,
   );
 
+  if (homeCityId) {
+    await prisma.city.updateMany({ data: { isDefault: false } });
+    await prisma.city.update({ where: { id: homeCityId }, data: { isDefault: true, isActive: true } });
+  }
+
   const areaId = formData.get('areaId')?.toString();
+  const radiusKm = Number(formData.get('radiusKm') || formData.get('cityServiceRadiusKm') || 50);
   const radiusData = {
     name: formData.get('radiusName')?.toString() || 'Зона обслуговування',
     type: 'RADIUS' as const,
     centerLat: Number(formData.get('centerLat') || 0),
     centerLng: Number(formData.get('centerLng') || 0),
-    radiusKm: Number(formData.get('radiusKm') || 0),
+    radiusKm,
     surchargeAmount: Number(formData.get('radiusSurcharge') || 0),
     isActive: mode === 'radius',
+    cityId: homeCityId || null,
   };
 
   if (areaId) {
@@ -144,7 +185,26 @@ export async function saveServiceAreaAction(formData: FormData) {
     await prisma.serviceArea.create({ data: radiusData });
   }
 
+  await upsertSettingsBatch(
+    [{ key: SETTING_KEYS.CITY_SERVICE_RADIUS_KM, value: String(radiusKm), group: 'pricing', type: SettingType.NUMBER }],
+    adminId,
+  );
+
   revalidatePublicSite();
+  savedRedirect('/admin/service-areas');
+}
+
+export async function saveCitiesAction(formData: FormData) {
+  await getAdminId();
+  const cities = await prisma.city.findMany();
+
+  for (const city of cities) {
+    const isActive = formData.get(`city_active_${city.id}`) === 'on';
+    await prisma.city.update({ where: { id: city.id }, data: { isActive } });
+  }
+
+  revalidatePublicSite();
+  savedRedirect('/admin/service-areas');
 }
 
 export async function saveVehicleCategoryAction(formData: FormData) {
@@ -368,4 +428,68 @@ export async function saveContentAction(formData: FormData) {
   revalidatePublicSite();
   revalidatePath('/about');
   savedRedirect('/admin/content');
+}
+
+export async function saveGalleryAction(formData: FormData) {
+  const adminId = await getAdminId();
+  const imagesJson = formData.get('galleryImages')?.toString() || '[]';
+
+  try {
+    JSON.parse(imagesJson);
+  } catch {
+    throw new Error('Invalid gallery JSON');
+  }
+
+  await upsertSettingsBatch(
+    [{ key: SETTING_KEYS.GALLERY_IMAGES, value: imagesJson, group: 'media', type: SettingType.JSON }],
+    adminId,
+  );
+
+  revalidatePublicSite();
+  savedRedirect('/admin/settings');
+}
+
+export async function saveAdminSecurityAction(formData: FormData) {
+  const session = await requireAdmin();
+  const adminId = session.user.id!;
+  const currentPassword = formData.get('currentPassword')?.toString() || '';
+  const newEmail = formData.get('newEmail')?.toString()?.trim() || '';
+  const newPassword = formData.get('newPassword')?.toString() || '';
+  const confirmPassword = formData.get('confirmPassword')?.toString() || '';
+
+  const admin = await prisma.adminUser.findUnique({ where: { id: adminId } });
+  if (!admin) {
+    redirect('/admin/settings?error=admin_not_found');
+  }
+
+  const valid = await bcrypt.compare(currentPassword, admin.passwordHash);
+  if (!valid) {
+    redirect('/admin/settings?error=invalid_password');
+  }
+
+  const data: { email?: string; passwordHash?: string } = {};
+
+  if (newEmail && newEmail !== admin.email) {
+    const existing = await prisma.adminUser.findUnique({ where: { email: newEmail } });
+    if (existing && existing.id !== adminId) {
+      redirect('/admin/settings?error=email_taken');
+    }
+    data.email = newEmail;
+  }
+
+  if (newPassword) {
+    if (newPassword.length < 8) {
+      redirect('/admin/settings?error=password_short');
+    }
+    if (newPassword !== confirmPassword) {
+      redirect('/admin/settings?error=password_mismatch');
+    }
+    data.passwordHash = await bcrypt.hash(newPassword, 12);
+  }
+
+  if (Object.keys(data).length > 0) {
+    await prisma.adminUser.update({ where: { id: adminId }, data });
+  }
+
+  savedRedirect('/admin/settings');
 }

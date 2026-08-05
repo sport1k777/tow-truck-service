@@ -45,22 +45,45 @@ function storeCookies(response) {
   }
 }
 
-function extractActionId(html, formHint) {
-  if (formHint) {
-    const formMatch = html.match(new RegExp(`<form[^>]*action="[^"]*${formHint}[^"]*"[^>]*>([\\s\\S]*?)<\\/form>`, 'i'));
-    if (formMatch) {
-      const m = formMatch[1].match(/name="\$ACTION_ID_([a-f0-9]+)"/);
-      if (m) return `$ACTION_ID_${m[1]}`;
-    }
-  }
-  const match = html.match(/name="\$ACTION_ID_([a-f0-9]+)"/);
-  return match ? `$ACTION_ID_${match[1]}` : null;
+function extractDeleteActionId(html) {
+  const match = html.match(/name="(\$ACTION_ID_[a-f0-9]+)"[^>]*formAction/i);
+  return match?.[1] ?? null;
 }
 
 function extractSecurityActionId(html) {
-  const securityBlock = html.split('Account security')[1] ?? html.split('Update account')[0] ?? '';
+  const securityBlock = html.split('Account security')[1] ?? '';
   const m = securityBlock.match(/name="\$ACTION_ID_([a-f0-9]+)"/);
   return m ? `$ACTION_ID_${m[1]}` : extractActionId(html);
+}
+
+async function submitDeleteRecord(pagePath, id) {
+  const pageRes = await authFetch(pagePath);
+  if (!pageRes.ok) throw new Error(`${pagePath} load ${pageRes.status}`);
+  const html = await pageRes.text();
+  const idMarker = html.indexOf(`value="${id}"`);
+  if (idMarker === -1) throw new Error(`Record ${id} not found on ${pagePath}`);
+  const chunk = html.slice(idMarker, idMarker + 4000);
+  const deleteActionId = extractDeleteActionId(chunk);
+  if (!deleteActionId) throw new Error(`No delete action for ${id} on ${pagePath}`);
+
+  const form = new FormData();
+  form.append(deleteActionId, '');
+  form.append('id', id);
+
+  const postRes = await authFetch(pagePath, {
+    method: 'POST',
+    body: form,
+    redirect: 'manual',
+  });
+
+  if (postRes.status !== 303 && postRes.status !== 302) {
+    throw new Error(`Delete ${pagePath} returned ${postRes.status}`);
+  }
+}
+
+function extractActionId(html) {
+  const match = html.match(/name="\$ACTION_ID_([a-f0-9]+)"/);
+  return match ? `$ACTION_ID_${match[1]}` : null;
 }
 
 function extractInput(html, name) {
@@ -365,15 +388,7 @@ async function testFaqCrud() {
   const faqPage = await fetch(`${BASE_URL}/`, { cache: 'no-store' });
   if (!(await faqPage.text()).includes(question)) throw new Error('FAQ missing on public homepage');
 
-  const page2 = await authFetch('/admin/faq');
-  const html2 = await page2.text();
-  const deleteAction = extractActionId(html2);
-  const delForm = new FormData();
-  delForm.append(deleteAction, '');
-  delForm.append('id', created.id);
-
-  const delRes = await authFetch('/admin/faq', { method: 'POST', body: delForm, redirect: 'manual' });
-  if (delRes.status !== 303 && delRes.status !== 302) throw new Error(`FAQ delete ${delRes.status}`);
+  await submitDeleteRecord('/admin/faq', created.id);
 
   const gone = await prisma.faqItem.findUnique({ where: { id: created.id } });
   if (gone) throw new Error('FAQ still in DB after delete');
@@ -405,12 +420,7 @@ async function testReviewsCrud() {
   const home = await fetch(`${BASE_URL}/`, { cache: 'no-store' });
   if (!(await home.text()).includes(name)) throw new Error('Review missing on homepage');
 
-  const page2 = await authFetch('/admin/reviews');
-  const deleteAction = extractActionId(await page2.text());
-  const delForm = new FormData();
-  delForm.append(deleteAction, '');
-  delForm.append('id', created.id);
-  await authFetch('/admin/reviews', { method: 'POST', body: delForm, redirect: 'manual' });
+  await submitDeleteRecord('/admin/reviews', created.id);
 
   if (await prisma.testimonial.findUnique({ where: { id: created.id } })) {
     throw new Error('Review still in DB');

@@ -51,7 +51,7 @@ export function HeroSection({
 
   return (
     <section
-      className="relative overflow-x-clip overflow-y-visible bg-[#030712] lg:overflow-hidden"
+      className="relative max-w-[100vw] overflow-x-hidden bg-[#030712] lg:overflow-hidden"
       aria-labelledby="hero-heading"
     >
       <div className="hero-artwork-ambient pointer-events-none absolute inset-0" aria-hidden="true" />
@@ -59,11 +59,11 @@ export function HeroSection({
 
       <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:min-h-screen lg:grid-cols-[minmax(0,520px)_1fr] lg:items-center xl:grid-cols-[minmax(0,560px)_1fr]">
         {/* Mobile — premium hero v2 */}
-        <div className="hero-mobile-v2 relative lg:hidden">
+        <div className="hero-mobile-v2 relative max-w-[100vw] overflow-x-hidden lg:hidden">
           <div className="hero-mobile-v2__bg pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="hero-mobile-v2__glow pointer-events-none absolute inset-0" aria-hidden="true" />
 
-          <div className="hero-mobile-v2__inner relative z-10 px-6 pb-10 pt-[4.5rem]">
+          <div className="hero-mobile-v2__inner relative z-10 w-full max-w-full px-4 pb-6 pt-[3.75rem]">
             <p
               className="hero-mobile-v2__badge hero-animate hero-animate-1"
               role="status"
@@ -80,8 +80,12 @@ export function HeroSection({
             </h1>
 
             <div className="hero-mobile-v2__artwork hero-animate hero-animate-3">
-              <div className="hero-mobile-v2__artwork-glow" aria-hidden="true" />
-              <HeroArtwork variant="mobile" layout="hero" priority imageUrl={mobileImageUrl} />
+              <div className="hero-mobile-v2__scene">
+                <div className="hero-mobile-v2__scene-glow" aria-hidden="true" />
+                <div className="hero-mobile-v2__artwork-blend">
+                  <HeroArtwork variant="mobile" layout="hero" priority imageUrl={mobileImageUrl} />
+                </div>
+              </div>
             </div>
 
             <div className="hero-mobile-v2__actions hero-animate hero-animate-4">

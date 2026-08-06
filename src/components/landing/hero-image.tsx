@@ -54,18 +54,19 @@ export function HeroArtwork({
   if (layout === 'hero') {
     return (
       <div className="hero-artwork-hero">
-        {/* Native img ensures full object-fit contain without Next/Image layout quirks on mobile */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUrl}
-          alt="Професійний евакуатор Evakuator24"
-          width={HERO_WIDTH}
-          height={HERO_HEIGHT}
-          decoding="async"
-          fetchPriority={shouldPreload ? 'high' : 'auto'}
-          loading={shouldPreload ? 'eager' : 'lazy'}
-          className="hero-artwork-image-hero"
-        />
+        <div className="hero-artwork-hero__float">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="Професійний евакуатор Evakuator24"
+            width={HERO_WIDTH}
+            height={HERO_HEIGHT}
+            decoding="async"
+            fetchPriority={shouldPreload ? 'high' : 'auto'}
+            loading={shouldPreload ? 'eager' : 'lazy'}
+            className="hero-artwork-image-hero"
+          />
+        </div>
       </div>
     );
   }

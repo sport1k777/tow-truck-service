@@ -422,8 +422,8 @@
 .hero-artwork-hero {
   position: relative;
   z-index: 1;
-  width: min(92vw, 100%);
-  max-width: 92%;
+  width: min(95vw, 100%);
+  max-width: 95%;
   aspect-ratio: 1024 / 819;
   overflow: visible;
 }
@@ -435,11 +435,8 @@
 }
 
 .hero-artwork-image-hero {
-  position: relative !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain;
-  object-position: center center;
+  object-fit: contain !important;
+  object-position: center center !important;
   filter: drop-shadow(0 24px 48px rgba(37, 99, 235, 0.22))
     drop-shadow(0 8px 24px rgba(56, 189, 248, 0.1));
 }

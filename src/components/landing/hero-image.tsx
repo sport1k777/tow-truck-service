@@ -10,7 +10,7 @@ const HERO_SIZES_MOBILE = '(max-width: 767px) 100vw, (max-width: 1023px) 768px, 
 
 interface HeroArtworkProps {
   variant: 'desktop' | 'mobile';
-  layout?: 'default' | 'premium';
+  layout?: 'default' | 'premium' | 'immersive' | 'hero';
   priority?: boolean;
   imageUrl?: string;
 }
@@ -45,6 +45,44 @@ export function HeroArtwork({
             quality={85}
             className="hero-artwork-image absolute left-[44%] top-[50%] h-auto w-[128%] max-w-none -translate-x-1/2 -translate-y-1/2 xl:left-[45%] xl:w-[132%]"
             sizes={HERO_SIZES_DESKTOP}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (layout === 'hero') {
+    return (
+      <div className="hero-artwork-hero relative h-full w-full">
+        <Image
+          src={imageUrl}
+          alt="Професійний евакуатор Evakuator24"
+          width={HERO_WIDTH}
+          height={HERO_HEIGHT}
+          priority={shouldPreload}
+          loading={shouldPreload ? undefined : 'lazy'}
+          quality={92}
+          className="hero-artwork-image-hero pointer-events-none absolute bottom-0 left-1/2 w-full max-w-none -translate-x-1/2 object-contain object-bottom"
+          sizes="100vw"
+        />
+      </div>
+    );
+  }
+
+  if (layout === 'immersive') {
+    return (
+      <div className="hero-artwork-immersive relative h-full w-full">
+        <div className="hero-artwork-mask-immersive absolute inset-0 overflow-visible">
+          <Image
+            src={imageUrl}
+            alt="Професійний евакуатор Evakuator24"
+            width={HERO_WIDTH}
+            height={HERO_HEIGHT}
+            priority={shouldPreload}
+            loading={shouldPreload ? undefined : 'lazy'}
+            quality={90}
+            className="hero-artwork-image-immersive absolute bottom-0 left-1/2 h-[168%] w-[188%] max-w-none -translate-x-1/2 object-contain object-bottom sm:h-[172%] sm:w-[192%]"
+            sizes={HERO_SIZES_MOBILE}
           />
         </div>
       </div>

@@ -22,6 +22,7 @@ export function MobileHeroCanvas({ imageUrl = DEFAULT_MOBILE_HERO_ARTWORK }: Mob
         className="hero-mobile-v2__layer hero-mobile-v2__layer-artwork"
         style={{ '--hero-mobile-artwork': artworkUrl } as CSSProperties}
       />
+      <div className="hero-mobile-v2__layer hero-mobile-v2__layer-reflection" />
       <div className="hero-mobile-v2__layer hero-mobile-v2__layer-ambient" />
       <div className="hero-mobile-v2__layer hero-mobile-v2__layer-beams" />
       <div className="hero-mobile-v2__layer hero-mobile-v2__layer-vignette" />

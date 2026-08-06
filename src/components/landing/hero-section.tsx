@@ -14,6 +14,21 @@ const FALLBACK_ICONS: Record<string, LucideIcon> = {
   Clock,
 };
 
+const MOBILE_HERO_LEAD =
+  'Базування у Рівному. Професійна евакуація автомобілів по всій Україні.';
+
+function MobileHeroTitle({ title, titleHighlight }: { title: string; titleHighlight: string }) {
+  const accent = titleHighlight.replace(/^за\s*/iu, '').trim() || '30 секунд';
+
+  return (
+    <h1 id="hero-heading" className="hero-mobile-v2__title hero-animate hero-animate-2">
+      <span className="block text-white">{title}</span>
+      <span className="block text-white">
+        за <span className="hero-mobile-v2__title-accent">{accent}</span>
+      </span>
+    </h1>
+  );
+}
 const MOBILE_HERO_FEATURES = [
   { emoji: '⚡', label: 'Швидкий виїзд' },
   { emoji: '📍', label: 'Базування: Рівне' },
@@ -63,7 +78,7 @@ export function HeroSection({
         <div className="hero-mobile-v2 relative max-w-[100vw] overflow-x-hidden lg:hidden">
           <MobileHeroCanvas imageUrl={mobileImageUrl} />
 
-          <div className="hero-mobile-v2__inner relative w-full max-w-full px-4 pb-5 pt-14">
+          <div className="hero-mobile-v2__inner relative w-full max-w-full px-4 pb-6 pt-14">
             <p
               className="hero-mobile-v2__badge hero-animate hero-animate-1"
               role="status"
@@ -71,20 +86,16 @@ export function HeroSection({
               📍 Рівне • Виїзд по всій Україні 24/7
             </p>
 
-            <h1
-              id="hero-heading"
-              className="hero-mobile-v2__title hero-animate hero-animate-2"
-            >
-              <span className="block text-white">{title}</span>
-              <span className="hero-mobile-v2__title-accent block">{titleHighlight}</span>
-            </h1>
+            <MobileHeroTitle title={title} titleHighlight={titleHighlight} />
+
+            <p className="hero-mobile-v2__lead hero-animate hero-animate-3">{MOBILE_HERO_LEAD}</p>
 
             <div
-              className="hero-mobile-v2__artwork-spacer hero-animate hero-animate-3"
+              className="hero-mobile-v2__artwork-spacer hero-animate hero-animate-4"
               aria-hidden="true"
             />
 
-            <div className="hero-mobile-v2__actions hero-animate hero-animate-4">
+            <div className="hero-mobile-v2__actions hero-animate hero-animate-5">
               <Link href="/order" className="hero-mobile-v2__btn-primary hero-mobile-btn">
                 {ctaPrimary}
                 <ArrowRight className="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
@@ -94,12 +105,12 @@ export function HeroSection({
               </Link>
             </div>
 
-            <p className="hero-mobile-v2__subtitle hero-animate hero-animate-5">
-              Базування у Рівному. Професійна евакуація автомобілів по всій Україні.
+            <p className="hero-mobile-v2__subtitle hero-animate hero-animate-6">
+              {MOBILE_HERO_LEAD}
             </p>
 
             <div
-              className="hero-mobile-v2__features hero-animate hero-animate-6"
+              className="hero-mobile-v2__features hero-animate hero-animate-7"
               aria-label="Переваги сервісу"
             >
               {MOBILE_HERO_FEATURES.map(({ emoji, label }) => (

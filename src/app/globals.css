@@ -307,8 +307,9 @@
   animation: hero-mobile-v2-fade-up 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Mobile hero v2 — seamless premium composition */
+/* Mobile hero v2 — cinematic layered background composition */
 .hero-mobile-v2 {
+  position: relative;
   isolation: isolate;
   width: 100%;
   max-width: 100vw;
@@ -316,23 +317,151 @@
   background: #030712;
 }
 
-.hero-mobile-v2__bg {
-  background:
-    radial-gradient(ellipse 110% 80% at 50% 36%, rgba(11, 18, 36, 0.95) 0%, transparent 62%),
-    linear-gradient(180deg, #020617 0%, #0a1020 42%, #030712 100%);
+.hero-mobile-v2__canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.hero-mobile-v2__glow {
+.hero-mobile-v2__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-mobile-v2__layer-base {
+  background:
+    radial-gradient(ellipse 120% 70% at 50% 18%, rgba(15, 23, 42, 0.9) 0%, transparent 55%),
+    linear-gradient(180deg, #020617 0%, #050b18 38%, #030712 72%, #020617 100%);
+}
+
+.hero-mobile-v2__layer-floor {
+  background:
+    radial-gradient(ellipse 95% 38% at 50% 78%, rgba(56, 189, 248, 0.14) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 22% at 50% 88%, rgba(37, 99, 235, 0.1) 0%, transparent 68%),
+    radial-gradient(ellipse 45% 12% at 50% 94%, rgba(59, 130, 246, 0.08) 0%, transparent 75%);
+}
+
+.hero-mobile-v2__layer-grid {
+  opacity: 0.35;
+  background:
+    radial-gradient(circle at 50% 72%, rgba(56, 189, 248, 0.07) 0%, transparent 52%),
+    repeating-radial-gradient(
+      circle at 50% 78%,
+      transparent 0,
+      transparent 14px,
+      rgba(56, 189, 248, 0.04) 14px,
+      rgba(56, 189, 248, 0.04) 15px
+    );
+  mask-image: radial-gradient(ellipse 80% 45% at 50% 78%, #000 0%, transparent 72%);
+}
+
+.hero-mobile-v2__layer-artwork {
+  background-image: var(--hero-mobile-artwork);
+  background-repeat: no-repeat;
+  background-position: 50% 44%;
+  background-size: min(138vw, 38rem) auto;
+  transform-origin: 50% 52%;
+  animation: hero-mobile-artwork-drift 10s ease-in-out infinite;
+  -webkit-mask-image: radial-gradient(
+    ellipse 92% 78% at 50% 46%,
+    #000 0%,
+    #000 42%,
+    rgba(0, 0, 0, 0.75) 58%,
+    rgba(0, 0, 0, 0.25) 78%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 92% 78% at 50% 46%,
+    #000 0%,
+    #000 42%,
+    rgba(0, 0, 0, 0.75) 58%,
+    rgba(0, 0, 0, 0.25) 78%,
+    transparent 100%
+  );
+}
+
+.hero-mobile-v2__layer-ambient {
   background:
     radial-gradient(
-      ellipse 88% 52% at 50% 44%,
-      rgba(56, 189, 248, 0.16) 0%,
-      rgba(37, 99, 235, 0.07) 40%,
+      ellipse 75% 48% at 50% 42%,
+      rgba(56, 189, 248, 0.24) 0%,
+      rgba(37, 99, 235, 0.1) 38%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 40% 28% at 72% 32%,
+      rgba(96, 165, 250, 0.12) 0%,
       transparent 70%
     );
+  mix-blend-mode: screen;
+}
+
+.hero-mobile-v2__layer-beams {
+  opacity: 0.55;
+  background:
+    linear-gradient(
+      118deg,
+      transparent 42%,
+      rgba(56, 189, 248, 0.06) 49%,
+      rgba(56, 189, 248, 0.14) 50%,
+      rgba(56, 189, 248, 0.05) 51%,
+      transparent 58%
+    ),
+    linear-gradient(
+      128deg,
+      transparent 36%,
+      rgba(37, 99, 235, 0.04) 46%,
+      rgba(59, 130, 246, 0.1) 47%,
+      transparent 56%
+    );
+  mask-image: radial-gradient(ellipse 85% 60% at 58% 38%, #000 0%, transparent 78%);
+}
+
+.hero-mobile-v2__layer-vignette {
+  background:
+    linear-gradient(180deg, #030712 0%, rgba(3, 7, 18, 0.94) 7%, transparent 24%, transparent 56%, rgba(3, 7, 18, 0.82) 70%, #030712 100%),
+    linear-gradient(90deg, #030712 0%, rgba(3, 7, 18, 0.75) 6%, transparent 18%, transparent 82%, rgba(3, 7, 18, 0.75) 94%, #030712 100%),
+    radial-gradient(ellipse 105% 85% at 50% 46%, transparent 32%, rgba(3, 7, 18, 0.35) 62%, rgba(3, 7, 18, 0.85) 82%, #030712 100%);
+}
+
+.hero-mobile-v2__layer-particles {
+  opacity: 0.7;
+  background-image:
+    radial-gradient(1px 1px at 12% 28%, rgba(125, 211, 252, 0.75), transparent),
+    radial-gradient(1px 1px at 24% 62%, rgba(56, 189, 248, 0.55), transparent),
+    radial-gradient(1.5px 1.5px at 78% 34%, rgba(96, 165, 250, 0.65), transparent),
+    radial-gradient(1px 1px at 68% 68%, rgba(56, 189, 248, 0.45), transparent),
+    radial-gradient(1px 1px at 42% 38%, rgba(125, 211, 252, 0.5), transparent),
+    radial-gradient(1px 1px at 88% 52%, rgba(59, 130, 246, 0.4), transparent);
+  animation: hero-mobile-particles-drift 14s ease-in-out infinite alternate;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 44%, #000 0%, transparent 88%);
+}
+
+@keyframes hero-mobile-artwork-drift {
+  0%,
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.015) translate3d(0, -5px, 0);
+  }
+}
+
+@keyframes hero-mobile-particles-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate3d(6px, -8px, 0);
+    opacity: 0.75;
+  }
 }
 
 .hero-mobile-v2__inner {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -363,6 +492,7 @@
   font-weight: 700;
   line-height: 1.02;
   letter-spacing: -0.04em;
+  text-shadow: 0 2px 28px rgba(3, 7, 18, 0.85);
 }
 
 .hero-mobile-v2__title-accent {
@@ -381,101 +511,12 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-.hero-mobile-v2__artwork {
-  position: relative;
-  z-index: 1;
+.hero-mobile-v2__artwork-spacer {
   width: 100%;
   max-width: 100%;
+  min-height: clamp(10.5rem, 34dvh, 18.5rem);
+  flex-shrink: 0;
   margin-bottom: 0.625rem;
-}
-
-.hero-mobile-v2__scene {
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  margin-inline: auto;
-}
-
-.hero-mobile-v2__scene-glow {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  z-index: 0;
-  width: min(98%, 26rem);
-  aspect-ratio: 1.35;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    ellipse 100% 100% at 50% 50%,
-    rgba(56, 189, 248, 0.32) 0%,
-    rgba(37, 99, 235, 0.14) 38%,
-    rgba(29, 78, 216, 0.05) 58%,
-    transparent 78%
-  );
-  filter: blur(26px);
-  pointer-events: none;
-}
-
-.hero-mobile-v2__artwork-blend {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-  justify-content: center;
-}
-
-.hero-artwork-hero {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-  justify-content: center;
-}
-
-.hero-artwork-hero__float {
-  position: relative;
-  display: flex;
-  width: min(98%, 100%);
-  max-width: 100%;
-  justify-content: center;
-  animation: hero-truck-float 7s ease-in-out infinite;
-  will-change: transform;
-}
-
-.hero-artwork-hero__float::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 82% 76% at 50% 47%,
-    transparent 54%,
-    rgba(3, 7, 18, 0.28) 74%,
-    rgba(3, 7, 18, 0.72) 88%,
-    #030712 100%
-  );
-}
-
-.hero-artwork-image-hero {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: clamp(11.25rem, 36dvh, 19.5rem);
-  object-fit: contain;
-  object-position: center center;
-  -webkit-mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%),
-    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
-  mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%),
-    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
 }
 
 .hero-mobile-v2__actions {
@@ -488,8 +529,8 @@
 }
 
 @media (max-width: 374px) {
-  .hero-artwork-image-hero {
-    max-height: clamp(10.25rem, 34dvh, 15.5rem);
+  .hero-mobile-v2__artwork-spacer {
+    min-height: clamp(9.75rem, 32dvh, 15.5rem);
   }
 
   .hero-mobile-v2__title {
@@ -497,26 +538,31 @@
     font-size: clamp(1.875rem, 8.5vw, 2.25rem);
   }
 
-  .hero-artwork-hero__float::after {
-    background: radial-gradient(
-      ellipse 84% 78% at 50% 47%,
-      transparent 52%,
-      rgba(3, 7, 18, 0.32) 72%,
-      rgba(3, 7, 18, 0.78) 86%,
-      #030712 100%
-    );
+  .hero-mobile-v2__layer-artwork {
+    background-position: 50% 45%;
+    background-size: min(142vw, 34rem) auto;
   }
 }
 
 @media (min-width: 390px) {
-  .hero-artwork-image-hero {
-    max-height: clamp(12rem, 37dvh, 20rem);
+  .hero-mobile-v2__artwork-spacer {
+    min-height: clamp(11.5rem, 35dvh, 19.5rem);
+  }
+
+  .hero-mobile-v2__layer-artwork {
+    background-position: 50% 43%;
+    background-size: min(132vw, 40rem) auto;
   }
 }
 
 @media (min-width: 428px) {
-  .hero-artwork-image-hero {
-    max-height: clamp(12.75rem, 38dvh, 21rem);
+  .hero-mobile-v2__artwork-spacer {
+    min-height: clamp(12.25rem, 36dvh, 20.5rem);
+  }
+
+  .hero-mobile-v2__layer-artwork {
+    background-position: 50% 42%;
+    background-size: min(128vw, 42rem) auto;
   }
 }
 
@@ -593,7 +639,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-artwork-hero__float {
+  .hero-mobile-v2__layer-artwork,
+  .hero-mobile-v2__layer-particles {
     animation: none;
   }
 

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, Clock, MapPin, Shield, Zap, type LucideIcon } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { HeroArtwork } from './hero-image';
+import { MobileHeroCanvas } from './mobile-hero-canvas';
 import type { WebsiteContentSettings } from '@/modules/settings/settings.types';
 
 const FALLBACK_ICONS: Record<string, LucideIcon> = {
@@ -60,10 +61,9 @@ export function HeroSection({
       <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:min-h-screen lg:grid-cols-[minmax(0,520px)_1fr] lg:items-center xl:grid-cols-[minmax(0,560px)_1fr]">
         {/* Mobile — premium hero v2 */}
         <div className="hero-mobile-v2 relative max-w-[100vw] overflow-x-hidden lg:hidden">
-          <div className="hero-mobile-v2__bg pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="hero-mobile-v2__glow pointer-events-none absolute inset-0" aria-hidden="true" />
+          <MobileHeroCanvas imageUrl={mobileImageUrl} />
 
-          <div className="hero-mobile-v2__inner relative z-10 w-full max-w-full px-4 pb-5 pt-14">
+          <div className="hero-mobile-v2__inner relative w-full max-w-full px-4 pb-5 pt-14">
             <p
               className="hero-mobile-v2__badge hero-animate hero-animate-1"
               role="status"
@@ -79,14 +79,10 @@ export function HeroSection({
               <span className="hero-mobile-v2__title-accent block">{titleHighlight}</span>
             </h1>
 
-            <div className="hero-mobile-v2__artwork hero-animate hero-animate-3">
-              <div className="hero-mobile-v2__scene">
-                <div className="hero-mobile-v2__scene-glow" aria-hidden="true" />
-                <div className="hero-mobile-v2__artwork-blend">
-                  <HeroArtwork variant="mobile" layout="hero" priority imageUrl={mobileImageUrl} />
-                </div>
-              </div>
-            </div>
+            <div
+              className="hero-mobile-v2__artwork-spacer hero-animate hero-animate-3"
+              aria-hidden="true"
+            />
 
             <div className="hero-mobile-v2__actions hero-animate hero-animate-4">
               <Link href="/order" className="hero-mobile-v2__btn-primary hero-mobile-btn">

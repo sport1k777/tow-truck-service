@@ -313,8 +313,7 @@
   position: relative;
   isolation: isolate;
   width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
+  max-width: 100%;
   background: #030712;
 }
 
@@ -322,6 +321,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  contain: paint;
   pointer-events: none;
 }
 
@@ -370,14 +370,16 @@
 .hero-mobile-v2__layer-artwork {
   background-image: var(--hero-mobile-artwork);
   background-repeat: no-repeat;
-  background-position: calc(47% + 30px) calc(40% - 92px);
-  background-size: min(140vw, 39rem) auto;
+  background-position: 50% calc(40% - 92px);
+  background-size: min(100%, 39rem) auto;
+  background-origin: padding-box;
+  background-clip: padding-box;
   transform-origin: 50% 44%;
   animation: hero-mobile-artwork-drift 10s ease-in-out infinite;
   filter: contrast(1.22) saturate(1.1) brightness(1.042);
   -webkit-filter: contrast(1.22) saturate(1.1) brightness(1.042);
   -webkit-mask-image: radial-gradient(
-    ellipse 96% 82% at 51% 36%,
+    ellipse 96% 82% at 50% 36%,
     #000 0%,
     #000 46%,
     rgba(0, 0, 0, 0.8) 58%,
@@ -385,7 +387,7 @@
     transparent 100%
   );
   mask-image: radial-gradient(
-    ellipse 96% 82% at 51% 36%,
+    ellipse 96% 82% at 50% 36%,
     #000 0%,
     #000 46%,
     rgba(0, 0, 0, 0.8) 58%,
@@ -400,13 +402,13 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 34% 18% at 43% 35%, rgba(224, 242, 254, 0.24) 0%, transparent 72%),
-    radial-gradient(ellipse 28% 14% at 38% 33%, rgba(186, 230, 253, 0.14) 0%, transparent 70%),
-    radial-gradient(ellipse 54% 40% at 48% 40%, rgba(96, 165, 250, 0.15) 0%, transparent 68%),
-    radial-gradient(ellipse 62% 28% at 52% 32%, rgba(56, 189, 248, 0.1) 0%, transparent 74%);
+    radial-gradient(ellipse 34% 18% at 50% 35%, rgba(224, 242, 254, 0.24) 0%, transparent 72%),
+    radial-gradient(ellipse 28% 14% at 48% 33%, rgba(186, 230, 253, 0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 54% 40% at 50% 40%, rgba(96, 165, 250, 0.15) 0%, transparent 68%),
+    radial-gradient(ellipse 62% 28% at 50% 32%, rgba(56, 189, 248, 0.1) 0%, transparent 74%);
   mix-blend-mode: soft-light;
-  -webkit-mask-image: radial-gradient(ellipse 74% 60% at 49% 38%, #000 0%, transparent 88%);
-  mask-image: radial-gradient(ellipse 74% 60% at 49% 38%, #000 0%, transparent 88%);
+  -webkit-mask-image: radial-gradient(ellipse 74% 60% at 50% 38%, #000 0%, transparent 88%);
+  mask-image: radial-gradient(ellipse 74% 60% at 50% 38%, #000 0%, transparent 88%);
 }
 
 .hero-mobile-v2__layer-ambient {
@@ -477,7 +479,7 @@
     transform: scale(1) translate3d(0, 0, 0);
   }
   50% {
-    transform: scale(1.015) translate3d(0, -5px, 0);
+    transform: scale(1.008) translate3d(0, -4px, 0);
   }
 }
 
@@ -487,7 +489,7 @@
     opacity: 0.55;
   }
   100% {
-    transform: translate3d(6px, -8px, 0);
+    transform: translate3d(0, -8px, 0);
     opacity: 0.75;
   }
 }
@@ -589,8 +591,8 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: calc(47% + 28px) calc(41% - 88px);
-    background-size: min(140vw, 35rem) auto;
+    background-position: 50% calc(41% - 88px);
+    background-size: min(100%, 35rem) auto;
   }
 }
 
@@ -600,8 +602,8 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: calc(47% + 30px) calc(39% - 92px);
-    background-size: min(134vw, 41rem) auto;
+    background-position: 50% calc(39% - 92px);
+    background-size: min(100%, 41rem) auto;
   }
 }
 
@@ -611,8 +613,8 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: calc(47% + 30px) calc(38% - 92px);
-    background-size: min(130vw, 43rem) auto;
+    background-position: 50% calc(38% - 92px);
+    background-size: min(100%, 43rem) auto;
   }
 }
 

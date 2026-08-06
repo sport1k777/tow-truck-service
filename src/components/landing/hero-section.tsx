@@ -67,7 +67,7 @@ export function HeroSection({
 
   return (
     <section
-      className="relative max-w-[100vw] overflow-x-hidden bg-[#030712] lg:overflow-hidden"
+      className="relative w-full max-w-full overflow-x-clip bg-[#030712] lg:overflow-hidden"
       aria-labelledby="hero-heading"
     >
       <div className="hero-artwork-ambient pointer-events-none absolute inset-0" aria-hidden="true" />
@@ -75,7 +75,7 @@ export function HeroSection({
 
       <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:min-h-screen lg:grid-cols-[minmax(0,520px)_1fr] lg:items-center xl:grid-cols-[minmax(0,560px)_1fr]">
         {/* Mobile — premium hero v2 */}
-        <div className="hero-mobile-v2 relative max-w-[100vw] overflow-x-hidden lg:hidden">
+        <div className="hero-mobile-v2 relative w-full max-w-full lg:hidden">
           <MobileHeroCanvas imageUrl={mobileImageUrl} />
 
           <div className="hero-mobile-v2__inner relative w-full max-w-full px-4 pb-6 pt-14">

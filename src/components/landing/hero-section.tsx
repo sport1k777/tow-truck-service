@@ -79,18 +79,12 @@ export function HeroSection({
               <span className="hero-mobile-v2__title-accent block">{titleHighlight}</span>
             </h1>
 
-            <p className="hero-mobile-v2__subtitle hero-animate hero-animate-3">
-              Базування у Рівному.
-              <br />
-              Професійна евакуація автомобілів по всій Україні.
-            </p>
-
-            <div className="hero-mobile-v2__artwork hero-animate hero-animate-4">
+            <div className="hero-mobile-v2__artwork hero-animate hero-animate-3">
               <div className="hero-mobile-v2__artwork-glow" aria-hidden="true" />
               <HeroArtwork variant="mobile" layout="hero" priority imageUrl={mobileImageUrl} />
             </div>
 
-            <div className="hero-mobile-v2__actions hero-animate hero-animate-5">
+            <div className="hero-mobile-v2__actions hero-animate hero-animate-4">
               <Link href="/order" className="hero-mobile-v2__btn-primary hero-mobile-btn">
                 {ctaPrimary}
                 <ArrowRight className="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
@@ -99,6 +93,10 @@ export function HeroSection({
                 {ctaSecondary}
               </Link>
             </div>
+
+            <p className="hero-mobile-v2__subtitle hero-animate hero-animate-5">
+              Базування у Рівному. Професійна евакуація автомобілів по всій Україні.
+            </p>
 
             <div
               className="hero-mobile-v2__features hero-animate hero-animate-6"

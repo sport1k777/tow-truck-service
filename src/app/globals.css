@@ -397,9 +397,10 @@
 .hero-mobile-v2__artwork {
   position: relative;
   z-index: 1;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  width: 95%;
+  max-width: 95%;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 1.125rem;
   overflow: visible;
 }
@@ -422,17 +423,15 @@
 .hero-artwork-hero {
   position: relative;
   z-index: 1;
-  display: flex;
   width: 100%;
-  justify-content: center;
   overflow: visible;
 }
 
 .hero-artwork-image-hero {
   display: block;
-  width: 95%;
-  max-width: 95%;
-  height: auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
   object-fit: contain;
   object-position: center center;
   animation: hero-truck-float 6s ease-in-out infinite;
@@ -441,7 +440,7 @@
 }
 
 @media (max-width: 360px) {
-  .hero-artwork-image-hero {
+  .hero-mobile-v2__artwork {
     width: 92%;
     max-width: 92%;
   }

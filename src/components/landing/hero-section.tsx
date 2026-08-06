@@ -51,7 +51,7 @@ export function HeroSection({
 
   return (
     <section
-      className="relative overflow-x-hidden bg-[#030712] lg:overflow-hidden"
+      className="relative overflow-x-clip overflow-y-visible bg-[#030712] lg:overflow-hidden"
       aria-labelledby="hero-heading"
     >
       <div className="hero-artwork-ambient pointer-events-none absolute inset-0" aria-hidden="true" />

@@ -63,7 +63,8 @@ export function HeroArtwork({
           loading={shouldPreload ? undefined : 'lazy'}
           quality={92}
           className="hero-artwork-image-hero"
-          sizes="(max-width: 430px) 95vw, 420px"
+          sizes="95vw"
+          style={{ width: '100%', height: 'auto', maxWidth: '100%' }}
         />
       </div>
     );

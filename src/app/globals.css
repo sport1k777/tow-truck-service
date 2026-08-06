@@ -314,6 +314,7 @@
   isolation: isolate;
   width: 100%;
   max-width: 100%;
+  overflow-x: clip;
   background: #030712;
 }
 
@@ -368,10 +369,18 @@
 }
 
 .hero-mobile-v2__layer-artwork {
+  overflow: hidden;
+}
+
+.hero-mobile-v2__layer-artwork::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background-image: var(--hero-mobile-artwork);
   background-repeat: no-repeat;
-  background-position: 50% calc(40% - 92px);
-  background-size: min(100%, 39rem) auto;
+  /* Truck focal point ~38% from image left; position derived from (viewport - artworkWidth) */
+  background-position: 7% calc(40% - 92px);
+  background-size: 39rem auto;
   background-origin: padding-box;
   background-clip: padding-box;
   transform-origin: 50% 44%;
@@ -379,7 +388,7 @@
   filter: contrast(1.22) saturate(1.1) brightness(1.042);
   -webkit-filter: contrast(1.22) saturate(1.1) brightness(1.042);
   -webkit-mask-image: radial-gradient(
-    ellipse 96% 82% at 50% 36%,
+    ellipse 100% 82% at 50% 36%,
     #000 0%,
     #000 46%,
     rgba(0, 0, 0, 0.8) 58%,
@@ -387,7 +396,7 @@
     transparent 100%
   );
   mask-image: radial-gradient(
-    ellipse 96% 82% at 50% 36%,
+    ellipse 100% 82% at 50% 36%,
     #000 0%,
     #000 46%,
     rgba(0, 0, 0, 0.8) 58%,
@@ -476,10 +485,10 @@
 @keyframes hero-mobile-artwork-drift {
   0%,
   100% {
-    transform: scale(1) translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: scale(1.008) translate3d(0, -4px, 0);
+    transform: translate3d(0, -4px, 0);
   }
 }
 
@@ -590,9 +599,9 @@
     font-size: 0.75rem;
   }
 
-  .hero-mobile-v2__layer-artwork {
-    background-position: 50% calc(41% - 88px);
-    background-size: min(100%, 35rem) auto;
+  .hero-mobile-v2__layer-artwork::before {
+    background-position: 6% calc(41% - 88px);
+    background-size: 35rem auto;
   }
 }
 
@@ -601,9 +610,9 @@
     min-height: clamp(11.75rem, 37dvh, 20rem);
   }
 
-  .hero-mobile-v2__layer-artwork {
-    background-position: 50% calc(39% - 92px);
-    background-size: min(100%, 41rem) auto;
+  .hero-mobile-v2__layer-artwork::before {
+    background-position: 8% calc(39% - 92px);
+    background-size: 41rem auto;
   }
 }
 
@@ -612,9 +621,9 @@
     min-height: clamp(12.5rem, 38dvh, 21rem);
   }
 
-  .hero-mobile-v2__layer-artwork {
-    background-position: 50% calc(38% - 92px);
-    background-size: min(100%, 43rem) auto;
+  .hero-mobile-v2__layer-artwork::before {
+    background-position: 7% calc(38% - 92px);
+    background-size: 43rem auto;
   }
 }
 
@@ -700,12 +709,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-mobile-v2__layer-artwork,
+  .hero-mobile-v2__layer-artwork::before,
   .hero-mobile-v2__layer-particles {
     animation: none;
   }
 
-  .hero-mobile-v2__layer-artwork {
+  .hero-mobile-v2__layer-artwork::before {
     filter: contrast(1.22) saturate(1.1) brightness(1.042);
     -webkit-filter: contrast(1.22) saturate(1.1) brightness(1.042);
   }
@@ -823,6 +832,12 @@
       transparent 65%
     );
   animation: hero-artwork-ambient-pulse 6s ease-in-out infinite;
+}
+
+@media (max-width: 1023px) {
+  .hero-artwork-ambient {
+    display: none;
+  }
 }
 
 /* Desktop artwork — soft edge mask, no visible frame */

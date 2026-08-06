@@ -9,7 +9,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div className="flex min-h-screen flex-col bg-[#030712]">
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-x-clip">{children}</main>
       <PublicFooter variant="dark" settings={settings} footerTagline={content.footerTagline} />
     </div>
   );

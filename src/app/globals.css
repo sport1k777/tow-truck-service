@@ -340,7 +340,7 @@
 }
 
 .hero-mobile-v2__badge {
-  margin-bottom: 0.625rem;
+  margin-bottom: 0.5rem;
   display: inline-flex;
   max-width: 100%;
   align-items: center;
@@ -357,7 +357,7 @@
 }
 
 .hero-mobile-v2__title {
-  margin-bottom: 1rem;
+  margin-bottom: 0.625rem;
   max-width: 12ch;
   font-size: clamp(2rem, 9vw, 2.625rem);
   font-weight: 700;
@@ -386,7 +386,7 @@
   z-index: 1;
   width: 100%;
   max-width: 100%;
-  margin-bottom: 0.875rem;
+  margin-bottom: 0.625rem;
 }
 
 .hero-mobile-v2__scene {
@@ -399,18 +399,19 @@
 .hero-mobile-v2__scene-glow {
   position: absolute;
   left: 50%;
-  top: 54%;
+  top: 52%;
   z-index: 0;
-  width: min(92%, 22rem);
-  height: min(68%, 14rem);
+  width: min(98%, 26rem);
+  aspect-ratio: 1.35;
   transform: translate(-50%, -50%);
   background: radial-gradient(
     ellipse 100% 100% at 50% 50%,
-    rgba(56, 189, 248, 0.22) 0%,
-    rgba(37, 99, 235, 0.1) 42%,
-    transparent 72%
+    rgba(56, 189, 248, 0.32) 0%,
+    rgba(37, 99, 235, 0.14) 38%,
+    rgba(29, 78, 216, 0.05) 58%,
+    transparent 78%
   );
-  filter: blur(22px);
+  filter: blur(26px);
   pointer-events: none;
 }
 
@@ -421,34 +422,6 @@
   width: 100%;
   max-width: 100%;
   justify-content: center;
-  overflow: hidden;
-  -webkit-mask-image: radial-gradient(
-    ellipse 100% 98% at 50% 50%,
-    #000 55%,
-    rgba(0, 0, 0, 0.88) 70%,
-    rgba(0, 0, 0, 0.45) 84%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 100% 98% at 50% 50%,
-    #000 55%,
-    rgba(0, 0, 0, 0.88) 70%,
-    rgba(0, 0, 0, 0.45) 84%,
-    transparent 100%
-  );
-}
-
-.hero-mobile-v2__artwork-blend::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  z-index: 2;
-  pointer-events: none;
-  background:
-    linear-gradient(to top, #030712 0%, rgba(3, 7, 18, 0.95) 6%, transparent 22%),
-    linear-gradient(to bottom, #030712 0%, rgba(3, 7, 18, 0.9) 5%, transparent 18%),
-    linear-gradient(to left, #030712 0%, rgba(3, 7, 18, 0.85) 4%, transparent 16%),
-    linear-gradient(to right, #030712 0%, rgba(3, 7, 18, 0.85) 4%, transparent 16%);
 }
 
 .hero-artwork-hero {
@@ -461,22 +434,48 @@
 }
 
 .hero-artwork-hero__float {
+  position: relative;
   display: flex;
-  width: 100%;
+  width: min(98%, 100%);
   max-width: 100%;
   justify-content: center;
   animation: hero-truck-float 7s ease-in-out infinite;
   will-change: transform;
 }
 
+.hero-artwork-hero__float::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 82% 76% at 50% 47%,
+    transparent 54%,
+    rgba(3, 7, 18, 0.28) 74%,
+    rgba(3, 7, 18, 0.72) 88%,
+    #030712 100%
+  );
+}
+
 .hero-artwork-image-hero {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   max-width: 100%;
   height: auto;
-  max-height: clamp(10.75rem, 32dvh, 17rem);
+  max-height: clamp(11.25rem, 36dvh, 19.5rem);
   object-fit: contain;
   object-position: center center;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
 .hero-mobile-v2__actions {
@@ -490,23 +489,34 @@
 
 @media (max-width: 374px) {
   .hero-artwork-image-hero {
-    max-height: clamp(9.75rem, 30dvh, 14.5rem);
+    max-height: clamp(10.25rem, 34dvh, 15.5rem);
   }
 
   .hero-mobile-v2__title {
     max-width: 11ch;
+    font-size: clamp(1.875rem, 8.5vw, 2.25rem);
+  }
+
+  .hero-artwork-hero__float::after {
+    background: radial-gradient(
+      ellipse 84% 78% at 50% 47%,
+      transparent 52%,
+      rgba(3, 7, 18, 0.32) 72%,
+      rgba(3, 7, 18, 0.78) 86%,
+      #030712 100%
+    );
   }
 }
 
 @media (min-width: 390px) {
   .hero-artwork-image-hero {
-    max-height: clamp(11.5rem, 33dvh, 18rem);
+    max-height: clamp(12rem, 37dvh, 20rem);
   }
 }
 
 @media (min-width: 428px) {
   .hero-artwork-image-hero {
-    max-height: clamp(12.5rem, 34dvh, 19rem);
+    max-height: clamp(12.75rem, 38dvh, 21rem);
   }
 }
 

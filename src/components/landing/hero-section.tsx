@@ -63,7 +63,7 @@ export function HeroSection({
           <div className="hero-mobile-v2__bg pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="hero-mobile-v2__glow pointer-events-none absolute inset-0" aria-hidden="true" />
 
-          <div className="hero-mobile-v2__inner relative z-10 w-full max-w-full px-4 pb-6 pt-[3.75rem]">
+          <div className="hero-mobile-v2__inner relative z-10 w-full max-w-full px-4 pb-5 pt-14">
             <p
               className="hero-mobile-v2__badge hero-animate hero-animate-1"
               role="status"

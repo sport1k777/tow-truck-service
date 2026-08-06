@@ -331,40 +331,40 @@
 
 .hero-mobile-v2__layer-base {
   background:
-    radial-gradient(ellipse 120% 70% at 50% 18%, rgba(15, 23, 42, 0.9) 0%, transparent 55%),
+    radial-gradient(ellipse 120% 70% at 50% 14%, rgba(15, 23, 42, 0.9) 0%, transparent 55%),
     linear-gradient(180deg, #020617 0%, #050b18 38%, #030712 72%, #020617 100%);
 }
 
 .hero-mobile-v2__layer-floor {
   background:
-    radial-gradient(ellipse 95% 38% at 50% 78%, rgba(56, 189, 248, 0.14) 0%, transparent 62%),
-    radial-gradient(ellipse 70% 22% at 50% 88%, rgba(37, 99, 235, 0.1) 0%, transparent 68%),
-    radial-gradient(ellipse 45% 12% at 50% 94%, rgba(59, 130, 246, 0.08) 0%, transparent 75%);
+    radial-gradient(ellipse 95% 38% at 50% 74%, rgba(56, 189, 248, 0.18) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 22% at 50% 84%, rgba(37, 99, 235, 0.13) 0%, transparent 68%),
+    radial-gradient(ellipse 45% 12% at 50% 90%, rgba(59, 130, 246, 0.1) 0%, transparent 75%);
 }
 
 .hero-mobile-v2__layer-grid {
   opacity: 0.35;
   background:
-    radial-gradient(circle at 50% 72%, rgba(56, 189, 248, 0.07) 0%, transparent 52%),
+    radial-gradient(circle at 50% 68%, rgba(56, 189, 248, 0.07) 0%, transparent 52%),
     repeating-radial-gradient(
-      circle at 50% 78%,
+      circle at 50% 74%,
       transparent 0,
       transparent 14px,
       rgba(56, 189, 248, 0.04) 14px,
       rgba(56, 189, 248, 0.04) 15px
     );
-  mask-image: radial-gradient(ellipse 80% 45% at 50% 78%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse 80% 45% at 50% 74%, #000 0%, transparent 72%);
 }
 
 .hero-mobile-v2__layer-artwork {
   background-image: var(--hero-mobile-artwork);
   background-repeat: no-repeat;
-  background-position: 50% calc(44% - 32px);
-  background-size: min(138vw, 38rem) auto;
-  transform-origin: 50% 48%;
+  background-position: 47% calc(44% - 58px);
+  background-size: min(142vw, 39rem) auto;
+  transform-origin: 50% 46%;
   animation: hero-mobile-artwork-drift 10s ease-in-out infinite;
   -webkit-mask-image: radial-gradient(
-    ellipse 92% 78% at 50% 42%,
+    ellipse 92% 78% at 50% 38%,
     #000 0%,
     #000 42%,
     rgba(0, 0, 0, 0.75) 58%,
@@ -372,7 +372,7 @@
     transparent 100%
   );
   mask-image: radial-gradient(
-    ellipse 92% 78% at 50% 42%,
+    ellipse 92% 78% at 50% 38%,
     #000 0%,
     #000 42%,
     rgba(0, 0, 0, 0.75) 58%,
@@ -384,14 +384,14 @@
 .hero-mobile-v2__layer-ambient {
   background:
     radial-gradient(
-      ellipse 75% 48% at 50% 38%,
-      rgba(56, 189, 248, 0.24) 0%,
-      rgba(37, 99, 235, 0.1) 38%,
+      ellipse 78% 50% at 50% 34%,
+      rgba(56, 189, 248, 0.31) 0%,
+      rgba(37, 99, 235, 0.14) 38%,
       transparent 72%
     ),
     radial-gradient(
-      ellipse 40% 28% at 72% 32%,
-      rgba(96, 165, 250, 0.12) 0%,
+      ellipse 44% 30% at 50% 30%,
+      rgba(96, 165, 250, 0.18) 0%,
       transparent 70%
     );
   mix-blend-mode: screen;
@@ -415,14 +415,14 @@
       rgba(59, 130, 246, 0.1) 47%,
       transparent 56%
     );
-  mask-image: radial-gradient(ellipse 85% 60% at 58% 38%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(ellipse 85% 60% at 50% 34%, #000 0%, transparent 78%);
 }
 
 .hero-mobile-v2__layer-vignette {
   background:
-    linear-gradient(180deg, #030712 0%, rgba(3, 7, 18, 0.94) 7%, transparent 24%, transparent 56%, rgba(3, 7, 18, 0.82) 70%, #030712 100%),
+    linear-gradient(180deg, #030712 0%, rgba(3, 7, 18, 0.94) 6%, transparent 18%, transparent 56%, rgba(3, 7, 18, 0.82) 70%, #030712 100%),
     linear-gradient(90deg, #030712 0%, rgba(3, 7, 18, 0.75) 6%, transparent 18%, transparent 82%, rgba(3, 7, 18, 0.75) 94%, #030712 100%),
-    radial-gradient(ellipse 105% 85% at 50% 42%, transparent 32%, rgba(3, 7, 18, 0.35) 62%, rgba(3, 7, 18, 0.85) 82%, #030712 100%);
+    radial-gradient(ellipse 105% 85% at 50% 38%, transparent 32%, rgba(3, 7, 18, 0.35) 62%, rgba(3, 7, 18, 0.85) 82%, #030712 100%);
 }
 
 .hero-mobile-v2__layer-particles {
@@ -435,7 +435,7 @@
     radial-gradient(1px 1px at 42% 38%, rgba(125, 211, 252, 0.5), transparent),
     radial-gradient(1px 1px at 88% 52%, rgba(59, 130, 246, 0.4), transparent);
   animation: hero-mobile-particles-drift 14s ease-in-out infinite alternate;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 0%, transparent 88%);
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 36%, #000 0%, transparent 88%);
 }
 
 @keyframes hero-mobile-artwork-drift {
@@ -539,8 +539,8 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: 50% calc(45% - 28px);
-    background-size: min(142vw, 34rem) auto;
+    background-position: 47% calc(45% - 54px);
+    background-size: min(146vw, 35rem) auto;
   }
 }
 
@@ -550,8 +550,8 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: 50% calc(43% - 32px);
-    background-size: min(132vw, 40rem) auto;
+    background-position: 47% calc(43% - 58px);
+    background-size: min(136vw, 41rem) auto;
   }
 }
 
@@ -561,8 +561,8 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: 50% calc(42% - 32px);
-    background-size: min(128vw, 42rem) auto;
+    background-position: 47% calc(42% - 58px);
+    background-size: min(132vw, 43rem) auto;
   }
 }
 

@@ -1,5 +1,5 @@
 export const SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE =
-  'Послуги евакуатора доступні лише для маршрутів, де місце завантаження або місце доставки знаходиться в Рівненській області.';
+  'На жаль, обраний маршрут знаходиться поза зоною обслуговування. Спробуйте іншу адресу або звʼяжіться з диспетчером.';
 
-export const SERVICE_AREA_AVAILABLE_MESSAGE = 'Послуга доступна у вашій зоні';
-export const SERVICE_AREA_NAME = 'Рівненська область';
+export const SERVICE_AREA_AVAILABLE_MESSAGE = 'Евакуація доступна по всій Україні';
+export const SERVICE_AREA_NAME = 'По всій Україні';

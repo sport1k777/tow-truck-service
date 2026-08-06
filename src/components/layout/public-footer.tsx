@@ -34,7 +34,7 @@ export function PublicFooter({
   settings: BusinessSettings;
   footerTagline?: string;
 }) {
-  const companyName = settings.companyName || 'Евакуатор';
+  const companyName = settings.companyName || 'Evakuator24';
   const isDark = variant === 'dark';
 
   const displayPhone = getDisplayPhone(settings.phone);

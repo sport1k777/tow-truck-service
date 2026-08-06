@@ -80,7 +80,7 @@ async function main() {
   }> = [
     {
       key: 'company.name',
-      value: 'Евакуатор',
+      value: 'Evakuator24',
       type: SettingType.STRING,
       group: 'branding',
       description: 'Company display name',
@@ -150,7 +150,7 @@ async function main() {
     },
     {
       key: 'contact.address',
-      value: 'Рівненська область, Україна',
+      value: 'Україна',
       type: SettingType.STRING,
       group: 'contact',
       description: 'Business address',
@@ -227,7 +227,7 @@ async function main() {
     },
     {
       key: 'seo.title',
-      value: 'Евакуатор — Швидкий виклик 24/7',
+      value: 'Evakuator24 — Евакуатор за 30 секунд',
       type: SettingType.STRING,
       group: 'seo',
       description: 'SEO title',
@@ -241,7 +241,7 @@ async function main() {
     },
     {
       key: 'seo.keywords',
-      value: 'евакуатор, евакуація авто, евакуатор 24/7, Рівненська область',
+      value: 'евакуатор, евакуація авто, евакуатор 24/7, евакуатор по Україні',
       type: SettingType.STRING,
       group: 'seo',
       description: 'SEO keywords',
@@ -276,28 +276,28 @@ async function main() {
     },
     {
       key: 'service_area.out_of_coverage_message',
-      value: 'Послуги евакуатора доступні лише для маршрутів, де місце завантаження або місце доставки знаходиться в Рівненській області.',
+      value: 'На жаль, обраний маршрут знаходиться поза зоною обслуговування. Спробуйте іншу адресу або звʼяжіться з диспетчером.',
       type: SettingType.STRING,
       group: 'service_area',
       description: 'Out of coverage message',
     },
     {
       key: 'service_area.available_message',
-      value: 'Послуга доступна у вашій зоні',
+      value: 'Евакуація доступна по всій Україні',
       type: SettingType.STRING,
       group: 'service_area',
       description: 'Available message',
     },
     {
       key: 'service_area.name',
-      value: 'Рівненська область',
+      value: 'По всій Україні',
       type: SettingType.STRING,
       group: 'service_area',
       description: 'Service area display name',
     },
     {
       key: 'service_area.validation_enabled',
-      value: 'true',
+      value: 'false',
       type: SettingType.BOOLEAN,
       group: 'service_area',
       description: 'Enable service area validation in calculator',
@@ -377,7 +377,11 @@ async function main() {
   for (const setting of settings) {
     await prisma.setting.upsert({
       where: { key: setting.key },
-      update: {},
+      update: {
+        value: setting.value,
+        type: setting.type,
+        group: setting.group,
+      },
       create: {
         ...setting,
         updatedById: admin.id,
@@ -459,7 +463,7 @@ async function main() {
   await prisma.serviceArea.upsert({
     where: { id: 'seed-rivne-radius' },
     update: {
-      name: 'Рівненська область',
+      name: 'По всій Україні',
       centerLat: 50.6199,
       centerLng: 26.2516,
       radiusKm: 80,
@@ -468,7 +472,7 @@ async function main() {
     },
     create: {
       id: 'seed-rivne-radius',
-      name: 'Рівненська область',
+      name: 'По всій Україні',
       type: 'RADIUS',
       cityId: rivne.id,
       centerLat: 50.6199,

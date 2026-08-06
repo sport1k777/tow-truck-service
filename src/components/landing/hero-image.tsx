@@ -10,6 +10,7 @@ const HERO_SIZES_MOBILE = '(max-width: 767px) 100vw, (max-width: 1023px) 768px, 
 
 interface HeroArtworkProps {
   variant: 'desktop' | 'mobile';
+  layout?: 'default' | 'premium';
   priority?: boolean;
   imageUrl?: string;
 }
@@ -18,7 +19,12 @@ interface HeroArtworkProps {
  * Renders the approved hero asset with edge masking so it blends
  * into the page background — no visible rectangular frame.
  */
-export function HeroArtwork({ variant, priority, imageUrl = HERO_IMAGE }: HeroArtworkProps) {
+export function HeroArtwork({
+  variant,
+  layout = 'default',
+  priority,
+  imageUrl = HERO_IMAGE,
+}: HeroArtworkProps) {
   const isDesktop = variant === 'desktop';
   const shouldPreload = priority ?? isDesktop;
 
@@ -45,18 +51,38 @@ export function HeroArtwork({ variant, priority, imageUrl = HERO_IMAGE }: HeroAr
     );
   }
 
+  if (layout === 'premium') {
+    return (
+      <div className="hero-artwork-premium relative h-full min-h-[11rem] w-full sm:min-h-[12.5rem]">
+        <div className="hero-artwork-mask-mobile-premium absolute inset-0 overflow-visible">
+          <Image
+            src={imageUrl}
+            alt="Професійний евакуатор Evakuator24"
+            width={HERO_WIDTH}
+            height={HERO_HEIGHT}
+            priority={shouldPreload}
+            loading={shouldPreload ? undefined : 'lazy'}
+            quality={85}
+            className="hero-artwork-image-premium absolute bottom-0 left-1/2 h-[115%] w-[128%] max-w-none -translate-x-1/2 object-contain object-bottom sm:h-[118%] sm:w-[132%]"
+            sizes={HERO_SIZES_MOBILE}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="hero-artwork-stage-mobile relative mx-auto aspect-[1024/819] w-full max-w-3xl lg:hidden">
-      <div className="hero-artwork-mask-mobile relative w-full">
+    <div className="hero-artwork-stage-mobile relative mx-auto w-full max-w-[28rem] lg:hidden">
+      <div className="hero-artwork-mask-mobile relative aspect-[5/4] w-full max-h-[min(42vh,18.5rem)] sm:max-h-[min(44vh,20rem)]">
         <Image
           src={imageUrl}
-          alt="Професійний евакуатор з автомобілем на фоні карти України"
+          alt="Професійний евакуатор Evakuator24"
           width={HERO_WIDTH}
           height={HERO_HEIGHT}
           priority={shouldPreload}
           loading={shouldPreload ? undefined : 'lazy'}
           quality={85}
-          className="hero-artwork-image-mobile mx-auto h-full w-[118%] max-w-none -translate-x-[3%] object-contain"
+          className="hero-artwork-image-mobile absolute inset-x-0 bottom-0 mx-auto h-full w-[112%] max-w-none -translate-x-[4%] object-contain object-bottom"
           sizes={HERO_SIZES_MOBILE}
         />
       </div>

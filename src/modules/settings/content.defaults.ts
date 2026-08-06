@@ -5,12 +5,12 @@ export const DEFAULT_WEBSITE_CONTENT: WebsiteContentSettings = {
   heroTitle: 'Евакуатор',
   heroTitleHighlight: 'за 30 секунд',
   heroSubtitle:
-    'Професійна евакуація автомобілів по всій Україні. Миттєвий розрахунок вартості, маршрут на карті та онлайн-замовлення — без зайвих дзвінків і очікування.',
-  heroCtaPrimary: 'Замовити евакуатор',
-  heroCtaSecondary: 'Розрахувати вартість',
+    'Професійна евакуація автомобілів по всій Україні. Миттєвий розрахунок вартості, побудова маршруту та онлайн-замовлення без зайвих дзвінків.',
+  heroCtaPrimary: 'Розрахувати вартість',
+  heroCtaSecondary: 'Замовити евакуатор',
   heroTrustItems: [
     { label: 'Швидкий виїзд', icon: 'Zap' },
-    { label: 'Вся Україна', icon: 'MapPin' },
+    { label: 'По всій Україні', icon: 'MapPin' },
     { label: 'Надійний сервіс', icon: 'Shield' },
     { label: '24/7', icon: 'Clock' },
   ],

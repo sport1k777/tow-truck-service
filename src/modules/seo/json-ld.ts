@@ -59,9 +59,9 @@ export function buildOrganizationJsonLd(options: {
     url: options.url,
     telephone: options.telephone || COMPANY_PHONE_DISPLAY,
     areaServed: {
-      '@type': 'AdministrativeArea',
-      name: 'Rivne Oblast',
-      alternateName: 'Рівненська область',
+      '@type': 'Country',
+      name: 'Ukraine',
+      alternateName: 'Україна',
     },
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',

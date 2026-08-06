@@ -70,7 +70,7 @@ export function mapSettingsToBusiness(settings: Map<string, string>): BusinessSe
 
 export function mapSettingsToSeo(settings: Map<string, string>): SeoSettings {
   return {
-    title: settings.get(SETTING_KEYS.SEO_TITLE) || 'Евакуатор — Швидкий виклик 24/7',
+    title: settings.get(SETTING_KEYS.SEO_TITLE) || 'Evakuator24 — Евакуатор за 30 секунд',
     description:
       settings.get(SETTING_KEYS.SEO_DESCRIPTION) || baseAppConfig.defaultDescription,
     keywords: settings.get(SETTING_KEYS.SEO_KEYWORDS) || '',

@@ -15,7 +15,7 @@ const inter = Inter({
 
 export function generateMetadata(): Metadata {
   return generatePageMetadata({
-    title: 'Евакуатор — Швидкий виклик 24/7',
+    title: 'Evakuator24 — Евакуатор за 30 секунд',
     description: baseAppConfig.defaultDescription,
     path: '/',
   });
@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="uk">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} overflow-x-hidden font-sans antialiased`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

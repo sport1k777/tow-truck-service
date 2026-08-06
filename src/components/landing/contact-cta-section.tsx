@@ -267,7 +267,7 @@ function ContactMapPlaceholder() {
         <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#030712]/85 px-3 py-2.5 backdrop-blur-md">
           <MapPin className="h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />
           <div className="min-w-0">
-            <p className="text-xs font-medium text-white/80">Київ та Україна</p>
+            <p className="text-xs font-medium text-white/80">По всій Україні</p>
             <p className="text-[10px] text-white/35">Зона обслуговування — вся Україна</p>
           </div>
         </div>

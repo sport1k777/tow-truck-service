@@ -409,21 +409,125 @@
   );
 }
 
-/* Mobile artwork — vertical fade into page bg */
-.hero-artwork-mask-mobile {
-  overflow: hidden;
+/* Mobile hero banner — compact premium layout */
+.hero-mobile-banner {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-mobile-banner::before {
+  content: '';
+  position: absolute;
+  inset: 8% 0 18%;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 55%,
+    rgba(56, 189, 248, 0.14) 0%,
+    rgba(37, 99, 235, 0.06) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+/* Premium mobile hero — unified title + truck + CTA composition */
+.hero-mobile-stage {
+  min-height: calc(100dvh - 3.5rem);
+  max-height: calc(100dvh - 3.5rem);
+}
+
+.hero-mobile-composition {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.hero-mobile-title {
+  text-shadow:
+    0 2px 28px rgba(3, 7, 18, 0.95),
+    0 0 48px rgba(3, 7, 18, 0.6);
+}
+
+.hero-mobile-visual {
+  max-height: 55%;
+  min-height: 45%;
+}
+
+.hero-mobile-glow {
+  background:
+    radial-gradient(
+      ellipse 90% 75% at 50% 72%,
+      rgba(56, 189, 248, 0.2) 0%,
+      rgba(37, 99, 235, 0.08) 42%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 50% 45%,
+      rgba(59, 130, 246, 0.06) 0%,
+      transparent 65%
+    );
+  filter: blur(2px);
+}
+
+.hero-mobile-cta-panel {
+  padding-top: 0.5rem;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(3, 7, 18, 0.55) 18%,
+    rgba(3, 7, 18, 0.92) 45%,
+    #030712 72%
+  );
+}
+
+.hero-artwork-premium {
+  z-index: 1;
+}
+
+.hero-artwork-mask-mobile-premium {
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    #000 8%,
+    #000 12%,
     #000 82%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    #000 8%,
+    #000 12%,
     #000 82%,
+    transparent 100%
+  );
+}
+
+.hero-artwork-image-premium {
+  filter: drop-shadow(0 24px 48px rgba(37, 99, 235, 0.22));
+}
+
+@supports (height: 100dvh) {
+  .hero-mobile-stage {
+    min-height: calc(100dvh - 3.5rem);
+    max-height: calc(100dvh - 3.5rem);
+  }
+}
+
+.hero-artwork-stage-mobile {
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile artwork — soft horizontal fade for banner feel */
+.hero-artwork-mask-mobile {
+  overflow: visible;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 88%,
     transparent 100%
   );
 }

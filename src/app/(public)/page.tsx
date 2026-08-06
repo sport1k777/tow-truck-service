@@ -52,7 +52,7 @@ export default async function HomePage() {
         telephone={settings.phone}
         email={settings.email}
       />
-      <HeroHeader companyName={companyName} />
+      <HeroHeader />
       <HeroSection desktopImageUrl={heroDesktop} mobileImageUrl={heroMobile} content={content} />
       <PriceCalculatorSection config={calculatorConfig} />
       <HowItWorksSection />

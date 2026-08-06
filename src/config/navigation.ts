@@ -2,7 +2,7 @@
 export const PUBLIC_NAV_ITEMS = [
   { href: '/', label: 'Головна' },
   { href: '/services', label: 'Послуги' },
-  { href: '/#how-it-works', label: 'Як це працює' },
+  { href: '/#how-it-works', label: 'Як працює' },
   { href: '/#pricing', label: 'Ціни' },
   { href: '/contact', label: 'Контакти' },
 ] as const;
@@ -10,7 +10,7 @@ export const PUBLIC_NAV_ITEMS = [
 export const PUBLIC_FOOTER_NAV_ITEMS = [
   { href: '/', label: 'Головна' },
   { href: '/#services', label: 'Послуги' },
-  { href: '/#how-it-works', label: 'Як це працює' },
+  { href: '/#how-it-works', label: 'Як працює' },
   { href: '/#pricing', label: 'Ціни' },
   { href: '/#faq', label: 'FAQ' },
   { href: '/#contact', label: 'Контакти' },

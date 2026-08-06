@@ -21,7 +21,7 @@ export default function OpenGraphImage() {
           color: 'white',
         }}
       >
-        <div style={{ fontSize: 28, color: '#7dd3fc', marginBottom: 16 }}>Евакуатор 24/7</div>
+        <div style={{ fontSize: 28, color: '#7dd3fc', marginBottom: 16 }}>Evakuator24</div>
         <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.1, maxWidth: 900 }}>
           Швидка евакуація автомобілів по Україні
         </div>

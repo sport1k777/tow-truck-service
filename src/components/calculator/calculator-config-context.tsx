@@ -28,9 +28,9 @@ const DEFAULT_RUNTIME_CONFIG: CalculatorRuntimeConfig = {
   pricingConfig: DEFAULT_PRICING_CONFIG,
   vehicleOptions: getCalculatorVehicleOptions(),
   serviceAreaConfig: {
-    validationEnabled: true,
+    validationEnabled: false,
     mode: 'regions',
-    allowedRegions: ['рівненська область', 'rivne oblast'],
+    allowedRegions: [],
     outOfCoverageMessage: SERVICE_AREA_OUT_OF_COVERAGE_MESSAGE,
     availableMessage: SERVICE_AREA_AVAILABLE_MESSAGE,
     areaName: SERVICE_AREA_NAME,

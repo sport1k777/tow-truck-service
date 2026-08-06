@@ -359,12 +359,12 @@
 .hero-mobile-v2__layer-artwork {
   background-image: var(--hero-mobile-artwork);
   background-repeat: no-repeat;
-  background-position: 50% 44%;
+  background-position: 50% calc(44% - 32px);
   background-size: min(138vw, 38rem) auto;
-  transform-origin: 50% 52%;
+  transform-origin: 50% 48%;
   animation: hero-mobile-artwork-drift 10s ease-in-out infinite;
   -webkit-mask-image: radial-gradient(
-    ellipse 92% 78% at 50% 46%,
+    ellipse 92% 78% at 50% 42%,
     #000 0%,
     #000 42%,
     rgba(0, 0, 0, 0.75) 58%,
@@ -372,7 +372,7 @@
     transparent 100%
   );
   mask-image: radial-gradient(
-    ellipse 92% 78% at 50% 46%,
+    ellipse 92% 78% at 50% 42%,
     #000 0%,
     #000 42%,
     rgba(0, 0, 0, 0.75) 58%,
@@ -384,7 +384,7 @@
 .hero-mobile-v2__layer-ambient {
   background:
     radial-gradient(
-      ellipse 75% 48% at 50% 42%,
+      ellipse 75% 48% at 50% 38%,
       rgba(56, 189, 248, 0.24) 0%,
       rgba(37, 99, 235, 0.1) 38%,
       transparent 72%
@@ -422,7 +422,7 @@
   background:
     linear-gradient(180deg, #030712 0%, rgba(3, 7, 18, 0.94) 7%, transparent 24%, transparent 56%, rgba(3, 7, 18, 0.82) 70%, #030712 100%),
     linear-gradient(90deg, #030712 0%, rgba(3, 7, 18, 0.75) 6%, transparent 18%, transparent 82%, rgba(3, 7, 18, 0.75) 94%, #030712 100%),
-    radial-gradient(ellipse 105% 85% at 50% 46%, transparent 32%, rgba(3, 7, 18, 0.35) 62%, rgba(3, 7, 18, 0.85) 82%, #030712 100%);
+    radial-gradient(ellipse 105% 85% at 50% 42%, transparent 32%, rgba(3, 7, 18, 0.35) 62%, rgba(3, 7, 18, 0.85) 82%, #030712 100%);
 }
 
 .hero-mobile-v2__layer-particles {
@@ -435,7 +435,7 @@
     radial-gradient(1px 1px at 42% 38%, rgba(125, 211, 252, 0.5), transparent),
     radial-gradient(1px 1px at 88% 52%, rgba(59, 130, 246, 0.4), transparent);
   animation: hero-mobile-particles-drift 14s ease-in-out infinite alternate;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 44%, #000 0%, transparent 88%);
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 0%, transparent 88%);
 }
 
 @keyframes hero-mobile-artwork-drift {
@@ -516,7 +516,7 @@
   max-width: 100%;
   min-height: clamp(10.5rem, 34dvh, 18.5rem);
   flex-shrink: 0;
-  margin-bottom: 0.625rem;
+  margin-bottom: 1rem;
 }
 
 .hero-mobile-v2__actions {
@@ -539,7 +539,7 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: 50% 45%;
+    background-position: 50% calc(45% - 28px);
     background-size: min(142vw, 34rem) auto;
   }
 }
@@ -550,7 +550,7 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: 50% 43%;
+    background-position: 50% calc(43% - 32px);
     background-size: min(132vw, 40rem) auto;
   }
 }
@@ -561,7 +561,7 @@
   }
 
   .hero-mobile-v2__layer-artwork {
-    background-position: 50% 42%;
+    background-position: 50% calc(42% - 32px);
     background-size: min(128vw, 42rem) auto;
   }
 }

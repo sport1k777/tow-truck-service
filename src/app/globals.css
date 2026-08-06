@@ -364,7 +364,7 @@
 }
 
 .hero-mobile-v2__title {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.125rem;
   font-size: 2.625rem;
   font-weight: 700;
   line-height: 1.02;
@@ -400,7 +400,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.125rem;
   overflow: visible;
 }
 
@@ -422,23 +422,29 @@
 .hero-artwork-hero {
   position: relative;
   z-index: 1;
-  width: min(95vw, 100%);
-  max-width: 95%;
-  aspect-ratio: 1024 / 819;
+  display: flex;
+  width: 100%;
+  justify-content: center;
   overflow: visible;
 }
 
-.hero-artwork-hero__float {
-  position: absolute;
-  inset: 0;
-  animation: hero-truck-float 6s ease-in-out infinite;
-}
-
 .hero-artwork-image-hero {
-  object-fit: contain !important;
-  object-position: center center !important;
+  display: block;
+  width: 95%;
+  max-width: 95%;
+  height: auto;
+  object-fit: contain;
+  object-position: center center;
+  animation: hero-truck-float 6s ease-in-out infinite;
   filter: drop-shadow(0 24px 48px rgba(37, 99, 235, 0.22))
     drop-shadow(0 8px 24px rgba(56, 189, 248, 0.1));
+}
+
+@media (max-width: 360px) {
+  .hero-artwork-image-hero {
+    width: 92%;
+    max-width: 92%;
+  }
 }
 
 .hero-mobile-v2__actions {

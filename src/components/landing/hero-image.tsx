@@ -54,18 +54,17 @@ export function HeroArtwork({
   if (layout === 'hero') {
     return (
       <div className="hero-artwork-hero">
-        <div className="hero-artwork-hero__float">
-          <Image
-            src={imageUrl}
-            alt="Професійний евакуатор Evakuator24"
-            fill
-            priority={shouldPreload}
-            loading={shouldPreload ? undefined : 'lazy'}
-            quality={92}
-            className="hero-artwork-image-hero"
-            sizes="(max-width: 430px) 95vw, 420px"
-          />
-        </div>
+        <Image
+          src={imageUrl}
+          alt="Професійний евакуатор Evakuator24"
+          width={HERO_WIDTH}
+          height={HERO_HEIGHT}
+          priority={shouldPreload}
+          loading={shouldPreload ? undefined : 'lazy'}
+          quality={92}
+          className="hero-artwork-image-hero"
+          sizes="(max-width: 430px) 95vw, 420px"
+        />
       </div>
     );
   }

@@ -20,9 +20,11 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-# Build-time public URL (override at runtime via compose / Vercel env)
-ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
+# Build-time public env (Next.js inlines NEXT_PUBLIC_* into the client bundle)
+ARG NEXT_PUBLIC_APP_URL=https://evakuator24.biz.ua
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
 # Satisfies schema during `next build` — replaced at runtime in production
 ENV AUTH_SECRET=build-time-secret-minimum-32-characters-long
 # Prisma schema references DATABASE_URL; dummy value for client generation only
@@ -51,10 +53,12 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
+RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
+
 USER nextjs
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "server.js"]

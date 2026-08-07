@@ -280,8 +280,415 @@
 .hero-animate-3 { animation-delay: 0.25s; }
 .hero-animate-4 { animation-delay: 0.35s; }
 .hero-animate-5 { animation-delay: 0.45s; }
+.hero-animate-6 { animation-delay: 0.55s; }
+.hero-animate-7 { animation-delay: 0.65s; }
 
-/* Primary CTA — bright blue, highest visual weight */
+@keyframes hero-truck-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes hero-mobile-v2-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-mobile-v2 .hero-animate {
+  animation: hero-mobile-v2-fade-up 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Mobile hero v2 — cinematic layered background composition */
+.hero-mobile-v2 {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  background: #030712;
+}
+
+.hero-mobile-v2__canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  contain: paint;
+  pointer-events: none;
+  background: #030712;
+}
+
+.hero-mobile-v2__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-mobile-v2__layer-base {
+  background:
+    radial-gradient(ellipse 120% 70% at 50% 14%, rgba(15, 23, 42, 0.94) 0%, transparent 55%),
+    linear-gradient(
+      180deg,
+      #020617 0%,
+      #030712 18%,
+      #050b18 38%,
+      #030712 72%,
+      #020617 100%
+    );
+}
+
+.hero-mobile-v2__layer-background {
+  z-index: 1;
+  top: -16%;
+  right: -14%;
+  bottom: -24%;
+  left: -14%;
+  background-image: var(--hero-background-artwork);
+  background-repeat: no-repeat;
+  background-position: 14% calc(42% - 108px);
+  background-size: 42rem auto;
+}
+
+.hero-mobile-v2__layer-glow {
+  z-index: 2;
+  background:
+    radial-gradient(
+      ellipse 84% 54% at 49% 58%,
+      rgba(56, 189, 248, 0.34) 0%,
+      rgba(37, 99, 235, 0.16) 38%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 50% 34% at 52% 54%,
+      rgba(96, 165, 250, 0.21) 0%,
+      transparent 70%
+    );
+  mix-blend-mode: screen;
+}
+
+.hero-mobile-v2__layer-truck {
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  padding-bottom: clamp(2.25rem, 8dvh, 4.5rem);
+}
+
+.hero-mobile-v2__truck-image {
+  position: relative;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(88vw, 40rem);
+  max-height: min(44dvh, 21rem);
+  object-fit: contain;
+  object-position: 42% bottom;
+  filter: saturate(1.12) contrast(1.04) brightness(1.02)
+    drop-shadow(0 28px 52px rgba(3, 7, 18, 0.62))
+    drop-shadow(0 0 40px rgba(37, 99, 235, 0.24));
+  transform: translate(-6%, 4%);
+  animation: hero-mobile-truck-drift 10s ease-in-out infinite;
+}
+
+.hero-mobile-v2__layer-headline-scrim {
+  top: 0;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  height: 34%;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3, 7, 18, 0.92) 0%,
+      rgba(3, 7, 18, 0.72) 18%,
+      rgba(3, 7, 18, 0.38) 42%,
+      rgba(3, 7, 18, 0.12) 68%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 108% 88% at 50% 0%,
+      rgba(3, 7, 18, 0.68) 0%,
+      rgba(3, 7, 18, 0.28) 46%,
+      transparent 82%
+    );
+}
+
+.hero-mobile-v2__layer-vignette {
+  background: radial-gradient(
+    ellipse 118% 104% at 50% 40%,
+    transparent 0%,
+    transparent 32%,
+    rgba(3, 7, 18, 0.04) 48%,
+    rgba(3, 7, 18, 0.12) 62%,
+    rgba(3, 7, 18, 0.24) 76%,
+    rgba(3, 7, 18, 0.38) 88%,
+    rgba(3, 7, 18, 0.52) 100%
+  );
+}
+
+@keyframes hero-mobile-truck-drift {
+  0%,
+  100% {
+    transform: translate(-6%, 4%);
+  }
+  50% {
+    transform: translate(-6%, calc(4% - 4px));
+  }
+}
+
+.hero-mobile-v2__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-mobile-v2__badge {
+  margin-bottom: 0.75rem;
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4375rem 0.875rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 0 24px rgba(56, 189, 248, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.hero-mobile-v2__title {
+  margin-bottom: 0.75rem;
+  max-width: 12ch;
+  font-size: clamp(2.125rem, 10vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  text-shadow:
+    0 2px 36px rgba(3, 7, 18, 0.98),
+    0 6px 48px rgba(3, 7, 18, 0.82);
+}
+
+.hero-mobile-v2__title-accent {
+  background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 42%, #2563eb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-mobile-v2__lead {
+  margin-bottom: 1rem;
+  max-width: 70%;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.74);
+  text-shadow:
+    0 1px 20px rgba(3, 7, 18, 0.96),
+    0 0 36px rgba(3, 7, 18, 0.78);
+}
+
+.hero-mobile-v2__subtitle {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  max-width: 70%;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.hero-mobile-v2__artwork-spacer {
+  width: 100%;
+  max-width: 100%;
+  min-height: clamp(11rem, 36dvh, 19rem);
+  flex-shrink: 0;
+  margin-bottom: 1.375rem;
+}
+
+.hero-mobile-v2__actions {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0;
+}
+
+@media (max-width: 374px) {
+  .hero-mobile-v2__artwork-spacer {
+    min-height: clamp(10.25rem, 34dvh, 16rem);
+  }
+
+  .hero-mobile-v2__title {
+    max-width: 11ch;
+    font-size: clamp(1.9375rem, 9vw, 2.375rem);
+  }
+
+  .hero-mobile-v2__lead,
+  .hero-mobile-v2__subtitle {
+    max-width: 78%;
+    font-size: 0.75rem;
+  }
+
+  .hero-mobile-v2__layer-background {
+    background-position: 13% calc(43% - 104px);
+    background-size: 38rem auto;
+  }
+
+  .hero-mobile-v2__truck-image {
+    max-width: min(86vw, 36rem);
+    max-height: min(42dvh, 18rem);
+    transform: translate(-5%, 5%);
+  }
+}
+
+@media (min-width: 390px) {
+  .hero-mobile-v2__artwork-spacer {
+    min-height: clamp(11.75rem, 37dvh, 20rem);
+  }
+
+  .hero-mobile-v2__layer-background {
+    background-position: 15% calc(41% - 108px);
+    background-size: 44rem auto;
+  }
+
+  .hero-mobile-v2__truck-image {
+    max-width: min(88vw, 40rem);
+    max-height: min(44dvh, 21rem);
+  }
+}
+
+@media (min-width: 428px) {
+  .hero-mobile-v2__artwork-spacer {
+    min-height: clamp(12.5rem, 38dvh, 21rem);
+  }
+
+  .hero-mobile-v2__layer-background {
+    background-position: 14% calc(40% - 108px);
+    background-size: 46rem auto;
+  }
+
+  .hero-mobile-v2__truck-image {
+    max-width: min(90vw, 42rem);
+    max-height: min(46dvh, 22rem);
+  }
+}
+
+.hero-mobile-btn {
+  display: inline-flex;
+  min-height: 3.25rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-mobile-btn:active {
+  transform: scale(0.98);
+}
+
+.hero-mobile-v2__btn-primary {
+  background: linear-gradient(135deg, #4f8ff7 0%, #3b82f6 45%, #2563eb 100%);
+  color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.4),
+    0 10px 36px rgba(37, 99, 235, 0.52),
+    0 0 56px rgba(59, 130, 246, 0.22);
+}
+
+.hero-mobile-v2__btn-secondary {
+  border: 1.5px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.06) inset,
+    0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-mobile-v2__features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.hero-mobile-v2__feature-card {
+  display: flex;
+  min-height: 5.625rem;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.625rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.025) 100%
+  );
+  padding: 1rem 1.125rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.05) inset,
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 10px 32px rgba(0, 0, 0, 0.24),
+    0 0 28px rgba(37, 99, 235, 0.1);
+}
+
+.hero-mobile-v2__feature-emoji {
+  font-size: 1.375rem;
+  line-height: 1;
+}
+
+.hero-mobile-v2__feature-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mobile-v2__truck-image {
+    animation: none;
+    transform: translate(-6%, 4%);
+  }
+
+  .hero-mobile-v2 .hero-animate {
+    animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .hero-mobile-btn:active {
+    transform: none;
+  }
+}
+
+/* Legacy mobile hero — kept for reference */
+.hero-mobile-stage {
+  isolation: isolate;
+}
 .hero-cta-primary {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   box-shadow:
@@ -384,48 +791,197 @@
   animation: hero-artwork-ambient-pulse 6s ease-in-out infinite;
 }
 
-/* Desktop artwork — soft edge mask, no visible frame */
+@media (max-width: 1023px) {
+  .hero-artwork-ambient {
+    display: none;
+  }
+}
+
+/* Desktop artwork — layered background + truck + CSS glow */
 .hero-artwork-stage {
   z-index: 1;
 }
 
-.hero-artwork-mask {
+.hero-layered-scene {
+  position: relative;
   overflow: visible;
-  -webkit-mask-image: radial-gradient(
-    ellipse 92% 88% at 58% 48%,
-    #000 0%,
-    #000 32%,
-    rgba(0, 0, 0, 0.75) 48%,
-    rgba(0, 0, 0, 0.35) 62%,
-    transparent 78%
-  );
-  mask-image: radial-gradient(
-    ellipse 92% 88% at 58% 48%,
-    #000 0%,
-    #000 32%,
-    rgba(0, 0, 0, 0.75) 48%,
-    rgba(0, 0, 0, 0.35) 62%,
-    transparent 78%
-  );
+  isolation: isolate;
 }
 
-/* Mobile artwork — vertical fade into page bg */
-.hero-artwork-mask-mobile {
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    #000 8%,
-    #000 82%,
-    transparent 100%
+.hero-layered__background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--hero-background-artwork);
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.hero-layered__glow {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 58% 48% at 50% 58%,
+    rgba(56, 189, 248, 0.38) 0%,
+    rgba(99, 102, 241, 0.24) 38%,
+    rgba(37, 99, 235, 0.1) 58%,
+    transparent 74%
   );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    #000 8%,
-    #000 82%,
-    transparent 100%
+  filter: blur(32px);
+}
+
+.hero-layered__truck {
+  position: absolute;
+  z-index: 2;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+  filter: saturate(1.12) contrast(1.04) brightness(1.02)
+    drop-shadow(0 28px 56px rgba(3, 7, 18, 0.58))
+    drop-shadow(0 0 44px rgba(37, 99, 235, 0.22));
+}
+
+.hero-layered__background--desktop {
+  inset: -6% -10% -14% -6%;
+  background-position: 54% 54%;
+  background-size: 105% auto;
+}
+
+.hero-layered__glow--desktop {
+  inset: 12% 8% 8% 18%;
+}
+
+.hero-layered__truck--desktop {
+  left: 44%;
+  right: auto;
+  bottom: -2%;
+  max-width: 74%;
+  max-height: 98%;
+  transform: translateX(-50%);
+  object-position: 42% bottom;
+}
+
+.hero-layered__background--immersive,
+.hero-layered__background--premium,
+.hero-layered__background--mobile-banner {
+  inset: -8% -10% -12% -10%;
+  background-position: 14% 58%;
+  background-size: min(130%, 28rem) auto;
+}
+
+.hero-layered__glow--immersive,
+.hero-layered__glow--premium,
+.hero-layered__glow--mobile-banner {
+  inset: 18% 10% 12% 10%;
+}
+
+.hero-layered__truck--immersive,
+.hero-layered__truck--premium,
+.hero-layered__truck--mobile-banner {
+  left: 46%;
+  bottom: -3%;
+  max-width: 88%;
+  max-height: 92%;
+  transform: translateX(-50%);
+  object-position: 42% bottom;
+}
+
+.hero-layered__truck--mobile-inline {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: saturate(1.15) contrast(1.05) brightness(1.03)
+    drop-shadow(0 24px 48px rgba(3, 7, 18, 0.55))
+    drop-shadow(0 0 36px rgba(37, 99, 235, 0.22));
+}
+
+/* Premium mobile hero — immersive unified composition */
+.hero-mobile-stage {
+  isolation: isolate;
+}
+
+.hero-mobile-ambient {
+  background:
+    radial-gradient(
+      ellipse 120% 80% at 50% 58%,
+      rgba(56, 189, 248, 0.16) 0%,
+      rgba(37, 99, 235, 0.08) 38%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at 50% 72%,
+      rgba(59, 130, 246, 0.1) 0%,
+      transparent 58%
+    );
+}
+
+.hero-mobile-title {
+  text-shadow:
+    0 1px 2px rgba(3, 7, 18, 0.8),
+    0 8px 32px rgba(3, 7, 18, 0.65);
+}
+
+.hero-mobile-visual {
+  margin-top: 0;
+}
+
+.hero-mobile-glow {
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse 85% 65% at 50% 68%,
+      rgba(56, 189, 248, 0.32) 0%,
+      rgba(37, 99, 235, 0.14) 38%,
+      transparent 72%
+    );
+  transform: scale(1.08);
+  filter: blur(8px);
+}
+
+.hero-artwork-immersive {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+}
+
+@media (max-width: 1023px) {
+  .hero-artwork-ambient {
+    background:
+      radial-gradient(
+        ellipse 90% 60% at 50% 52%,
+        rgba(56, 189, 248, 0.1) 0%,
+        rgba(37, 99, 235, 0.04) 45%,
+        transparent 72%
+      );
+  }
+}
+
+/* Legacy mobile hero helpers */
+.hero-mobile-banner {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-mobile-banner::before {
+  content: '';
+  position: absolute;
+  inset: 8% 0 18%;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 55%,
+    rgba(56, 189, 248, 0.14) 0%,
+    rgba(37, 99, 235, 0.06) 45%,
+    transparent 72%
   );
+  pointer-events: none;
+}
+
+.hero-artwork-stage-mobile {
+  position: relative;
+  z-index: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -480,6 +1036,78 @@
   outline: none;
 }
 
+.calculator-input--with-action {
+  padding-right: 2.75rem;
+}
+
+.calculator-input-location-btn {
+  position: absolute;
+  right: 0.375rem;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    opacity 0.2s;
+}
+
+.calculator-input-location-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 1);
+}
+
+.calculator-input-location-btn:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.5);
+  outline-offset: 2px;
+}
+
+.calculator-input-location-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.calculator-swap-btn {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.calculator-swap-btn:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.calculator-swap-btn:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.5);
+  outline-offset: 2px;
+}
+
 /* Google Places Autocomplete — dark theme for calculator */
 .pac-container {
   margin-top: 0.25rem;
@@ -488,6 +1116,12 @@
   background: #0a1628;
   box-shadow: 0 16px 40px rgba(3, 7, 18, 0.55);
   font-family: inherit;
+}
+
+.pac-container--anchored {
+  z-index: 10000;
+  max-height: 16rem;
+  overflow-y: auto;
 }
 
 .pac-item {

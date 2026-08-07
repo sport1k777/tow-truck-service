@@ -1,21 +1,25 @@
 'use client';
 
-import { Car, Loader2, MapPin, MessageSquare, Zap } from 'lucide-react';
+import { ArrowUpDown, Car, Loader2, MapPin, MessageSquare, Zap } from 'lucide-react';
 import { AddressAutocomplete } from '@/components/maps/address-autocomplete';
 import type { CalculatorFormErrors, CalculatorFormState } from './calculator.types';
 import { VEHICLE_TYPE_OPTIONS } from './calculator.pricing';
+import { useCalculatorConfig } from './calculator-config-context';
 import type { PlaceLocation } from '@/modules/maps/maps.types';
 
 interface CalculatorFormProps {
   form: CalculatorFormState;
   errors: CalculatorFormErrors;
   isCalculating: boolean;
+  isServiceAreaBlocked?: boolean;
   onFieldChange: <K extends keyof CalculatorFormState>(
     key: K,
     value: CalculatorFormState[K],
   ) => void;
   onPickupPlaceSelect: (place: PlaceLocation) => void;
+  onPickupGeolocationSelect?: (place: PlaceLocation) => void;
   onDestinationPlaceSelect: (place: PlaceLocation) => void;
+  onSwapAddresses: () => void;
   onCalculate: () => void;
 }
 
@@ -23,11 +27,17 @@ export function CalculatorForm({
   form,
   errors,
   isCalculating,
+  isServiceAreaBlocked = false,
   onFieldChange,
   onPickupPlaceSelect,
+  onPickupGeolocationSelect,
   onDestinationPlaceSelect,
+  onSwapAddresses,
   onCalculate,
 }: CalculatorFormProps) {
+  const { vehicleOptions } = useCalculatorConfig();
+  const options = vehicleOptions.length > 0 ? vehicleOptions : VEHICLE_TYPE_OPTIONS;
+
   return (
     <form
       className="space-y-5"
@@ -47,7 +57,21 @@ export function CalculatorForm({
         error={errors.pickupAddress}
         onAddressChange={(address) => onFieldChange('pickupAddress', address)}
         onPlaceSelect={onPickupPlaceSelect}
+        onGeolocationSelect={onPickupGeolocationSelect}
+        showLocationButton={true}
       />
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          className="calculator-swap-btn"
+          onClick={onSwapAddresses}
+          aria-label="Поміняти адреси місцями"
+          title="Поміняти адреси місцями"
+        >
+          <ArrowUpDown className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
 
       <AddressAutocomplete
         id="destination-address"
@@ -60,6 +84,15 @@ export function CalculatorForm({
         onAddressChange={(address) => onFieldChange('destinationAddress', address)}
         onPlaceSelect={onDestinationPlaceSelect}
       />
+
+      {errors.serviceArea && (
+        <div
+          className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3 text-sm text-amber-200/90"
+          role="alert"
+        >
+          {errors.serviceArea}
+        </div>
+      )}
 
       {errors.route && (
         <div
@@ -81,7 +114,7 @@ export function CalculatorForm({
           onChange={(e) => onFieldChange('vehicleType', e.target.value as CalculatorFormState['vehicleType'])}
           className="calculator-input w-full appearance-none"
         >
-          {VEHICLE_TYPE_OPTIONS.map((option) => (
+          {options.map((option) => (
             <option key={option.value} value={option.value} className="bg-[#0a1628] text-white">
               {option.label}
             </option>
@@ -132,7 +165,7 @@ export function CalculatorForm({
 
       <button
         type="submit"
-        disabled={isCalculating}
+        disabled={isCalculating || isServiceAreaBlocked}
         className="hero-cta-primary flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isCalculating ? (

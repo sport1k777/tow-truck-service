@@ -33,9 +33,12 @@ export function calculatePrice(
   config: PricingConfig,
 ): PriceCalculationResult {
   const vehicleRate = config.vehicleRates[input.vehicleType];
-  const baseAmount = config.baseCallOutFee;
-  const distanceAmount = input.distanceKm * vehicleRate.perKmRate;
-  const subtotal = baseAmount + distanceAmount;
+  const baseAmount = input.isOutsideCity ? config.outsideCityBaseFee : config.baseCallOutFee;
+  const perKmRate = input.isOutsideCity ? config.outsideCityPerKmRate : config.cityPerKmRate;
+  const billableKm = Math.max(0, input.distanceKm - config.freeKm);
+  const distanceAmount = billableKm * perKmRate;
+  const vehicleFlatSurcharge = vehicleRate.flatSurcharge ?? 0;
+  const subtotal = baseAmount + distanceAmount + vehicleFlatSurcharge;
 
   const breakdown: PriceCalculationResult['breakdown'] = [
     {
@@ -44,11 +47,20 @@ export function calculatePrice(
       type: 'base',
     },
     {
-      label: `Відстань (${input.distanceKm.toLocaleString('uk-UA', { maximumFractionDigits: 1 })} км × ${vehicleRate.perKmRate} ₴/км)`,
+      label: `Відстань (${billableKm.toLocaleString('uk-UA', { maximumFractionDigits: 1 })} км × ${perKmRate} ₴/км${config.freeKm > 0 ? `, безкоштовно ${config.freeKm} км` : ''})`,
       amount: roundAmount(distanceAmount),
       type: 'distance',
     },
   ];
+
+  if (vehicleFlatSurcharge > 0) {
+    breakdown.push({
+      label: `${vehicleRate.label} (доплата)`,
+      amount: roundAmount(vehicleFlatSurcharge),
+      type: 'surcharge',
+      surchargeType: PRICING_SURCHARGE_TYPES.VEHICLE_TYPE,
+    });
+  }
 
   let total = subtotal;
   const { additionalServices } = config;
@@ -102,7 +114,18 @@ export function calculatePrice(
     total += additionalServices.difficultLoading.flatFee;
   }
 
-  const roundedTotal = roundAmount(total);
+  if (additionalServices.holidaySurcharge.enabled && input.isHoliday) {
+    const holidayAmount = subtotal * (additionalServices.holidaySurcharge.percent / 100);
+    breakdown.push({
+      label: `${additionalServices.holidaySurcharge.label} (+${additionalServices.holidaySurcharge.percent}%)`,
+      amount: roundAmount(holidayAmount),
+      type: 'surcharge',
+      surchargeType: PRICING_SURCHARGE_TYPES.HOLIDAY,
+    });
+    total += holidayAmount;
+  }
+
+  const roundedTotal = Math.max(roundAmount(total), config.minCharge);
 
   breakdown.push({
     label: 'Разом (орієнтовно)',

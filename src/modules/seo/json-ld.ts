@@ -47,6 +47,40 @@ export function buildLocalBusinessJsonLd(options: LocalBusinessJsonLdOptions): R
   };
 }
 
+export function buildOrganizationJsonLd(options: {
+  companyName: string;
+  url: string;
+  telephone?: string | null;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: options.companyName,
+    url: options.url,
+    telephone: options.telephone || COMPANY_PHONE_DISPLAY,
+    areaServed: {
+      '@type': 'Country',
+      name: 'Ukraine',
+      alternateName: 'Україна',
+    },
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ],
+      opens: '00:00',
+      closes: '23:59',
+    },
+    inLanguage: DEFAULT_LOCALE,
+  };
+}
+
 export function buildWebSiteJsonLd(options: {
   companyName: string;
   description: string;

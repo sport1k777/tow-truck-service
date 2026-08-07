@@ -1,23 +1,27 @@
 import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
 import { generatePageMetadata } from '@/modules/seo/metadata';
+import { SettingsService } from '@/modules/settings/settings.service';
 
-export function generateMetadata() {
+export async function generateMetadata() {
+  const content = await SettingsService.getContentSettings();
+
   return generatePageMetadata({
-    title: 'Про нас',
-    description: 'Професійна служба евакуації автомобілів в Україні. Цілодобова підтримка та прозорі тарифи.',
+    title: content.aboutTitle,
+    description: content.aboutBody.slice(0, 160),
     path: '/about',
   });
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const content = await SettingsService.getContentSettings();
+
   return (
-    <PageShell title="Про нас">
+    <PageShell title={content.aboutTitle}>
       <div className="space-y-4 text-sm leading-relaxed text-white/60">
-        <p>
-          Ми надаємо послуги евакуації легкових та вантажних автомобілів по всій Україні.
-          Прозорий калькулятор вартості, онлайн-замовлення та швидке підтвердження через WhatsApp.
-        </p>
+        {content.aboutBody.split('\n\n').map((paragraph) => (
+          <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+        ))}
         <p>
           Детальніше про послуги та ціни — на{' '}
           <Link href="/#services" className="text-sky-400/90 hover:text-sky-300">

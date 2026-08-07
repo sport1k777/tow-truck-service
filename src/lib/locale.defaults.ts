@@ -12,10 +12,10 @@ export const DEFAULT_CURRENCY_SYMBOL = '₴' as const;
 export const DEFAULT_PHONE_COUNTRY_CODE = '+380' as const;
 export const DEFAULT_TIMEZONE = 'Europe/Kyiv' as const;
 
-/** Kyiv city center — used as default Google Maps center */
+/** Rivne city center — default map view for calculator (Ukraine-wide search still enabled) */
 export const DEFAULT_MAP_CENTER = {
-  lat: 50.4501,
-  lng: 30.5234,
+  lat: 50.6199,
+  lng: 26.2516,
 } as const;
 
 export const DEFAULT_MAP_ZOOM = 11;

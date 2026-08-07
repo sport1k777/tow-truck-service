@@ -9,7 +9,7 @@ interface FaqItem {
   answer: string;
 }
 
-const FAQ_ITEMS: FaqItem[] = [
+const FAQ_FALLBACK: FaqItem[] = [
   {
     id: 'arrival-time',
     question: 'Як швидко приїде евакуатор?',
@@ -60,7 +60,7 @@ const FAQ_ITEMS: FaqItem[] = [
   },
 ];
 
-export function FaqSection() {
+export function FaqSection({ items = FAQ_FALLBACK }: { items?: FaqItem[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const baseId = useId();
 
@@ -125,7 +125,7 @@ export function FaqSection() {
         </div>
 
         <dl className="space-y-3" data-faq-list>
-          {FAQ_ITEMS.map((item, index) => {
+          {items.map((item, index) => {
             const isOpen = openId === item.id;
             const headingId = `${baseId}-faq-heading-${index}`;
             const panelId = `${baseId}-faq-panel-${index}`;

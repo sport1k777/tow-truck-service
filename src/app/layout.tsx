@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { baseAppConfig } from '@/config/base.config';
 import { generatePageMetadata } from '@/modules/seo/metadata';
+import { AppProviders } from '@/components/providers/app-providers';
 import './globals.css';
 
 const inter = Inter({
@@ -14,7 +15,7 @@ const inter = Inter({
 
 export function generateMetadata(): Metadata {
   return generatePageMetadata({
-    title: 'Евакуатор — Швидкий виклик 24/7',
+    title: 'Evakuator24 — Евакуатор за 30 секунд',
     description: baseAppConfig.defaultDescription,
     path: '/',
   });
@@ -36,8 +37,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uk">
-      <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
+    <html lang="uk" className="overflow-x-hidden">
+      <body className={`${inter.variable} overflow-x-hidden font-sans antialiased`}>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }

@@ -1,14 +1,28 @@
 'use client';
 
 import Link from 'next/link';
+import { useCallback, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { MapsProvider } from '@/modules/maps/maps-provider';
 import { CalculatorRouteMap } from '@/components/maps/calculator-route-map';
 import { CalculatorForm } from './calculator-form';
 import { CalculatorResults } from './calculator-results';
 import { useCalculator } from './use-calculator';
+import {
+  CalculatorConfigProvider,
+  type CalculatorRuntimeConfig,
+} from './calculator-config-context';
+import type { GeoCoordinates } from '@/modules/maps/maps.types';
+import type { PlaceLocation } from '@/modules/maps/maps.types';
 
 function PriceCalculatorSectionContent() {
+  const [mapFocusLocation, setMapFocusLocation] = useState<GeoCoordinates | null>(null);
+
+  const handlePickupGeolocationSelect = useCallback((place: PlaceLocation) => {
+    if (place.location) {
+      setMapFocusLocation(place.location);
+    }
+  }, []);
   const {
     form,
     errors,
@@ -22,9 +36,11 @@ function PriceCalculatorSectionContent() {
     updateField,
     setPickupPlace,
     setDestinationPlace,
+    swapAddresses,
     calculate,
     isCalculating,
     isCalculatingRoute,
+    isServiceAreaBlocked,
   } = useCalculator();
 
   return (
@@ -62,15 +78,22 @@ function PriceCalculatorSectionContent() {
                   form={form}
                   errors={errors}
                   isCalculating={isCalculating}
+                  isServiceAreaBlocked={isServiceAreaBlocked}
                   onFieldChange={updateField}
                   onPickupPlaceSelect={setPickupPlace}
+                  onPickupGeolocationSelect={handlePickupGeolocationSelect}
                   onDestinationPlaceSelect={setDestinationPlace}
+                  onSwapAddresses={swapAddresses}
                   onCalculate={calculate}
                 />
 
                 <Link
                   href="/order"
-                  className="hero-cta-secondary inline-flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-medium text-white/90"
+                  aria-disabled={isServiceAreaBlocked}
+                  tabIndex={isServiceAreaBlocked ? -1 : undefined}
+                  className={`hero-cta-secondary inline-flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-medium text-white/90${
+                    isServiceAreaBlocked ? ' pointer-events-none opacity-60' : ''
+                  }`}
                 >
                   Замовити евакуатор
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -94,6 +117,7 @@ function PriceCalculatorSectionContent() {
               <CalculatorRouteMap
                 pickupAddress={form.pickupAddress}
                 destinationAddress={form.destinationAddress}
+                focusLocation={mapFocusLocation}
                 route={route}
                 distanceKm={displayDistanceKm}
                 durationMinutes={displayDurationMinutes ?? undefined}
@@ -107,10 +131,12 @@ function PriceCalculatorSectionContent() {
   );
 }
 
-export function PriceCalculatorSection() {
+export function PriceCalculatorSection({ config }: { config: CalculatorRuntimeConfig }) {
   return (
-    <MapsProvider>
-      <PriceCalculatorSectionContent />
-    </MapsProvider>
+    <CalculatorConfigProvider value={config}>
+      <MapsProvider>
+        <PriceCalculatorSectionContent />
+      </MapsProvider>
+    </CalculatorConfigProvider>
   );
 }

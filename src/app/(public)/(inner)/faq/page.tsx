@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import { PageShell } from '@/components/layout/page-shell';
+import { FaqSection } from '@/components/landing/faq-section';
+import { ContentService } from '@/modules/content/content.service';
 import { generatePageMetadata } from '@/modules/seo/metadata';
 
 export function generateMetadata() {
@@ -10,17 +11,12 @@ export function generateMetadata() {
   });
 }
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const faqItems = await ContentService.getFaqItems();
+
   return (
     <PageShell title="Часті запитання">
-      <div className="space-y-4 text-sm leading-relaxed text-white/60">
-        <p>
-          Найпоширеніші запитання та відповіді зібрані в розділі FAQ на головній сторінці.
-        </p>
-        <Link href="/#faq" className="inline-flex text-sky-400/90 transition-colors hover:text-sky-300">
-          Перейти до FAQ →
-        </Link>
-      </div>
+      <FaqSection items={faqItems.length ? faqItems : undefined} />
     </PageShell>
   );
 }

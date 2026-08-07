@@ -4,12 +4,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { PUBLIC_NAV_ITEMS } from '@/config/navigation';
+import { BrandLogo } from '@/components/layout/brand-logo';
 
-interface HeroHeaderProps {
-  companyName: string;
-}
-
-export function HeroHeader({ companyName }: HeroHeaderProps) {
+export function HeroHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -21,19 +18,10 @@ export function HeroHeader({ companyName }: HeroHeaderProps) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#030712]/90 shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 sm:h-[4.5rem] sm:px-10 lg:px-14">
-        <Link
-          href="/"
-          className="relative z-10 inline-flex min-h-11 min-w-11 items-center justify-center px-3 text-base font-semibold tracking-tight text-white transition-opacity hover:opacity-80"
-          aria-label={`${companyName} — головна`}
-        >
-          {companyName}
-        </Link>
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-8 lg:px-14">
+        <BrandLogo onNavigate={() => setMobileOpen(false)} />
 
-        <nav
-          className="hidden items-center gap-3 lg:flex"
-          aria-label="Головна навігація"
-        >
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Головна навігація">
           {PUBLIC_NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
@@ -45,17 +33,17 @@ export function HeroHeader({ companyName }: HeroHeaderProps) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/order"
-            className="hero-cta-primary hidden h-11 items-center justify-center rounded-full px-5 text-sm font-semibold text-white sm:inline-flex"
+            className="hero-cta-primary hidden h-10 items-center justify-center rounded-full px-5 text-sm font-semibold text-white sm:inline-flex sm:h-11"
           >
             Замовити
           </Link>
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 lg:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 sm:h-11 sm:w-11 lg:hidden"
             onClick={() => setMobileOpen((open) => !open)}
             aria-expanded={mobileOpen}
             aria-controls="hero-mobile-nav"
@@ -73,7 +61,7 @@ export function HeroHeader({ companyName }: HeroHeaderProps) {
         }`}
         {...(!mobileOpen ? { inert: true } : {})}
       >
-        <nav className="flex flex-col gap-1 px-6 py-4" aria-label="Мобільна навігація">
+        <nav className="flex flex-col gap-1 px-4 py-4 sm:px-6" aria-label="Мобільна навігація">
           {PUBLIC_NAV_ITEMS.map((item) => (
             <Link
               key={item.href}

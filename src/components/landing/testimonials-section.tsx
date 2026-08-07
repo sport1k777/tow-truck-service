@@ -2,8 +2,6 @@
 
 import { Star } from 'lucide-react';
 
-type ServiceType = 'Екстрена евакуація' | 'Міжміське перевезення' | 'Евакуація після ДТП';
-
 interface Testimonial {
   id: string;
   initials: string;
@@ -11,10 +9,10 @@ interface Testimonial {
   name: string;
   city: string;
   review: string;
-  serviceType: ServiceType;
+  serviceType: string;
 }
 
-const TESTIMONIALS: Testimonial[] = [
+const TESTIMONIALS_FALLBACK: Testimonial[] = [
   {
     id: 'andrii-kyiv',
     initials: 'АК',
@@ -77,17 +75,22 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-const SERVICE_TYPE_STYLES: Record<ServiceType, string> = {
+const SERVICE_TYPE_STYLES: Record<string, string> = {
   'Екстрена евакуація': 'border-sky-500/20 bg-sky-500/10 text-sky-300/90',
   'Міжміське перевезення': 'border-blue-500/20 bg-blue-500/10 text-blue-300/90',
   'Евакуація після ДТП': 'border-indigo-500/20 bg-indigo-500/10 text-indigo-300/90',
 };
 
+const DEFAULT_SERVICE_TYPE_STYLE = 'border-white/10 bg-white/5 text-white/70';
+
 interface TestimonialsSectionProps {
   companyName: string;
 }
 
-export function TestimonialsSection({ companyName }: TestimonialsSectionProps) {
+export function TestimonialsSection({
+  companyName,
+  testimonials = TESTIMONIALS_FALLBACK,
+}: TestimonialsSectionProps & { testimonials?: Testimonial[] }) {
   return (
     <section id="testimonials" className="landing-section" aria-labelledby="testimonials-heading">
       <div className="landing-section-bg" aria-hidden="true" />
@@ -106,28 +109,14 @@ export function TestimonialsSection({ companyName }: TestimonialsSectionProps) {
           <p className="landing-subtitle">Реальні відгуки клієнтів з різних міст України.</p>
         </div>
 
-        {/* Mobile: swipeable carousel */}
         <ul
-          className="testimonial-carousel -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:hidden"
+          className="testimonial-carousel -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none md:px-0 md:pb-0"
           aria-label="Відгуки клієнтів"
         >
-          {TESTIMONIALS.map((testimonial, index) => (
+          {testimonials.map((testimonial, index) => (
             <li
               key={testimonial.id}
-              className="testimonial-card-animate w-[min(85vw,320px)] shrink-0 snap-center"
-              style={{ animationDelay: `${index * 0.06}s` }}
-            >
-              <TestimonialCard testimonial={testimonial} />
-            </li>
-          ))}
-        </ul>
-
-        {/* Desktop: 3-column grid */}
-        <ul className="hidden gap-5 md:grid md:grid-cols-3">
-          {TESTIMONIALS.map((testimonial, index) => (
-            <li
-              key={testimonial.id}
-              className="testimonial-card-animate"
+              className="testimonial-card-animate w-[min(85vw,320px)] shrink-0 snap-center md:w-auto md:shrink"
               style={{ animationDelay: `${index * 0.06}s` }}
             >
               <TestimonialCard testimonial={testimonial} />
@@ -174,7 +163,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
 
       <p className="relative mt-4">
         <span
-          className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide ${SERVICE_TYPE_STYLES[testimonial.serviceType]}`}
+          className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide ${SERVICE_TYPE_STYLES[testimonial.serviceType] ?? DEFAULT_SERVICE_TYPE_STYLE}`}
         >
           {testimonial.serviceType}
         </span>

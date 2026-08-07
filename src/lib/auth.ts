@@ -1,12 +1,11 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
+import { authConfig } from './auth.config';
 
-/**
- * Auth.js configuration.
- * MVP: email/password credentials for administrators.
- * Future: add Google OAuth provider without refactoring session handling.
- */
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: 'credentials',
@@ -14,32 +13,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      authorize: async (_credentials) => {
-        // Implemented in Phase 8 — validates against AdminUser in database
-        return null;
+      authorize: async (credentials) => {
+        const email = credentials?.email?.toString().trim().toLowerCase();
+        const password = credentials?.password?.toString();
+
+        if (!email || !password) {
+          return null;
+        }
+
+        const admin = await prisma.adminUser.findUnique({ where: { email } });
+
+        if (!admin?.isActive) {
+          return null;
+        }
+
+        const isValid = await bcrypt.compare(password, admin.passwordHash);
+
+        if (!isValid) {
+          return null;
+        }
+
+        await prisma.adminUser.update({
+          where: { id: admin.id },
+          data: { lastLoginAt: new Date() },
+        });
+
+        return {
+          id: admin.id,
+          email: admin.email,
+          name: admin.name,
+          role: admin.role,
+        };
       },
     }),
-    // Future: Google({ clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET })
   ],
-  session: {
-    strategy: 'jwt',
-    maxAge: 24 * 60 * 60,
-  },
-  pages: {
-    signIn: '/login',
-  },
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.role = 'ADMIN';
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-      }
-      return session;
-    },
-  },
 });

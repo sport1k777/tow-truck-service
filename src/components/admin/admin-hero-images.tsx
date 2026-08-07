@@ -55,7 +55,7 @@ export async function AdminHeroImagesSection() {
         <form action={saveHeroImageAction} className="space-y-4">
           <AdminGrid>
             <AdminField label="URL">
-              <AdminInput name="url" placeholder="/images/hero-background.webp" required />
+              <AdminInput name="url" placeholder="/tow-truck.png" required />
             </AdminField>
             <AdminField label="Alt">
               <AdminInput name="alt" />

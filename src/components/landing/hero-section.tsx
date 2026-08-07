@@ -5,6 +5,7 @@ import { ArrowRight, Clock, MapPin, Shield, Zap, type LucideIcon } from 'lucide-
 import * as LucideIcons from 'lucide-react';
 import { HeroArtwork } from './hero-image';
 import { MobileHeroCanvas } from './mobile-hero-canvas';
+import { HERO_BACKGROUND_IMAGE } from '@/config/hero-assets';
 import type { WebsiteContentSettings } from '@/modules/settings/settings.types';
 
 const FALLBACK_ICONS: Record<string, LucideIcon> = {
@@ -44,10 +45,17 @@ function resolveIcon(name: string): LucideIcon {
 export function HeroSection({
   desktopImageUrl,
   mobileImageUrl,
+  truckImageUrl,
+  backgroundImageUrl,
+  mapImageUrl,
   content,
 }: {
   desktopImageUrl?: string;
   mobileImageUrl?: string;
+  truckImageUrl?: string;
+  backgroundImageUrl?: string;
+  /** @deprecated Use backgroundImageUrl */
+  mapImageUrl?: string;
   content?: WebsiteContentSettings;
 }) {
   const badge = content?.heroBadge ?? '24/7 по всій Україні';
@@ -58,6 +66,8 @@ export function HeroSection({
     'Професійна евакуація автомобілів по всій Україні. Миттєвий розрахунок вартості, побудова маршруту та онлайн-замовлення без зайвих дзвінків.';
   const ctaPrimary = content?.heroCtaPrimary ?? 'Розрахувати вартість';
   const ctaSecondary = content?.heroCtaSecondary ?? 'Замовити евакуатор';
+  const truckArtwork = truckImageUrl ?? mobileImageUrl ?? desktopImageUrl;
+  const sceneBackground = backgroundImageUrl ?? mapImageUrl ?? HERO_BACKGROUND_IMAGE;
   const trustItems = content?.heroTrustItems ?? [
     { label: 'Швидкий виїзд', icon: 'Zap' },
     { label: 'По всій Україні', icon: 'MapPin' },
@@ -71,12 +81,12 @@ export function HeroSection({
       aria-labelledby="hero-heading"
     >
       <div className="hero-artwork-ambient pointer-events-none absolute inset-0" aria-hidden="true" />
-      <HeroArtwork variant="desktop" imageUrl={desktopImageUrl} />
+      <HeroArtwork variant="desktop" truckUrl={truckArtwork} backgroundUrl={sceneBackground} />
 
       <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:min-h-screen lg:grid-cols-[minmax(0,520px)_1fr] lg:items-center xl:grid-cols-[minmax(0,560px)_1fr]">
         {/* Mobile — premium hero v2 */}
         <div className="hero-mobile-v2 relative w-full max-w-full lg:hidden">
-          <MobileHeroCanvas imageUrl={mobileImageUrl} />
+          <MobileHeroCanvas truckUrl={truckArtwork} backgroundUrl={sceneBackground} />
 
           <div className="hero-mobile-v2__inner relative w-full max-w-full px-4 pb-6 pt-14">
             <p

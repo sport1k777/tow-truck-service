@@ -520,10 +520,42 @@ async function main() {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Hero images — migrate legacy paths, then ensure tow-truck.png exists
+  // ---------------------------------------------------------------------------
+  const LEGACY_HERO_URLS = [
+    '/images/tow-truck-transparent.png',
+    '/images/tow-truck.png',
+    '/images/hero-background.webp',
+    '/images/hero-background.png',
+    '/hero-background.webp',
+  ] as const;
+
+  await prisma.heroImage.updateMany({
+    where: { url: { in: [...LEGACY_HERO_URLS] } },
+    data: { url: '/tow-truck.png' },
+  });
+
   for (const image of SEED_HERO_IMAGES) {
     const existing = await prisma.heroImage.findFirst({ where: { url: image.url } });
     if (!existing) {
-      await prisma.heroImage.create({ data: image });
+      const activeLegacy = await prisma.heroImage.findFirst({
+        where: { isActive: true, url: { not: image.url } },
+        orderBy: { sortOrder: 'asc' },
+      });
+
+      if (activeLegacy) {
+        await prisma.heroImage.update({
+          where: { id: activeLegacy.id },
+          data: {
+            url: image.url,
+            alt: image.alt,
+            variant: image.variant,
+          },
+        });
+      } else {
+        await prisma.heroImage.create({ data: image });
+      }
     }
   }
 

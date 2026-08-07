@@ -197,7 +197,7 @@ export const SEED_HERO_IMAGES: Array<{
   sortOrder: number;
 }> = [
   {
-    url: '/images/hero-background.webp',
+    url: '/tow-truck.png',
     alt: 'Професійний евакуатор',
     variant: 'BOTH',
     sortOrder: 0,

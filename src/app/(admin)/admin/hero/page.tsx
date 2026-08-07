@@ -47,7 +47,7 @@ export default async function AdminHeroPage() {
         <AdminCard title="Додати hero зображення">
           <form action={saveHeroImageAction} className="space-y-4">
             <AdminGrid>
-              <AdminField label="URL"><AdminInput name="url" placeholder="/images/hero-background.webp" required /></AdminField>
+              <AdminField label="URL"><AdminInput name="url" placeholder="/tow-truck.png" required /></AdminField>
               <AdminField label="Alt"><AdminInput name="alt" /></AdminField>
             </AdminGrid>
             <HeroImageUploadField />

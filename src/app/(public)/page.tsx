@@ -2,6 +2,7 @@ import { ContactCtaSection } from '@/components/landing/contact-cta-section';
 import { FaqSection } from '@/components/landing/faq-section';
 import { HeroHeader } from '@/components/landing/hero-header';
 import { HeroSection } from '@/components/landing/hero-section';
+import { HERO_TRUCK_IMAGE } from '@/config/hero-assets';
 import { HowItWorksSection } from '@/components/landing/how-it-works-section';
 import { ServicesSection } from '@/components/landing/services-section';
 import { TestimonialsSection } from '@/components/landing/testimonials-section';
@@ -38,12 +39,10 @@ export default async function HomePage() {
   ]);
 
   const companyName = settings.companyName || baseAppConfig.defaultSiteName;
-  const heroDesktop =
+  const heroTruck =
     heroImages.find((image) => image.variant === 'DESKTOP' || image.variant === 'BOTH')?.url ??
-    '/images/hero-background.webp';
-  const heroMobile =
     heroImages.find((image) => image.variant === 'MOBILE' || image.variant === 'BOTH')?.url ??
-    heroDesktop;
+    HERO_TRUCK_IMAGE;
 
   return (
     <>
@@ -53,7 +52,7 @@ export default async function HomePage() {
         email={settings.email}
       />
       <HeroHeader />
-      <HeroSection desktopImageUrl={heroDesktop} mobileImageUrl={heroMobile} content={content} />
+      <HeroSection truckImageUrl={heroTruck} content={content} />
       <PriceCalculatorSection config={calculatorConfig} />
       <HowItWorksSection />
       <ServicesSection />
